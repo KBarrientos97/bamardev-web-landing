@@ -1,0 +1,29 @@
+# CI/CD de la landing: push a main → deploy a Cloudflare Pages (bamardev.com).
+# Requiere el secret CLOUDFLARE_API_TOKEN (token "Cloudflare Pages: Edit" de la
+# cuenta de Kevin — el mismo tipo que usa bamardev-web-licencia). El account id
+# no es secreto y wrangler lo lee del .env del repo.
+name: Deploy landing
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Deploy a Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler pages deploy dist --branch=main
