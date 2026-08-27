@@ -1,4 +1,5 @@
-import { COMPARATIVA } from '../data/planes'
+import { comparativa } from '../data/planes'
+import { usePrecios } from '../data/precios'
 
 /** Pinta "Sí" en verde y "—" apagado; el resto tal cual. */
 function Celda({ valor, destacada }: { valor: string; destacada?: boolean }) {
@@ -22,6 +23,8 @@ function Celda({ valor, destacada }: { valor: string; destacada?: boolean }) {
 }
 
 export function Comparativa() {
+  const { precios, descuento } = usePrecios()
+  const filas = comparativa(precios, descuento)
   return (
     <section className="bg-slate-50 py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -51,7 +54,7 @@ export function Comparativa() {
               </tr>
             </thead>
             <tbody>
-              {COMPARATIVA.map(([concepto, basico, profesional, full]) => (
+              {filas.map(([concepto, basico, profesional, full]) => (
                 <tr key={concepto} className="border-b border-slate-100 last:border-0">
                   <td className="px-4 py-3.5 text-sm font-semibold text-slate-600">
                     {concepto}

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import {
-  DESCUENTO_ANUAL,
   PLANES,
   ahorroAnual,
   fmtBs,
@@ -8,13 +7,16 @@ import {
   mensualEquivalente,
   precioAnual,
 } from '../data/planes'
+import { usePrecios } from '../data/precios'
 import { CheckIcon } from './ui'
 
 export function Planes() {
   // Mensual / Anual: el precio grande siempre es "por mes"; en anual se
   // muestra el equivalente mensual y, debajo, lo que se paga por el año.
   const [anual, setAnual] = useState(false)
-  const pctDescuento = Math.round(DESCUENTO_ANUAL * 100)
+  // Precios vigentes: los que administra el panel (con los fijos de respaldo).
+  const { precios, descuento } = usePrecios()
+  const pctDescuento = Math.round(descuento * 100)
 
   return (
     <section id="planes" className="scroll-mt-16 bg-white py-20 lg:py-28">
@@ -66,10 +68,12 @@ export function Planes() {
 
         <div className="mt-12 grid items-start gap-6 lg:grid-cols-3">
           {PLANES.map((plan) => {
-            const porMes = anual ? mensualEquivalente(plan) : plan.precio
+            const mensual = precios[plan.nombre] ?? plan.precio
+            const total = precioAnual(mensual, descuento)
+            const porMes = anual ? mensualEquivalente(mensual, descuento) : mensual
             const mensajeWhatsApp = anual
-              ? `Hola BamarDev, me interesa el plan ${plan.nombre} con pago anual (Bs ${fmtBs(precioAnual(plan))}/año) para mi restaurante.`
-              : `Hola BamarDev, me interesa el plan ${plan.nombre} (Bs ${plan.precio}/mes) para mi restaurante.`
+              ? `Hola BamarDev, me interesa el plan ${plan.nombre} con pago anual (Bs ${fmtBs(total)}/año) para mi restaurante.`
+              : `Hola BamarDev, me interesa el plan ${plan.nombre} (Bs ${mensual}/mes) para mi restaurante.`
             return (
               <article
                 key={plan.nombre}
@@ -110,14 +114,14 @@ export function Planes() {
                 <p className="mt-1.5 min-h-10 text-sm text-slate-500">
                   {anual ? (
                     <>
-                      Bs {fmtBs(precioAnual(plan))} al año, pagado por adelantado.{' '}
+                      Bs {fmtBs(total)} al año, pagado por adelantado.{' '}
                       <span className="font-bold text-brand-700">
-                        Ahorrás Bs {fmtBs(ahorroAnual(plan))}.
+                        Ahorrás Bs {fmtBs(ahorroAnual(mensual, descuento))}.
                       </span>
                     </>
                   ) : (
                     <>
-                      Facturación mensual. Pagando el año: Bs {fmtBs(precioAnual(plan))}{' '}
+                      Facturación mensual. Pagando el año: Bs {fmtBs(total)}{' '}
                       (−{pctDescuento} %).
                     </>
                   )}

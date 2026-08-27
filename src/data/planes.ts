@@ -28,17 +28,17 @@ export interface Plan {
  */
 export const DESCUENTO_ANUAL = 0.1
 
-export function precioAnual(plan: Plan): number {
-  return Math.round(plan.precio * 12 * (1 - DESCUENTO_ANUAL))
+export function precioAnual(precioMensual: number, descuento = DESCUENTO_ANUAL): number {
+  return Math.round(precioMensual * 12 * (1 - descuento))
 }
 
 /** Lo que "sale por mes" pagando anual (para mostrar "Bs 314 / mes"). */
-export function mensualEquivalente(plan: Plan): number {
-  return Math.round(precioAnual(plan) / 12)
+export function mensualEquivalente(precioMensual: number, descuento = DESCUENTO_ANUAL): number {
+  return Math.round(precioAnual(precioMensual, descuento) / 12)
 }
 
-export function ahorroAnual(plan: Plan): number {
-  return plan.precio * 12 - precioAnual(plan)
+export function ahorroAnual(precioMensual: number, descuento = DESCUENTO_ANUAL): number {
+  return precioMensual * 12 - precioAnual(precioMensual, descuento)
 }
 
 /** "2689" → "2.689" (separador de miles local). */
@@ -102,15 +102,29 @@ export const PLANES: Plan[] = [
   },
 ]
 
-/** Filas de la tabla comparativa: [concepto, Básico, Profesional, Full]. */
-export const COMPARATIVA: [string, string, string, string][] = [
-  ['Precio mensual', 'Bs 249', 'Bs 349', 'Bs 449'],
-  [
-    'Precio anual (−10 %)',
-    `Bs ${fmtBs(precioAnual(PLANES[0]))}`,
-    `Bs ${fmtBs(precioAnual(PLANES[1]))}`,
-    `Bs ${fmtBs(precioAnual(PLANES[2]))}`,
-  ],
+/**
+ * Filas de la tabla comparativa: [concepto, Básico, Profesional, Full].
+ * Las dos de precio se arman con los precios vigentes (API o fijos).
+ */
+export function comparativa(
+  precios: Record<string, number>,
+  descuento: number,
+): [string, string, string, string][] {
+  const p = PLANES.map((pl) => precios[pl.nombre] ?? pl.precio)
+  return [
+    ['Precio mensual', `Bs ${fmtBs(p[0])}`, `Bs ${fmtBs(p[1])}`, `Bs ${fmtBs(p[2])}`],
+    [
+      `Precio anual (−${Math.round(descuento * 100)} %)`,
+      `Bs ${fmtBs(precioAnual(p[0], descuento))}`,
+      `Bs ${fmtBs(precioAnual(p[1], descuento))}`,
+      `Bs ${fmtBs(precioAnual(p[2], descuento))}`,
+    ],
+    ...COMPARATIVA_FIJA,
+  ]
+}
+
+/** Filas que no dependen del precio. */
+const COMPARATIVA_FIJA: [string, string, string, string][] = [
   ['Objetivo', 'Vender', 'Administrar', 'Rentabilizar'],
   ['Punto de venta (efectivo)', 'Sí', 'Sí', 'Sí'],
   ['Pagos con QR y mixto', '—', 'Sí', 'Sí'],
