@@ -15,10 +15,35 @@ export interface Plan {
   nombre: string
   objetivo: string
   descripcion: string
+  /** Precio mensual en Bs (facturación mes a mes). */
   precio: number
   destacado?: boolean
   notaPrevia?: string
   features: string[]
+}
+
+/**
+ * Pagar el año por adelantado descuenta un 10 %. Mismo cálculo que el backend
+ * (src/licencia/catalogo.ts): 12 meses × precio × 0,9, redondeado a Bs enteros.
+ */
+export const DESCUENTO_ANUAL = 0.1
+
+export function precioAnual(plan: Plan): number {
+  return Math.round(plan.precio * 12 * (1 - DESCUENTO_ANUAL))
+}
+
+/** Lo que "sale por mes" pagando anual (para mostrar "Bs 314 / mes"). */
+export function mensualEquivalente(plan: Plan): number {
+  return Math.round(precioAnual(plan) / 12)
+}
+
+export function ahorroAnual(plan: Plan): number {
+  return plan.precio * 12 - precioAnual(plan)
+}
+
+/** "2689" → "2.689" (separador de miles local). */
+export function fmtBs(n: number): string {
+  return n.toLocaleString('es-BO')
 }
 
 export const PLANES: Plan[] = [
@@ -80,6 +105,12 @@ export const PLANES: Plan[] = [
 /** Filas de la tabla comparativa: [concepto, Básico, Profesional, Full]. */
 export const COMPARATIVA: [string, string, string, string][] = [
   ['Precio mensual', 'Bs 249', 'Bs 349', 'Bs 449'],
+  [
+    'Precio anual (−10 %)',
+    `Bs ${fmtBs(precioAnual(PLANES[0]))}`,
+    `Bs ${fmtBs(precioAnual(PLANES[1]))}`,
+    `Bs ${fmtBs(precioAnual(PLANES[2]))}`,
+  ],
   ['Objetivo', 'Vender', 'Administrar', 'Rentabilizar'],
   ['Punto de venta (efectivo)', 'Sí', 'Sí', 'Sí'],
   ['Pagos con QR y mixto', '—', 'Sí', 'Sí'],
@@ -100,4 +131,4 @@ export const COMPARATIVA: [string, string, string, string][] = [
 ]
 
 export const NOTA_LEGAL =
-  'Precios en bolivianos, facturación mensual. Incluye actualizaciones y respaldo en la nube. Instalación y capacitación se cotizan aparte. Cada plan incluye 1 sucursal; adicionales, Bs 100/mes cada una. Las ganancias mostradas son estimadas: se calculan sobre precio de venta y costo cargado en el sistema, sin incluir otros gastos del negocio (alquiler, sueldos, servicios).'
+  'Precios en bolivianos. Facturación mensual, o anual por adelantado con 10 % de descuento. Incluye actualizaciones y respaldo en la nube. Instalación y capacitación se cotizan aparte. Cada plan incluye 1 sucursal; adicionales, Bs 100/mes cada una. Las ganancias mostradas son estimadas: se calculan sobre precio de venta y costo cargado en el sistema, sin incluir otros gastos del negocio (alquiler, sueldos, servicios).'
