@@ -1,5 +1,5 @@
 import { NOTA_LEGAL, WHATSAPP_DISPLAY, linkWhatsApp } from '../data/planes'
-import { WhatsAppIcon } from './ui'
+import { Contacto } from './Contacto'
 
 export function Cierre() {
   return (
@@ -19,15 +19,9 @@ export function Cierre() {
               Coordinamos una visita a tu local o te lo mostramos por
               videollamada — sin compromiso.
             </p>
-            <a
-              href={linkWhatsApp('Hola BamarDev, quiero coordinar una demo del sistema para mi negocio.')}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-8 inline-flex items-center gap-3 rounded-full bg-brand-500 px-8 py-4 text-lg font-bold text-white shadow-xl shadow-brand-500/30 transition hover:bg-brand-400"
-            >
-              <WhatsAppIcon className="h-6 w-6" />
-              Escribinos al {WHATSAPP_DISPLAY}
-            </a>
+            <div className="mt-8">
+              <Contacto />
+            </div>
           </div>
         </div>
       </div>
