@@ -9,9 +9,9 @@ import { DESCUENTO_ANUAL, PLANES } from './planes'
 export const API_PLANES_URL = 'https://api.bamardev.com/api/licencia/planes'
 
 export interface PreciosVigentes {
-  /** Precio mensual por nombre de plan ("Básico", "Profesional", "Full"). */
+  /** Precio mensual por nombre de plan ("Básico", "Profesional"). */
   precios: Record<string, number>
-  /** Fracción de descuento anual (0.1 = 10 %). */
+  /** Fracción de descuento anual (0.15 = 15 %). */
   descuento: number
   desdeApi: boolean
 }
