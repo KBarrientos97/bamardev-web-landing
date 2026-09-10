@@ -25,12 +25,12 @@ export function Planes() {
           Planes para restaurantes
         </p>
         <h2 className="mx-auto mt-3 max-w-2xl text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-          De vender a saber cuánto ganás realmente.
+          De vender a administrar todo el restaurante.
         </h2>
         <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-slate-600">
-          Básico te pone a vender desde el día uno; Profesional te da el control
-          de un sistema de gestión completo; Full te muestra cuánto gastás en
-          producir y cuánto ganás realmente.
+          Básico te pone a vender desde el día uno, con inventario, caja y
+          reportes; Profesional suma delivery, salón con meseros, combos y
+          varias sucursales.
         </p>
 
         {/* Mensual / Anual */}
@@ -66,7 +66,7 @@ export function Planes() {
           </div>
         </div>
 
-        <div className="mt-12 grid items-start gap-6 lg:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-4xl items-start gap-6 lg:grid-cols-2">
           {PLANES.map((plan) => {
             const mensual = precios[plan.nombre] ?? plan.precio
             const total = precioAnual(mensual, descuento)
