@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/logo-192.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ecfdf5" />
+    <!--
+      Página aparte y no una sección de index.html: el link se comparte por
+      WhatsApp y Facebook, y esos leen el título y la imagen del HTML sin
+      ejecutar JavaScript. Con una SPA la vista previa diría lo de la landing.
+    -->
+    <title>Encuesta Plan Emprendedor · BamarDev</title>
+    <meta
+      name="description"
+      content="Ayúdanos a crear un plan económico para negocios que recién empiezan. Son 9 preguntas, 2 minutos y sin registrarte."
+    />
+    <meta property="og:title" content="Encuesta Plan Emprendedor · BamarDev" />
+    <meta
+      property="og:description"
+      content="¿Tienes un negocio que recién empieza? Ayúdanos a definir el precio del nuevo Plan Emprendedor. 2 minutos, sin registrarte."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bamardev.com/encuesta" />
+    <meta property="og:image" content="https://bamardev.com/logo-400.png" />
+    <!-- Se comparte con un link; no hace falta que Google la muestre a cualquiera. -->
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/encuesta/main.tsx"></script>
+  </body>
+</html>
