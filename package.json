@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:qa": "tsc -b && vite build --mode qa",
     "deploy": "npm run build && wrangler pages deploy dist --branch=main",
+    "deploy:qa": "npm run build:qa && wrangler pages deploy dist --branch=qa",
     "preview": "vite preview"
   },
   "dependencies": {
