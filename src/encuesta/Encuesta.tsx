@@ -95,14 +95,44 @@ function secuencia(r: Respuestas): Pregunta[] {
  */
 function sinContestar(r: Respuestas): Pregunta | undefined {
   return secuencia(r).find((p) =>
-    p === 'contacto' ? false : p === 'herramientas' ? r.herramientas.length === 0 : !r[p],
+    p === 'contacto'
+      ? false
+      : p === 'herramientas'
+        ? // Se cuenta lo que se VA A ENVIAR, no lo que quedó en el estado: el
+          // payload filtra las herramientas por rubro y el backend exige al
+          // menos una. Mirando la lista cruda, una respuesta cuyas
+          // herramientas no existan para su rubro pasaba la guardia y rebotaba
+          // con 400 — mostrando "actualizamos la encuesta", que no ayuda y
+          // pierde todo lo contestado.
+          herramientasElegidasDe(r).length === 0
+        : !r[p],
   )
 }
 
-/** De dónde vino el link: `?origen=facebook`, `?o=visita` o el utm de siempre. */
+/** Las herramientas que sobreviven al filtro por rubro: lo que se envía. */
+function herramientasElegidasDe(r: Respuestas): string[] {
+  const visibles = herramientasPara(r.rubro)
+  return r.herramientas.filter((h) => visibles.some((o) => o.valor === h))
+}
+
+/**
+ * De dónde vino el link: `?origen=facebook`, `?o=visita` o el utm de siempre.
+ *
+ * Se sanea igual que el backend y se corta en 40, que es lo que acepta el DTO.
+ * Sin esto, un `utm_source` de los que arma el administrador de anuncios de
+ * Facebook —"fb_campaign_verano2026_bolivia_santacruz_leads_v3" son 49
+ * caracteres— rebotaba con 400 y la persona perdía la encuesta entera con el
+ * mensaje de "actualizamos la encuesta", que no tiene nada que ver.
+ *
+ * El saneado va ANTES del corte a propósito: el backend valida el largo del
+ * texto crudo y recién después limpia, así que recortar sin limpiar dejaría
+ * pasar 40 caracteres que el backend igual rechaza.
+ */
 function leerOrigen(): string | undefined {
   const q = new URLSearchParams(window.location.search)
-  return (q.get('origen') || q.get('o') || q.get('utm_source') || '').trim() || undefined
+  const crudo = (q.get('origen') || q.get('o') || q.get('utm_source') || '').trim()
+  const limpio = crudo.toLowerCase().replace(/[^a-z0-9_-]/g, '')
+  return limpio.slice(0, 40) || undefined
 }
 
 function leerYaRespondio(): boolean {
@@ -181,6 +211,18 @@ export default function Encuesta() {
   const [yaRespondio] = useState(leerYaRespondio)
   const titulo = useRef<HTMLHeadingElement>(null)
   const enviado = useRef(false)
+  /**
+   * El POST en vuelo. Va en un ref y no en el estado `enviando` porque
+   * `setEnviando(true)` no desactiva el botón hasta que React vuelve a
+   * pintar: dos toques rápidos —o el doble tap que deja el teclado del
+   * celular al cerrarse— entran los dos en el mismo tick y mandan la encuesta
+   * dos veces. El endpoint no tiene idempotencia, así que eso son dos filas
+   * en la base y una persona contada doble en los promedios.
+   *
+   * Es el mismo cuidado que ya tenía el avance automático con
+   * `pasoAutomatico`; al envío le faltaba.
+   */
+  const enVuelo = useRef(false)
   const pasoAutomatico = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   useEffect(() => {
@@ -219,6 +261,22 @@ export default function Encuesta() {
     setPaso(siguiente)
   }
 
+  /**
+   * El "← Atrás" del encabezado.
+   *
+   * En la primera pregunta NO usa `history.back()`: la encuesta se comparte
+   * por WhatsApp, y quien entra desde ahí tiene la portada como única entrada
+   * propia del historial. Un `back()` de más lo devolvía a WhatsApp, o sea
+   * fuera del sitio, y la encuesta quedaba abandonada. Desde la segunda
+   * pregunta sí es `back()`, para que el botón del encabezado y el del celular
+   * hagan exactamente lo mismo.
+   */
+  const volverAtras = () => {
+    const pasos = secuencia(r)
+    if (paso === pasos[0]) ir('inicio')
+    else history.back()
+  }
+
   /** Pasa a la siguiente pregunta que corresponda con estas respuestas. */
   const avanzar = (con: Respuestas) => {
     const pasos = secuencia(con)
@@ -253,9 +311,7 @@ export default function Encuesta() {
    * (comandas en una farmacia) no se manda; lo demás se conserva.
    */
   const herramientasVisibles = herramientasPara(r.rubro)
-  const herramientasElegidas = r.herramientas.filter((h) =>
-    herramientasVisibles.some((o) => o.valor === h),
-  )
+  const herramientasElegidas = herramientasElegidasDe(r)
 
   async function enviar(con: Respuestas, honeypot = '') {
     const falta = sinContestar(con)
@@ -263,6 +319,10 @@ export default function Encuesta() {
       ir(falta)
       return
     }
+    // Antes de cualquier await: es lo único que corta el segundo toque, porque
+    // `setEnviando` recién desactiva el botón en el próximo render.
+    if (enVuelo.current || enviado.current) return
+    enVuelo.current = true
     setEnviando(true)
     setError('')
     try {
@@ -274,9 +334,7 @@ export default function Encuesta() {
           rubroOtro: con.rubro === 'OTRO' ? con.rubroOtro?.trim() || undefined : undefined,
           ventasDia: con.ventasDia,
           control: con.control,
-          herramientas: con.herramientas.filter((h) =>
-            herramientasPara(con.rubro).some((o) => o.valor === h),
-          ),
+          herramientas: herramientasElegidasDe(con),
           precioMensual: con.precioMensual,
           modalidad: con.modalidad,
           periodoLimite: con.periodoLimite,
@@ -317,6 +375,10 @@ export default function Encuesta() {
             : 'No pudimos guardar tus respuestas.',
       )
     } finally {
+      // Se libera siempre: si falló por red o por un 429, la persona tiene que
+      // poder reintentar. Lo que impide el reenvío tras un alta exitosa es
+      // `enviado.current`, no esto.
+      enVuelo.current = false
       setEnviando(false)
     }
   }
@@ -415,7 +477,7 @@ export default function Encuesta() {
       <header className="flex items-center justify-between gap-3">
         <button
           type="button"
-          onClick={() => history.back()}
+          onClick={volverAtras}
           className="-ml-2 rounded-full px-2 py-1 text-sm font-semibold text-slate-500 hover:text-slate-900"
         >
           ← Atrás
