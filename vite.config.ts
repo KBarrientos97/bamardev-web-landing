@@ -14,11 +14,14 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), tailwindcss()],
     build: {
       rollupOptions: {
-        // Dos páginas: la landing y la encuesta. Cloudflare Pages sirve
-        // `encuesta.html` en /encuesta sin configurar nada.
+        // Una página por ruta: la landing, la encuesta y los textos legales.
+        // Cloudflare Pages sirve `encuesta.html` en /encuesta (y así las
+        // demás) sin configurar nada.
         input: {
           main: resolve(__dirname, 'index.html'),
           encuesta: resolve(__dirname, 'encuesta.html'),
+          terminos: resolve(__dirname, 'terminos.html'),
+          privacidad: resolve(__dirname, 'privacidad.html'),
         },
       },
     },

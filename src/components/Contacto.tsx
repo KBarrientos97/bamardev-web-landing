@@ -12,7 +12,20 @@ import { WhatsAppIcon } from './ui'
  */
 const API_LEADS_URL = 'https://api.bamardev.com/api/leads'
 
-const RUBROS = ['Restaurante', 'Farmacia', 'Ferretería', 'Minimarket', 'Otro']
+// Los textos viajan tal cual: el backend los valida contra su propia lista
+// (bamardev-backend/src/leads/dto/crear-lead.dto.ts). Uno que no esté allá
+// hace fallar el envío entero.
+const RUBROS = [
+  'Restaurante',
+  'Farmacia',
+  'Ferretería',
+  'Minimarket',
+  'Peluquería',
+  'Barbería',
+  'Spa',
+  'Uñas',
+  'Otro',
+]
 
 type Estado = 'escribiendo' | 'enviando' | 'listo' | 'error'
 

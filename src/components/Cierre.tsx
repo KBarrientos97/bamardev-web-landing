@@ -52,10 +52,20 @@ export function Footer() {
         <p className="mt-8 max-w-4xl text-xs leading-relaxed text-slate-400">
           {NOTA_LEGAL}
         </p>
-        <p className="mt-4 text-xs text-slate-400">
-          © {new Date().getFullYear()} BamarDev Technology. Todos los derechos
-          reservados.
-        </p>
+        <div className="mt-4 flex flex-col gap-2 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {new Date().getFullYear()} BamarDev Technology. Todos los derechos
+            reservados.
+          </p>
+          <p className="flex gap-4">
+            <a href="/terminos" className="font-semibold hover:text-brand-600">
+              Términos del servicio
+            </a>
+            <a href="/privacidad" className="font-semibold hover:text-brand-600">
+              Política de privacidad
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   )

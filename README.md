@@ -1,8 +1,8 @@
 # BamarDev — Landing comercial
 
 Landing de venta de **bamardev.com**: software de gestión para
-**restaurantes** (disponible), **farmacias** y **ferreterías** (en
-desarrollo). React 19 + Vite + Tailwind 4, misma paleta de marca que el panel
+**restaurantes** (disponible), **farmacias**, **ferreterías** y **salones,
+barberías, spa y uñas** (en desarrollo). React 19 + Vite + Tailwind 4, misma paleta de marca que el panel
 de licencias (verde `#10b981`, logo robot, Plus Jakarta Sans).
 
 ## URLs
@@ -71,6 +71,12 @@ npm run deploy:qa   # QA
 - **Rubros** (activar farmacias/ferreterías cuando estén listos):
   [src/components/Rubros.tsx](src/components/Rubros.tsx) — cambiar
   `disponible: true` y ajustar los textos.
+- **Términos y privacidad** (`/terminos`, `/privacidad`, enlazadas desde el
+  pie): el texto vive en [src/legal/](src/legal/) como copia de
+  `bamar/legal/` (la fuente, fuera de los repos). Al cambiar la versión se
+  copia el `.md` de nuevo; mientras tenga `[MARCADORES]` sin completar va con
+  el aviso "Versión preliminar" (`preliminar` en `src/legal/terminos.tsx` y
+  `privacidad.tsx`) y `noindex` en su HTML.
 - **Secciones**: cada bloque de la página es un componente en
   [src/components/](src/components/) (Hero, Rubros, Funciones, Planes,
   Comparativa, Cierre/Footer).
