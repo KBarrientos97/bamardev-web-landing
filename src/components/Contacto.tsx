@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { WHATSAPP_DISPLAY, linkWhatsApp } from '../data/planes'
 import { WhatsAppIcon } from './ui'
+import { Captcha } from './Captcha'
+import { siteKeyTurnstile } from '../lib/turnstile'
 
 /**
  * El formulario escribe en el CRM del panel. Antes todo iba a WhatsApp: si
@@ -32,6 +34,11 @@ type Estado = 'escribiendo' | 'enviando' | 'listo' | 'error'
 export function Contacto({ planInteres }: { planInteres?: string }) {
   const [estado, setEstado] = useState<Estado>('escribiendo')
   const [error, setError] = useState('')
+  // Turnstile, sólo si el build trae la site key. `vueltaCaptcha` remonta el
+  // widget para pedir otro token: el backend gasta el anterior en cada envío.
+  const siteKey = siteKeyTurnstile()
+  const [captcha, setCaptcha] = useState<string | null>(null)
+  const [vueltaCaptcha, setVueltaCaptcha] = useState(0)
 
   const enviar = async (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault()
@@ -41,6 +48,11 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
     const email = String(datos.get('email') ?? '').trim()
     if (!telefono && !email) {
       setError('Dejanos un teléfono o un email para poder contactarte.')
+      setEstado('error')
+      return
+    }
+    if (siteKey && !captcha) {
+      setError('Completá la verificación anti-robots (el recuadro de arriba del botón) y volvé a enviar.')
       setEstado('error')
       return
     }
@@ -60,10 +72,27 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
           planInteres,
           // Honeypot: va oculto, así que sólo lo completa un bot.
           web: String(datos.get('web') ?? ''),
+          ...(siteKey && captcha ? { captcha } : {}),
         }),
       })
-      if (!res.ok) throw new Error(String(res.status))
-      setEstado('listo')
+      if (res.ok) {
+        setEstado('listo')
+        return
+      }
+      // El token ya se gastó: el próximo intento necesita uno nuevo.
+      if (siteKey) {
+        setCaptcha(null)
+        setVueltaCaptcha((v) => v + 1)
+      }
+      // El 400 CAPTCHA tiene arreglo en la página (resolverlo de nuevo): se
+      // muestra el mensaje del backend en vez de mandar a WhatsApp.
+      const cuerpo = (await res.json().catch(() => null)) as { codigo?: string; message?: string } | null
+      if (cuerpo?.codigo === 'CAPTCHA') {
+        setError(cuerpo.message || 'No pudimos verificar que seas una persona. Volvé a intentar.')
+        setEstado('error')
+        return
+      }
+      throw new Error(String(res.status))
     } catch {
       // Si la API no responde, no se pierde el contacto: se ofrece WhatsApp.
       setError('No pudimos enviar el formulario. Escribinos por WhatsApp y te respondemos igual.')
@@ -168,6 +197,8 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
       <p className="mt-2 text-xs text-slate-400">
         Dejanos al menos un teléfono o un email para poder responderte.
       </p>
+
+      {siteKey && <Captcha key={vueltaCaptcha} siteKey={siteKey} onToken={setCaptcha} />}
 
       {error && <p className="mt-3 text-sm text-rose-300">{error}</p>}
 
