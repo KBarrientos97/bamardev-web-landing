@@ -6,6 +6,8 @@ interface Rubro {
   disponible: boolean
   descripcion: string
   puntos: string[]
+  /** Cómo se presenta el interesado en el WhatsApp de "Avisame" (sólo si no está disponible). */
+  quienEscribe?: string
 }
 
 const RUBROS: Rubro[] = [
@@ -32,6 +34,7 @@ const RUBROS: Rubro[] = [
       'Ventas ágiles en mostrador',
       'Reportes de rotación por producto',
     ],
+    quienEscribe: 'tengo una farmacia',
   },
   {
     emoji: '🛠️',
@@ -44,6 +47,20 @@ const RUBROS: Rubro[] = [
       'Precios diferenciados y ventas mixtas',
       'Control de caja y de stock real',
     ],
+    quienEscribe: 'tengo una ferretería',
+  },
+  {
+    emoji: '✂️',
+    nombre: 'Salones, barberías, spa y uñas',
+    disponible: false,
+    descripcion:
+      'Agenda de citas para tu equipo y reservas online: tus clientes eligen servicio, profesional y horario desde un enlace.',
+    puntos: [
+      'Agenda del día y de la semana por profesional',
+      'Reservas online, sin llamadas ni mensajes de ida y vuelta',
+      'La cita se cobra en la misma caja del sistema',
+    ],
+    quienEscribe: 'tengo un salón de belleza, barbería, spa o local de uñas',
   },
 ]
 
@@ -59,10 +76,10 @@ export function Rubros() {
         </h2>
         <p className="mt-4 max-w-2xl text-lg text-slate-600">
           Empezamos por restaurantes y estamos llevando la misma experiencia a
-          farmacias y ferreterías.
+          farmacias, ferreterías y salones de belleza.
         </p>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {RUBROS.map((r) => (
             <article
               key={r.nombre}
@@ -114,7 +131,7 @@ export function Rubros() {
                 ) : (
                   <a
                     href={linkWhatsApp(
-                      `Hola BamarDev, tengo una ${r.nombre === 'Farmacias' ? 'farmacia' : 'ferretería'} y quiero que me avisen cuando el sistema esté listo para mi rubro.`,
+                      `Hola BamarDev, ${r.quienEscribe} y quiero que me avisen cuando el sistema esté listo para mi rubro.`,
                     )}
                     target="_blank"
                     rel="noreferrer"
