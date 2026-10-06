@@ -12,7 +12,10 @@ import { siteKeyTurnstile } from '../lib/turnstile'
  * WhatsApp sigue estando como alternativa: hay gente que prefiere escribir
  * directo, y no hay razón para obligarla a llenar un formulario.
  */
-const API_LEADS_URL = 'https://api.bamardev.com/api/leads'
+// El API del ambiente, como la encuesta: la landing de QA escribe en el CRM
+// de QA (y valida su captcha allá), no en el de producción. En dev queda
+// `/api` y el proxy de Vite lo manda a QA.
+const API_LEADS_URL = `${import.meta.env.VITE_API_URL || '/api'}/leads`
 
 // Los textos viajan tal cual: el backend los valida contra su propia lista
 // (bamardev-backend/src/leads/dto/crear-lead.dto.ts). Uno que no esté allá
