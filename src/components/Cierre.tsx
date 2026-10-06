@@ -11,7 +11,7 @@ export function Cierre() {
             className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full bg-brand-500/25 blur-3xl"
           />
           <div className="relative">
-            <img src="/logo.png" alt="" className="mx-auto h-16 w-16 rounded-2xl shadow-lg" />
+            <img src="/logo-marca.png" alt="" className="mx-auto h-16 w-16 drop-shadow-lg" />
             <h2 className="mx-auto mt-6 max-w-2xl text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
               ¿Querés ver el sistema funcionando en tu negocio?
             </h2>
@@ -35,7 +35,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
           <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="BamarDev" className="h-9 w-9 rounded-xl" />
+            <img src="/logo-marca.png" alt="BamarDev" className="h-9 w-9" />
             <span className="text-lg font-extrabold tracking-tight text-slate-900">
               BamarDev <span className="font-medium text-slate-500">Technology</span>
             </span>
