@@ -5,8 +5,13 @@ import { DESCUENTO_ANUAL, PLANES } from './planes'
  * Los precios se administran desde el panel de licencias y los publica el
  * backend. La landing los lee al cargar; si la API no responde (o el CORS no
  * la deja) se quedan los valores fijos de planes.ts, que deben coincidir.
+ *
+ * Del API de su ambiente, como el formulario y la encuesta: la landing de QA
+ * muestra los precios que se editan en el panel de QA (antes leía siempre los
+ * de producción y un cambio de precio no se podía probar). En dev, `/api` y
+ * el proxy de Vite.
  */
-export const API_PLANES_URL = 'https://api.bamardev.com/api/licencia/planes'
+export const API_PLANES_URL = `${import.meta.env.VITE_API_URL || '/api'}/licencia/planes`
 
 export interface PreciosVigentes {
   /** Precio mensual por nombre de plan ("Básico", "Profesional"). */
