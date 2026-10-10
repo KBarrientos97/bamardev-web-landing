@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {
   PLANES,
   ahorroAnual,
+  descuentoDe,
   featuresDe,
   fmtBs,
   linkWhatsApp,
@@ -17,10 +18,13 @@ export function Planes() {
   // muestra el equivalente mensual y, debajo, lo que se paga por el año.
   const [anual, setAnual] = useState(false)
   // Precios vigentes: los que administra el panel (con los fijos de respaldo).
-  const { precios, descuento, cupo } = usePrecios()
+  const { precios, descuento, cupo, descuentoPorPlazo } = usePrecios()
   // El mismo pedido que la sección de créditos (se hace una sola vez).
   const { regaloAlta } = usePaquetes()
   const pctDescuento = Math.round(descuento * 100)
+  // La marca del botón Anual sólo si algún plan la tiene: el Emprendedor paga
+  // el año a precio lleno (D25) y su tarjeta no muestra descuento.
+  const algunoConDescuento = PLANES.some((pl) => descuentoDe(pl.codigo, descuento, descuentoPorPlazo) > 0)
 
   return (
     <section id="planes" className="scroll-mt-16 bg-white py-20 lg:py-28">
@@ -65,9 +69,11 @@ export function Planes() {
               }`}
             >
               Anual
-              <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-extrabold text-brand-700">
-                −{pctDescuento} %
-              </span>
+              {algunoConDescuento && (
+                <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-extrabold text-brand-700">
+                  −{pctDescuento} %
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -75,8 +81,11 @@ export function Planes() {
         <div className="mx-auto mt-12 grid max-w-xl items-start gap-6 lg:max-w-6xl lg:grid-cols-3">
           {PLANES.map((plan) => {
             const mensual = precios[plan.codigo] ?? plan.precio
-            const total = precioAnual(mensual, descuento)
-            const porMes = anual ? mensualEquivalente(mensual, descuento) : mensual
+            // 0 en un plan sin descuento por plazo: el año sale 12 × mes.
+            const d = descuentoDe(plan.codigo, descuento, descuentoPorPlazo)
+            const total = precioAnual(mensual, d)
+            const ahorro = ahorroAnual(mensual, d)
+            const porMes = anual ? mensualEquivalente(mensual, d) : mensual
             const mensajeWhatsApp = anual
               ? `Hola BamarDev, me interesa el plan ${plan.nombre} con pago anual (Bs ${fmtBs(total)}/año) para mi negocio.`
               : `Hola BamarDev, me interesa el plan ${plan.nombre} (Bs ${mensual}/mes) para mi negocio.`
@@ -126,15 +135,18 @@ export function Planes() {
                 <p className="mt-1.5 min-h-10 text-sm text-slate-500">
                   {anual ? (
                     <>
-                      Bs {fmtBs(total)} al año, pagado por adelantado.{' '}
-                      <span className="font-bold text-brand-700">
-                        Ahorrás Bs {fmtBs(ahorroAnual(mensual, descuento))}.
-                      </span>
+                      Bs&nbsp;{fmtBs(total)} al año, pagado por adelantado.
+                      {ahorro > 0 && (
+                        <>
+                          {' '}
+                          <span className="font-bold text-brand-700">Ahorrás Bs&nbsp;{fmtBs(ahorro)}.</span>
+                        </>
+                      )}
                     </>
                   ) : (
                     <>
-                      Facturación mensual. Pagando el año: Bs {fmtBs(total)}{' '}
-                      (−{pctDescuento} %).
+                      Facturación mensual. Pagando el año: Bs&nbsp;{fmtBs(total)}
+                      {d > 0 ? ` (−${Math.round(d * 100)} %).` : '.'}
                     </>
                   )}
                 </p>

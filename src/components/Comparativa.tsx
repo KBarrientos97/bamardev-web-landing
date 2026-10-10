@@ -23,8 +23,8 @@ function Celda({ valor, destacada }: { valor: string; destacada?: boolean }) {
 }
 
 export function Comparativa() {
-  const { precios, descuento, cupo } = usePrecios()
-  const filas = comparativa(precios, descuento, cupo)
+  const { precios, descuento, cupo, descuentoPorPlazo } = usePrecios()
+  const filas = comparativa(precios, descuento, cupo, descuentoPorPlazo)
   return (
     <section className="bg-slate-50 py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
