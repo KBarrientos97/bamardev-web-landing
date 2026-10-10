@@ -1,4 +1,4 @@
-import { comparativa } from '../data/planes'
+import { PLANES, comparativa } from '../data/planes'
 import { usePrecios } from '../data/precios'
 
 /** Pinta "Sí" en verde y "—" apagado; el resto tal cual. */
@@ -23,8 +23,8 @@ function Celda({ valor, destacada }: { valor: string; destacada?: boolean }) {
 }
 
 export function Comparativa() {
-  const { precios, descuento } = usePrecios()
-  const filas = comparativa(precios, descuento)
+  const { precios, descuento, cupo, descuentoPorPlazo } = usePrecios()
+  const filas = comparativa(precios, descuento, cupo, descuentoPorPlazo)
   return (
     <section className="bg-slate-50 py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -36,28 +36,36 @@ export function Comparativa() {
         </p>
 
         <div className="mt-10 overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
-          <table className="w-full min-w-[32rem] border-collapse">
+          {/* En el celular la tabla se desliza de costado; la columna del
+              concepto queda fija para no perder de qué fila se trata. */}
+          <table className="w-full min-w-[40rem] border-collapse">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-sm">
-                <th className="px-4 py-4 text-left font-bold text-slate-500">
+                <th className="sticky left-0 bg-slate-50 px-4 py-4 text-left font-bold text-slate-500">
                   Incluye
                 </th>
-                <th className="px-4 py-4 text-center font-extrabold text-slate-900">
-                  Básico
-                </th>
-                <th className="bg-brand-50 px-4 py-4 text-center font-extrabold text-brand-700">
-                  Profesional
-                </th>
+                {PLANES.map((plan) => (
+                  <th
+                    key={plan.codigo}
+                    className={`px-4 py-4 text-center font-extrabold ${
+                      plan.destacado ? 'bg-brand-50 text-brand-700' : 'text-slate-900'
+                    }`}
+                  >
+                    {plan.nombre}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {filas.map(([concepto, basico, profesional]) => (
+              {filas.map(([concepto, ...valores]) => (
                 <tr key={concepto} className="border-b border-slate-100 last:border-0">
-                  <td className="px-4 py-3.5 text-sm font-semibold text-slate-600">
-                    {concepto}
+                  <td className="sticky left-0 bg-white px-4 py-3.5 text-sm font-semibold text-slate-600">
+                    {/* Angosta en el celular para que se vea al menos un plan al lado. */}
+                    <div className="w-32 sm:w-auto">{concepto}</div>
                   </td>
-                  <Celda valor={basico} />
-                  <Celda valor={profesional} destacada />
+                  {valores.map((valor, i) => (
+                    <Celda key={PLANES[i].codigo} valor={valor} destacada={PLANES[i].destacado} />
+                  ))}
                 </tr>
               ))}
             </tbody>
