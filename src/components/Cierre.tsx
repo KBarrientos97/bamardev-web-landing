@@ -31,7 +31,7 @@ export function Cierre() {
 }
 
 export function Footer() {
-  const { descuento, cupo } = usePrecios()
+  const { descuento, cupo, descuentoPorPlazo } = usePrecios()
   return (
     <footer className="border-t border-slate-200 bg-white">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -52,7 +52,7 @@ export function Footer() {
           </a>
         </div>
         <p className="mt-8 max-w-4xl text-xs leading-relaxed text-slate-400">
-          {notaLegal(descuento, cupo)}
+          {notaLegal(descuento, cupo, descuentoPorPlazo)}
         </p>
         <div className="mt-4 flex flex-col gap-2 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <p>

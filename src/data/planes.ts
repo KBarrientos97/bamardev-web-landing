@@ -1,7 +1,8 @@
 /*
   Contenido de los planes, vigente desde oct-2026: tres planes (Emprendedor,
   Básico y Profesional), 15 % de descuento anual y la mitad (7,5 %) pagando 6
-  meses. Si cambian precios, cupos, paquetes de créditos o features, actualizar
+  meses, salvo el Emprendedor, que se paga por 6 o 12 meses a precio lleno
+  (D25, `descuentoPorPlazo`). Si cambian precios, cupos, paquetes de créditos o features, actualizar
   acá, en el backend (src/licencia/catalogo.ts y su migración) y en el PDF
   comercial a la vez.
 
@@ -48,7 +49,8 @@ export interface CupoPlan {
 /** Respaldo de los campos que el backend publica en el plan EMPRENDEDOR. */
 export const CUPO_EMPRENDEDOR: CupoPlan = {
   ventasDia: 50,
-  citasDia: 50,
+  // 1 cita = 2 créditos: 25 citas pesan lo mismo que 50 ventas (D26).
+  citasDia: 25,
   creditosPorVenta: 1,
   creditosPorCita: 2,
 }
@@ -60,6 +62,11 @@ export interface Plan {
   descripcion: string
   /** Precio mensual en Bs (facturación mes a mes). */
   precio: number
+  /**
+   * Respaldo de `descuentoPorPlazo` del backend: si pagar 6 o 12 meses tiene
+   * descuento. El Emprendedor no lo tiene (D25): se paga a precio lleno.
+   */
+  descuentoPorPlazo: boolean
   destacado?: boolean
   /** Cinta chica sobre la tarjeta ("Nuevo"), menos llamativa que la del destacado. */
   etiqueta?: string
@@ -108,6 +115,20 @@ export function ahorroAnual(precioMensual: number, descuento = DESCUENTO_ANUAL):
   return precioMensual * 12 - precioAnual(precioMensual, descuento)
 }
 
+/**
+ * El descuento anual que le toca a un plan: el vigente si tiene descuento por
+ * plazo, 0 si no (Emprendedor, D25). Con 0, las fórmulas de arriba dan precio
+ * lleno (6 meses = 6 × mes, el año = 12 × mes, ahorro 0), que es lo mismo que
+ * publica el backend para esos planes.
+ */
+export function descuentoDe(
+  codigo: CodigoPlan,
+  descuento: number,
+  conDescuento: Record<CodigoPlan, boolean>,
+): number {
+  return conDescuento[codigo] ? descuento : 0
+}
+
 /** "2040" → "2.040" (separador de miles local). */
 export function fmtBs(n: number): string {
   return n.toLocaleString('es-BO')
@@ -134,6 +155,7 @@ export const PLANES: Plan[] = [
     descripcion:
       'El mismo sistema del Básico a precio de entrada: un cupo de ventas por día y créditos para los días de más movimiento.',
     precio: 75,
+    descuentoPorPlazo: false,
     etiqueta: 'Nuevo',
     notaPrevia: 'Todo lo de Básico, con un cupo diario',
     // Misma plantilla que el Básico (migración plan_emprendedor, D14): las
@@ -163,6 +185,10 @@ export const PLANES: Plan[] = [
     descripcion:
       'Punto de venta completo: cobrás, controlás stock, caja y gastos, y funciona sin internet.',
     precio: 200,
+    descuentoPorPlazo: true,
+    // "Más elegido" desde oct-2026 (D27): es el plan al que apuntan los dos
+    // de al lado (el Emprendedor que crece y el que no necesita delivery).
+    destacado: true,
     features: [
       // pos · mesa_llevar · recoger
       'Punto de venta con comanda Mesa / Llevar y pedidos para recoger',
@@ -193,7 +219,7 @@ export const PLANES: Plan[] = [
     descripcion:
       'Delivery, salón con meseros, combos, varios almacenes y exportación de reportes.',
     precio: 350,
-    destacado: true,
+    descuentoPorPlazo: true,
     notaPrevia: 'Todo lo de Básico, más',
     features: [
       // delivery
@@ -264,20 +290,28 @@ export function comparativa(
   precios: Record<CodigoPlan, number>,
   descuento: number,
   cupo: CupoPlan,
+  conDescuento: Record<CodigoPlan, boolean>,
 ): Fila[] {
-  const p = PLANES.map((pl) => precios[pl.codigo] ?? pl.precio)
-  const fila = (concepto: string, valor: (precio: number) => string): Fila => [
+  const p = PLANES.map((pl) => ({
+    precio: precios[pl.codigo] ?? pl.precio,
+    d: descuentoDe(pl.codigo, descuento, conDescuento),
+  }))
+  const fila = (concepto: string, valor: (precio: number, d: number) => string): Fila => [
     concepto,
-    valor(p[0]),
-    valor(p[1]),
-    valor(p[2]),
+    valor(p[0].precio, p[0].d),
+    valor(p[1].precio, p[1].d),
+    valor(p[2].precio, p[2].d),
   ]
   // Espacio duro antes del "%": en el celular no queda solo en otra línea.
   const pct = (fraccion: number) => `${fmtPct(fraccion)}\u00a0%`
+  // El descuento va en la celda y no en el concepto: el Emprendedor paga 6 y
+  // 12 meses a precio lleno (D25) y un "(−7,5 %)" en la fila lo contradecía.
+  const conMarca = (monto: number, fraccion: number) =>
+    fraccion > 0 ? `Bs ${fmtBs(monto)} (−${pct(fraccion)})` : `Bs ${fmtBs(monto)}`
   return [
     fila('Precio mensual', (x) => `Bs ${fmtBs(x)}`),
-    fila(`Pago por 6 meses (−${pct(descuento / 2)})`, (x) => `Bs ${fmtBs(precioSemestral(x, descuento))}`),
-    fila(`Precio anual (−${pct(descuento)})`, (x) => `Bs ${fmtBs(precioAnual(x, descuento))}`),
+    fila('Pago por 6 meses', (x, d) => conMarca(precioSemestral(x, d), d / 2)),
+    fila('Precio anual', (x, d) => conMarca(precioAnual(x, d), d)),
     ['Ventas por día', `${fmtBs(cupo.ventasDia)} + créditos`, 'Ilimitadas', 'Ilimitadas'],
     ['Citas por día (negocios con agenda)', `${fmtBs(cupo.citasDia)} + créditos`, 'Ilimitadas', 'Ilimitadas'],
     ...COMPARATIVA_FIJA,
@@ -314,15 +348,43 @@ const COMPARATIVA_FIJA: Fila[] = [
   ['Usuarios incluidos', '4', '4', 'Ilimitados'],
 ]
 
+/** "Básico", "Básico y Profesional", "A, B y C". */
+function enumerar(nombres: string[]): string {
+  if (nombres.length <= 1) return nombres[0] ?? ''
+  return `${nombres.slice(0, -1).join(', ')} y ${nombres[nombres.length - 1]}`
+}
+
+/** Cómo se factura cada plazo, según qué planes tienen descuento por plazo. */
+function notaPlazos(descuento: number, conDescuento: Record<CodigoPlan, boolean>): string {
+  const tiene = (pl: Plan) => descuentoDe(pl.codigo, descuento, conDescuento) > 0
+  const con = PLANES.filter(tiene).map((pl) => pl.nombre)
+  const sin = PLANES.filter((pl) => !tiene(pl)).map((pl) => pl.nombre)
+  if (con.length === 0) return 'Facturación mensual, por 6 meses o anual por adelantado, sin descuento por plazo.'
+  if (sin.length === 0) {
+    return (
+      `Facturación mensual, por 6 meses con ${fmtPct(descuento / 2)} % de descuento ` +
+      `o anual por adelantado con ${fmtPct(descuento)} % de descuento.`
+    )
+  }
+  return (
+    `Facturación mensual, por 6 meses o anual por adelantado: en ${enumerar(con)}, 6 meses tienen ` +
+    `${fmtPct(descuento / 2)} % de descuento y el año, ${fmtPct(descuento)} %; ` +
+    `${enumerar(sin)} se paga a precio lleno.`
+  )
+}
+
 /**
  * Nota al pie de precios. Se arma con los valores vigentes (API o fijos): un
  * "15 %" o un "50 ventas" escrito a mano quedaba contradiciendo las tarjetas
  * en cuanto se cambiaba el descuento o el cupo desde el panel.
  */
-export function notaLegal(descuento: number, cupo: CupoPlan): string {
+export function notaLegal(
+  descuento: number,
+  cupo: CupoPlan,
+  conDescuento: Record<CodigoPlan, boolean>,
+): string {
   return (
-    `Precios en bolivianos. Facturación mensual, por 6 meses con ${fmtPct(descuento / 2)} % de descuento ` +
-    `o anual por adelantado con ${fmtPct(descuento)} % de descuento. Incluye actualizaciones y respaldo ` +
+    `Precios en bolivianos. ${notaPlazos(descuento, conDescuento)} Incluye actualizaciones y respaldo ` +
     'en la nube. Instalación y capacitación se cotizan aparte. Emprendedor y Básico incluyen 1 sucursal ' +
     `y Profesional 2; adicionales, Bs ${fmtBs(PRECIO_SUCURSAL_ADICIONAL)}/mes cada una. Emprendedor incluye ` +
     `${fmtBs(cupo.ventasDia)} ventas y ${fmtBs(cupo.citasDia)} citas por día; lo que pase de ahí se paga ` +

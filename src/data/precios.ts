@@ -20,6 +20,11 @@ export interface PreciosVigentes {
   precios: Record<CodigoPlan, number>
   /** Fracción de descuento anual (0.15 = 15 %). */
   descuento: number
+  /**
+   * Si el plan tiene descuento por pagar 6 o 12 meses. Sin descuento los
+   * plazos salen a precio lleno (Emprendedor, D25): ver `descuentoDe`.
+   */
+  descuentoPorPlazo: Record<CodigoPlan, boolean>
   /** Cupo diario del Emprendedor y lo que cuesta pasarse. */
   cupo: CupoPlan
   desdeApi: boolean
@@ -31,6 +36,9 @@ interface PlanApi {
   nombre?: string
   precioMensual?: number
   descuentoAnual?: number
+  // Desde oct-2026 (D25). Un backend que todavía no lo publica cae al fijo
+  // del plan en planes.ts (Emprendedor sin descuento, el resto con).
+  descuentoPorPlazo?: boolean
   // Sólo los publica el backend con el Emprendedor (oct-2026); antes no vienen.
   limiteVentasDia?: number | null
   limiteCitasDia?: number | null
@@ -41,6 +49,10 @@ interface PlanApi {
 const FIJOS: PreciosVigentes = {
   precios: Object.fromEntries(PLANES.map((p) => [p.codigo, p.precio])) as Record<CodigoPlan, number>,
   descuento: DESCUENTO_ANUAL,
+  descuentoPorPlazo: Object.fromEntries(PLANES.map((p) => [p.codigo, p.descuentoPorPlazo])) as Record<
+    CodigoPlan,
+    boolean
+  >,
   cupo: CUPO_EMPRENDEDOR,
   desdeApi: false,
 }
@@ -65,11 +77,13 @@ function codigoDe(p: PlanApi): CodigoPlan | null {
  */
 function desdeApi(planes: PlanApi[]): PreciosVigentes {
   const precios = { ...FIJOS.precios }
+  const descuentoPorPlazo = { ...FIJOS.descuentoPorPlazo }
   let cupo = FIJOS.cupo
   for (const p of planes) {
     const codigo = codigoDe(p)
     if (!codigo) continue
     if (positivo(p.precioMensual)) precios[codigo] = p.precioMensual
+    if (typeof p.descuentoPorPlazo === 'boolean') descuentoPorPlazo[codigo] = p.descuentoPorPlazo
     if (codigo === 'EMPRENDEDOR') {
       cupo = {
         ventasDia: positivo(p.limiteVentasDia) ? p.limiteVentasDia : FIJOS.cupo.ventasDia,
@@ -83,6 +97,7 @@ function desdeApi(planes: PlanApi[]): PreciosVigentes {
   return {
     precios,
     descuento: typeof descuento === 'number' && Number.isFinite(descuento) ? descuento : DESCUENTO_ANUAL,
+    descuentoPorPlazo,
     cupo,
     desdeApi: true,
   }
