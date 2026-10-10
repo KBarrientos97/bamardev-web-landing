@@ -59,6 +59,11 @@ export function Footer() {
             © {new Date().getFullYear()} BamarDev Technology. Todos los derechos
             reservados.
           </p>
+          {/* Ocultos hasta completar los textos legales (D1): todavía tienen
+              [MARCADORES] sin llenar, y vite.config.ts no publica /terminos ni
+              /privacidad. Para volver a mostrarlos, descomentar esto y las
+              dos entradas de vite.config.ts, y sacar las reglas de
+              public/_redirects.
           <p className="flex gap-4">
             <a href="/terminos" className="font-semibold hover:text-brand-600">
               Términos del servicio
@@ -67,6 +72,7 @@ export function Footer() {
               Política de privacidad
             </a>
           </p>
+          */}
         </div>
       </div>
     </footer>

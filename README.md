@@ -71,8 +71,11 @@ npm run deploy:qa   # QA
 - **Rubros** (activar farmacias/ferreterías cuando estén listos):
   [src/components/Rubros.tsx](src/components/Rubros.tsx) — cambiar
   `disponible: true` y ajustar los textos.
-- **Términos y privacidad** (`/terminos`, `/privacidad`, enlazadas desde el
-  pie): el texto vive en [src/legal/](src/legal/) como copia de
+- **Términos y privacidad** — **OCULTOS hasta completar los textos (D1)**: el
+  build no publica `terminos.html` ni `privacidad.html` (comentados en
+  `vite.config.ts`), los links del pie están comentados en `Cierre.tsx` y
+  `public/_redirects` manda `/terminos` y `/privacidad` al inicio con un 302.
+  Para volver a publicarlos se deshacen esas tres cosas. El texto vive en [src/legal/](src/legal/) como copia de
   `bamar/legal/` (la fuente, fuera de los repos). Al cambiar la versión se
   copia el `.md` de nuevo; mientras tenga `[MARCADORES]` sin completar va con
   el aviso "Versión preliminar" (`preliminar` en `src/legal/terminos.tsx` y
