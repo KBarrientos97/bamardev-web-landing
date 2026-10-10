@@ -62,6 +62,13 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
 
     setEstado('enviando')
     setError('')
+    // Un token por envío: después de un intento fallido (también si la red se
+    // cortó con el pedido ya en el servidor) el siguiente necesita otro.
+    const pedirOtroCaptcha = () => {
+      if (!siteKey) return
+      setCaptcha(null)
+      setVueltaCaptcha((v) => v + 1)
+    }
     try {
       const res = await fetch(API_LEADS_URL, {
         method: 'POST',
@@ -82,21 +89,21 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
         setEstado('listo')
         return
       }
-      // El token ya se gastó: el próximo intento necesita uno nuevo.
-      if (siteKey) {
-        setCaptcha(null)
-        setVueltaCaptcha((v) => v + 1)
-      }
       // El 400 CAPTCHA tiene arreglo en la página (resolverlo de nuevo): se
-      // muestra el mensaje del backend en vez de mandar a WhatsApp.
+      // muestra el mensaje del backend en vez de mandar a WhatsApp. Sólo si
+      // hay widget: un build sin site key contra un backend que exige captcha
+      // no tiene arreglo acá, y "volvé a intentar" dejaría al visitante
+      // reintentando para siempre. Ahí va al mensaje de WhatsApp.
       const cuerpo = (await res.json().catch(() => null)) as { codigo?: string; message?: string } | null
-      if (cuerpo?.codigo === 'CAPTCHA') {
+      if (siteKey && cuerpo?.codigo === 'CAPTCHA') {
+        pedirOtroCaptcha()
         setError(cuerpo.message || 'No pudimos verificar que seas una persona. Volvé a intentar.')
         setEstado('error')
         return
       }
       throw new Error(String(res.status))
     } catch {
+      pedirOtroCaptcha()
       // Si la API no responde, no se pierde el contacto: se ofrece WhatsApp.
       setError('No pudimos enviar el formulario. Escribinos por WhatsApp y te respondemos igual.')
       setEstado('error')
@@ -203,7 +210,13 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
 
       {siteKey && <Captcha key={vueltaCaptcha} siteKey={siteKey} onToken={setCaptcha} />}
 
-      {error && <p className="mt-3 text-sm text-rose-300">{error}</p>}
+      {/* role="alert": el lector de pantalla lo anuncia al aparecer; si no,
+          quien no ve el formulario no se entera de por qué no se envió. */}
+      {error && (
+        <p role="alert" className="mt-3 text-sm text-rose-300">
+          {error}
+        </p>
+      )}
 
       <button
         type="submit"

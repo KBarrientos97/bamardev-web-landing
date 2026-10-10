@@ -18,8 +18,8 @@ const RUBROS: Rubro[] = [
     descripcion:
       'Del punto de venta al control total de costos: el sistema crece con tu restaurante.',
     puntos: [
-      'Combos y platos que descuentan ingredientes solos',
-      'Panel de cocina y tablero TV en tiempo real',
+      'Comanda Mesa / Llevar y salón con meseros',
+      'Insumos, gastos y ganancia estimada por producto',
       'Delivery y recojo con app para el repartidor',
     ],
   },
