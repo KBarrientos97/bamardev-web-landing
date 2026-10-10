@@ -70,15 +70,18 @@ const FIJOS: CreditosVigentes = {
 }
 
 /**
- * Sin paquetes válidos se quedan los fijos: una lista vacía dejaría la sección
- * sin tabla, y es más probable un error de carga que "no se vende ninguno".
+ * Una lista vacía o con todos inactivos es una respuesta válida: el panel dejó
+ * de vender paquetes, y mostrar los fijos sería ofrecer precios que nadie
+ * puede comprar. Sólo si la API manda paquetes pero ninguno se entiende (otra
+ * forma de respuesta) se quedan los fijos.
  */
 function desdeApi(r: RespuestaApi): CreditosVigentes | null {
   if (!r || !Array.isArray(r.paquetes)) return null
   const porVenta = positivo(r.creditosPorVenta) ? r.creditosPorVenta : FIJOS.creditosPorVenta
   const porCita = positivo(r.creditosPorCita) ? r.creditosPorCita : FIJOS.creditosPorCita
-  const paquetes = r.paquetes
-    .filter((p) => p.activo !== false && positivo(p.creditos) && positivo(p.precio))
+  const activos = r.paquetes.filter((p) => p.activo !== false)
+  const paquetes = activos
+    .filter((p) => positivo(p.creditos) && positivo(p.precio))
     .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0))
     .map((p) => {
       const base = armar(p.creditos as number, p.precio as number, porVenta, porCita)
@@ -90,7 +93,7 @@ function desdeApi(r: RespuestaApi): CreditosVigentes | null {
         alcanzaCitas: positivo(p.alcanzaCitas) ? p.alcanzaCitas : base.alcanzaCitas,
       }
     })
-  if (paquetes.length === 0) return null
+  if (activos.length > 0 && paquetes.length === 0) return null
   return {
     creditosPorVenta: porVenta,
     creditosPorCita: porCita,

@@ -55,11 +55,11 @@ export interface Plan {
    * Las del Emprendedor dependen del cupo vigente (que puede venir de la API),
    * por eso pueden ser una función. Usar `featuresDe` para leerlas.
    */
-  features: string[] | ((cupo: CupoPlan) => string[])
+  features: string[] | ((cupo: CupoPlan, regaloAlta: number) => string[])
 }
 
-export function featuresDe(plan: Plan, cupo: CupoPlan): string[] {
-  return typeof plan.features === 'function' ? plan.features(cupo) : plan.features
+export function featuresDe(plan: Plan, cupo: CupoPlan, regaloAlta: number): string[] {
+  return typeof plan.features === 'function' ? plan.features(cupo, regaloAlta) : plan.features
 }
 
 /** "1 crédito" / "2 créditos". */
@@ -115,11 +115,12 @@ export const PLANES: Plan[] = [
     precio: 75,
     etiqueta: 'Nuevo',
     notaPrevia: 'Todo lo de Básico, con un cupo diario',
-    features: (c) => [
+    features: (c, regalo) => [
       `${fmtBs(c.ventasDia)} ventas por día incluidas`,
       `${fmtBs(c.citasDia)} citas por día en negocios con agenda`,
       `¿Un día vendés más? Seguís con créditos: 1 venta = ${creditos(c.creditosPorVenta)}, 1 cita = ${creditos(c.creditosPorCita)}`,
-      'Los créditos no vencen y los primeros son de regalo',
+      // El regalo es un parámetro del panel y puede ser 0: entonces no se promete.
+      regalo > 0 ? 'Los créditos no vencen y los primeros son de regalo' : 'Los créditos no vencen',
       'Punto de venta, caja, inventario, reportes y venta sin internet, igual que en Básico',
       'Paneles de Administrador y Cajero · hasta 4 usuarios',
       '1 sucursal incluida (adicionales, Bs 100/mes c/u)',
@@ -183,11 +184,26 @@ export const REGALO_ALTA = 10
 
 /**
  * Hasta cuántas ventas por día conviene el Emprendedor frente al Básico.
- * Sale de §5 del plan: la diferencia de precio (Bs 125) en el paquete más
- * barato por crédito alcanza para ~13 ventas extra por día (≈ 63). Se publica
- * redondeado para abajo porque es una recomendación, no un corte.
+ * Sale de §5 del plan: la diferencia de precio (hoy Bs 125) en el paquete más
+ * barato por crédito alcanza para ~13 ventas extra por día (≈ 63, con meses
+ * de 30 días). Se publica redondeado para abajo a múltiplos de 5 (hoy, 60)
+ * porque es una recomendación, no un corte.
+ *
+ * Se calcula con los valores vigentes y no es un número fijo: los precios, el
+ * cupo y los paquetes se cambian desde el panel (D12), y un "60" fijo quedaba
+ * contradiciendo la tabla de al lado en cuanto cambiaba cualquiera de ellos.
  */
-export const VENTAS_DIA_CONVIENE_BASICO = 60
+export function ventasDiaConvieneBasico(
+  cupo: CupoPlan,
+  precios: Record<CodigoPlan, number>,
+  bsPorCredito: number[],
+): number {
+  const diferencia = precios.BASICO - precios.EMPRENDEDOR
+  const masBarato = Math.min(...bsPorCredito.filter((x) => x > 0))
+  if (!(diferencia > 0) || !Number.isFinite(masBarato)) return cupo.ventasDia
+  const extrasPorDia = diferencia / (masBarato * cupo.creditosPorVenta) / 30
+  return Math.max(cupo.ventasDia, Math.floor((cupo.ventasDia + extrasPorDia) / 5) * 5)
+}
 
 type Fila = [string, string, string, string]
 
@@ -238,4 +254,4 @@ const COMPARATIVA_FIJA: Fila[] = [
 ]
 
 export const NOTA_LEGAL =
-  'Precios en bolivianos. Facturación mensual, por 6 meses con 7,5 % de descuento o anual por adelantado con 15 % de descuento. Incluye actualizaciones y respaldo en la nube. Instalación y capacitación se cotizan aparte. Emprendedor y Básico incluyen 1 sucursal y Profesional 2; adicionales, Bs 100/mes cada una. Emprendedor incluye 50 ventas y 50 citas por día; lo que pase de ahí se paga con créditos prepagos, que no vencen.Las ganancias mostradas son estimadas: se calculan sobre precio de venta y costo cargado en el sistema, sin incluir otros gastos del negocio (alquiler, sueldos, servicios).'
+  'Precios en bolivianos. Facturación mensual, por 6 meses con 7,5 % de descuento o anual por adelantado con 15 % de descuento. Incluye actualizaciones y respaldo en la nube. Instalación y capacitación se cotizan aparte. Emprendedor y Básico incluyen 1 sucursal y Profesional 2; adicionales, Bs 100/mes cada una. Emprendedor incluye 50 ventas y 50 citas por día; lo que pase de ahí se paga con créditos prepagos, que no vencen. Las ganancias mostradas son estimadas: se calculan sobre precio de venta y costo cargado en el sistema, sin incluir otros gastos del negocio (alquiler, sueldos, servicios).'

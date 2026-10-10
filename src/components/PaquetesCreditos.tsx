@@ -1,4 +1,4 @@
-import { VENTAS_DIA_CONVIENE_BASICO, creditos, fmtBs } from '../data/planes'
+import { creditos, fmtBs, ventasDiaConvieneBasico } from '../data/planes'
 import { usePaquetes } from '../data/paquetes'
 import { usePrecios } from '../data/precios'
 import { CheckIcon } from './ui'
@@ -6,6 +6,14 @@ import { CheckIcon } from './ui'
 /** "0,5" → "0,50": los montos por crédito siempre con dos decimales. */
 function fmtCentavos(n: number): string {
   return n.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+/**
+ * Precio de un paquete: "Bs 35" si es entero, "Bs 32,50" si tiene centavos
+ * (el panel admite 2 decimales y fmtBs mostraba "32,5").
+ */
+function fmtPrecio(n: number): string {
+  return Number.isInteger(n) ? fmtBs(n) : fmtCentavos(n)
 }
 
 function plural(n: number, singular: string, pluralTxt: string): string {
@@ -25,6 +33,14 @@ function alcanza(ventas: number, citas: number): string {
 export function PaquetesCreditos() {
   const { creditosPorVenta, creditosPorCita, regaloAlta, paquetes } = usePaquetes()
   const { precios, cupo } = usePrecios()
+  const conviene = ventasDiaConvieneBasico(
+    cupo,
+    precios,
+    paquetes.map((p) => p.precioPorCredito),
+  )
+  // Sin paquetes a la venta ni regalo (los dos se apagan desde el panel) no
+  // hay tabla que mostrar.
+  const hayTabla = paquetes.length > 0 || regaloAlta > 0
 
   return (
     <section id="creditos" className="scroll-mt-16 bg-white pb-20 lg:pb-28">
@@ -83,57 +99,59 @@ export function PaquetesCreditos() {
 
           {/* Paquetes */}
           <div className="lg:pt-2">
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50 text-left">
-                    <th className="px-3 py-3.5 font-bold text-slate-500 sm:px-5">Paquete</th>
-                    <th className="px-3 py-3.5 font-bold text-slate-500 sm:px-5">Precio</th>
-                    <th className="px-3 py-3.5 font-bold text-slate-500 sm:px-5">Te alcanza para</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paquetes.map((p) => (
-                    <tr key={`${p.creditos}-${p.precio}`} className="border-b border-slate-100">
-                      <td className="px-3 py-3.5 font-extrabold text-slate-900 sm:px-5">
-                        {creditos(p.creditos)}
-                      </td>
-                      <td className="px-3 py-3.5 sm:px-5">
-                        <span className="font-extrabold text-slate-900">Bs {fmtBs(p.precio)}</span>
-                        <span className="block whitespace-nowrap text-xs text-slate-500">
-                          Bs {fmtCentavos(p.precioPorCredito)} c/u
-                        </span>
-                      </td>
-                      <td className="px-3 py-3.5 text-slate-700 sm:px-5">
-                        {alcanza(p.alcanzaVentas, p.alcanzaCitas)}
-                      </td>
+            {hayTabla && (
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <table className="w-full border-collapse text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-200 bg-slate-50 text-left">
+                      <th className="px-3 py-3.5 font-bold text-slate-500 sm:px-5">Paquete</th>
+                      <th className="px-3 py-3.5 font-bold text-slate-500 sm:px-5">Precio</th>
+                      <th className="px-3 py-3.5 font-bold text-slate-500 sm:px-5">Te alcanza para</th>
                     </tr>
-                  ))}
-                  {regaloAlta > 0 && (
-                    <tr className="bg-brand-50/70">
-                      <td className="px-3 py-3.5 font-extrabold text-brand-800 sm:px-5">
-                        {creditos(regaloAlta)}
-                        <span className="block text-xs font-semibold text-brand-700">de regalo</span>
-                      </td>
-                      <td className="px-3 py-3.5 font-extrabold text-brand-800 sm:px-5">
-                        Gratis
-                        <span className="block text-xs font-semibold text-brand-700">al empezar</span>
-                      </td>
-                      <td className="px-3 py-3.5 text-brand-800 sm:px-5">
-                        {alcanza(
-                          Math.floor(regaloAlta / creditosPorVenta),
-                          Math.floor(regaloAlta / creditosPorCita),
-                        )}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {paquetes.map((p) => (
+                      <tr key={`${p.creditos}-${p.precio}`} className="border-b border-slate-100">
+                        <td className="px-3 py-3.5 font-extrabold text-slate-900 sm:px-5">
+                          {creditos(p.creditos)}
+                        </td>
+                        <td className="px-3 py-3.5 sm:px-5">
+                          <span className="font-extrabold text-slate-900">Bs {fmtPrecio(p.precio)}</span>
+                          <span className="block whitespace-nowrap text-xs text-slate-500">
+                            Bs {fmtCentavos(p.precioPorCredito)} c/u
+                          </span>
+                        </td>
+                        <td className="px-3 py-3.5 text-slate-700 sm:px-5">
+                          {alcanza(p.alcanzaVentas, p.alcanzaCitas)}
+                        </td>
+                      </tr>
+                    ))}
+                    {regaloAlta > 0 && (
+                      <tr className="bg-brand-50/70">
+                        <td className="px-3 py-3.5 font-extrabold text-brand-800 sm:px-5">
+                          {creditos(regaloAlta)}
+                          <span className="block text-xs font-semibold text-brand-700">de regalo</span>
+                        </td>
+                        <td className="px-3 py-3.5 font-extrabold text-brand-800 sm:px-5">
+                          Gratis
+                          <span className="block text-xs font-semibold text-brand-700">al empezar</span>
+                        </td>
+                        <td className="px-3 py-3.5 text-brand-800 sm:px-5">
+                          {alcanza(
+                            Math.floor(regaloAlta / creditosPorVenta),
+                            Math.floor(regaloAlta / creditosPorCita),
+                          )}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             <p className="mt-5 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm leading-relaxed text-slate-600">
               <strong className="text-slate-900">
-                Ideal si vendés hasta unas {VENTAS_DIA_CONVIENE_BASICO} ventas por día.
+                Ideal si vendés hasta unas {fmtBs(conviene)} ventas por día.
               </strong>{' '}
               Si todos los días pasás de ahí, el{' '}
               <a

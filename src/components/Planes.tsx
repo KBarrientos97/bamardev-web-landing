@@ -9,6 +9,7 @@ import {
   precioAnual,
 } from '../data/planes'
 import { usePrecios } from '../data/precios'
+import { usePaquetes } from '../data/paquetes'
 import { CheckIcon } from './ui'
 
 export function Planes() {
@@ -17,6 +18,8 @@ export function Planes() {
   const [anual, setAnual] = useState(false)
   // Precios vigentes: los que administra el panel (con los fijos de respaldo).
   const { precios, descuento, cupo } = usePrecios()
+  // El mismo pedido que la sección de créditos (se hace una sola vez).
+  const { regaloAlta } = usePaquetes()
   const pctDescuento = Math.round(descuento * 100)
 
   return (
@@ -154,7 +157,7 @@ export function Planes() {
                   </p>
                 )}
                 <ul className={`space-y-3 text-sm text-slate-700 ${plan.notaPrevia ? 'mt-4' : 'mt-7'}`}>
-                  {featuresDe(plan, cupo).map((f) => (
+                  {featuresDe(plan, cupo, regaloAlta).map((f) => (
                     <li key={f} className="flex gap-2.5">
                       <CheckIcon />
                       <span>{f}</span>
