@@ -14,14 +14,20 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), tailwindcss()],
     build: {
       rollupOptions: {
-        // Una página por ruta: la landing, la encuesta y los textos legales.
-        // Cloudflare Pages sirve `encuesta.html` en /encuesta (y así las
-        // demás) sin configurar nada.
+        // Una página por ruta: la landing y la encuesta. Cloudflare Pages
+        // sirve `encuesta.html` en /encuesta (y así las demás) sin configurar
+        // nada.
+        //
+        // Los textos legales NO se publican hasta completarlos (D1): tienen
+        // [MARCADORES] sin llenar. Su código sigue en el repo (terminos.html,
+        // privacidad.html y src/legal/); para volver a publicarlos,
+        // descomentar estas dos entradas, los links del pie (Cierre.tsx) y
+        // sacar sus reglas de public/_redirects.
         input: {
           main: resolve(__dirname, 'index.html'),
           encuesta: resolve(__dirname, 'encuesta.html'),
-          terminos: resolve(__dirname, 'terminos.html'),
-          privacidad: resolve(__dirname, 'privacidad.html'),
+          // terminos: resolve(__dirname, 'terminos.html'),
+          // privacidad: resolve(__dirname, 'privacidad.html'),
         },
       },
     },

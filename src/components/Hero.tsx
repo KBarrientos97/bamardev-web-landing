@@ -20,7 +20,7 @@ export function Hero() {
       <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-2 lg:pb-28 lg:pt-24">
         <div>
           <span className="inline-flex items-center gap-2 rounded-full border border-brand-400/30 bg-brand-500/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-brand-300">
-            Restaurantes · Farmacias · Ferreterías
+            Restaurantes · Farmacias · Comercios
           </span>
 
           <h1 className="mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
@@ -41,7 +41,7 @@ export function Hero() {
               href="#planes"
               className="rounded-full bg-brand-500 px-7 py-3.5 text-base font-bold text-white shadow-xl shadow-brand-500/30 transition hover:bg-brand-400"
             >
-              Ver planes para restaurantes
+              Ver planes
             </a>
             <a
               href={linkWhatsApp('Hola BamarDev, quiero ver el sistema funcionando en mi negocio.')}
