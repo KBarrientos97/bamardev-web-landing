@@ -2,12 +2,14 @@ import { useState } from 'react'
 import {
   PLANES,
   ahorroAnual,
+  featuresDe,
   fmtBs,
   linkWhatsApp,
   mensualEquivalente,
   precioAnual,
 } from '../data/planes'
 import { usePrecios } from '../data/precios'
+import { usePaquetes } from '../data/paquetes'
 import { CheckIcon } from './ui'
 
 export function Planes() {
@@ -15,7 +17,9 @@ export function Planes() {
   // muestra el equivalente mensual y, debajo, lo que se paga por el año.
   const [anual, setAnual] = useState(false)
   // Precios vigentes: los que administra el panel (con los fijos de respaldo).
-  const { precios, descuento } = usePrecios()
+  const { precios, descuento, cupo } = usePrecios()
+  // El mismo pedido que la sección de créditos (se hace una sola vez).
+  const { regaloAlta } = usePaquetes()
   const pctDescuento = Math.round(descuento * 100)
 
   return (
@@ -25,12 +29,14 @@ export function Planes() {
           Planes para restaurantes
         </p>
         <h2 className="mx-auto mt-3 max-w-2xl text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-          De vender a administrar todo el restaurante.
+          De tu primera venta a administrar todo el restaurante.
         </h2>
         <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-slate-600">
-          Básico te pone a vender desde el día uno, con inventario, caja,
-          gastos y reportes; Profesional suma delivery, salón con meseros,
-          combos, varios almacenes y una segunda sucursal incluida.
+          Emprendedor es para arrancar: lo mismo que Básico, con{' '}
+          {cupo.ventasDia} ventas por día. Básico te pone a vender sin límite,
+          con inventario, caja, gastos y reportes; Profesional suma delivery,
+          salón con meseros, combos, varios almacenes y una segunda sucursal
+          incluida.
         </p>
 
         {/* Mensual / Anual */}
@@ -66,9 +72,9 @@ export function Planes() {
           </div>
         </div>
 
-        <div className="mx-auto mt-12 grid max-w-4xl items-start gap-6 lg:grid-cols-2">
+        <div className="mx-auto mt-12 grid max-w-xl items-start gap-6 lg:max-w-6xl lg:grid-cols-3">
           {PLANES.map((plan) => {
-            const mensual = precios[plan.nombre] ?? plan.precio
+            const mensual = precios[plan.codigo] ?? plan.precio
             const total = precioAnual(mensual, descuento)
             const porMes = anual ? mensualEquivalente(mensual, descuento) : mensual
             const mensajeWhatsApp = anual
@@ -83,10 +89,16 @@ export function Planes() {
                     : 'border border-slate-200 bg-white shadow-sm'
                 }`}
               >
-                {plan.destacado && (
+                {plan.destacado ? (
                   <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-brand-600 px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest text-white shadow-lg">
                     Más elegido
                   </span>
+                ) : (
+                  plan.etiqueta && (
+                    <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full border border-brand-200 bg-white px-4 py-1 text-xs font-extrabold uppercase tracking-widest text-brand-700 shadow-sm">
+                      {plan.etiqueta}
+                    </span>
+                  )
                 )}
 
                 <h3 className="text-2xl font-extrabold text-slate-900">
@@ -146,13 +158,21 @@ export function Planes() {
                   </p>
                 )}
                 <ul className={`space-y-3 text-sm text-slate-700 ${plan.notaPrevia ? 'mt-4' : 'mt-7'}`}>
-                  {plan.features.map((f) => (
+                  {featuresDe(plan, cupo, regaloAlta).map((f) => (
                     <li key={f} className="flex gap-2.5">
                       <CheckIcon />
                       <span>{f}</span>
                     </li>
                   ))}
                 </ul>
+                {plan.codigo === 'EMPRENDEDOR' && (
+                  <a
+                    href="#creditos"
+                    className="mt-6 text-sm font-bold text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-600"
+                  >
+                    Cómo funcionan los créditos →
+                  </a>
+                )}
               </article>
             )
           })}

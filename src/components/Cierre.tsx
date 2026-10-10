@@ -1,4 +1,5 @@
-import { NOTA_LEGAL, WHATSAPP_DISPLAY, linkWhatsApp } from '../data/planes'
+import { WHATSAPP_DISPLAY, linkWhatsApp, notaLegal } from '../data/planes'
+import { usePrecios } from '../data/precios'
 import { Contacto } from './Contacto'
 
 export function Cierre() {
@@ -30,6 +31,7 @@ export function Cierre() {
 }
 
 export function Footer() {
+  const { descuento, cupo } = usePrecios()
   return (
     <footer className="border-t border-slate-200 bg-white">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -50,7 +52,7 @@ export function Footer() {
           </a>
         </div>
         <p className="mt-8 max-w-4xl text-xs leading-relaxed text-slate-400">
-          {NOTA_LEGAL}
+          {notaLegal(descuento, cupo)}
         </p>
         <div className="mt-4 flex flex-col gap-2 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <p>
