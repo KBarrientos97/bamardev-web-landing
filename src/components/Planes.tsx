@@ -28,9 +28,9 @@ export function Planes() {
           De vender a administrar todo el restaurante.
         </h2>
         <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-slate-600">
-          Básico te pone a vender desde el día uno, con inventario, caja y
-          reportes; Profesional suma delivery, salón con meseros, combos y
-          varias sucursales.
+          Básico te pone a vender desde el día uno, con inventario, caja,
+          gastos y reportes; Profesional suma delivery, salón con meseros,
+          combos, varios almacenes y una segunda sucursal incluida.
         </p>
 
         {/* Mensual / Anual */}

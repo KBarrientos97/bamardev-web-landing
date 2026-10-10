@@ -114,7 +114,7 @@ export function Hero() {
             <p className="text-xs font-bold text-slate-400">Pedido #42</p>
             <p className="mt-0.5 flex items-center gap-1.5 text-sm font-bold text-white">
               <span className="h-2 w-2 rounded-full bg-amber-400" />
-              En cocina · Mesa 5
+              Mesa 5 · 1 para llevar
             </p>
           </div>
           <div className="absolute -bottom-12 -left-6 hidden -rotate-2 rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 shadow-xl sm:block">
