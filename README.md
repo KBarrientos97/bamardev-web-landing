@@ -1,8 +1,8 @@
 # BamarDev — Landing comercial
 
 Landing de venta de **bamardev.com**: software de gestión para
-**restaurantes** (disponible), **farmacias**, **ferreterías** y **salones,
-barberías, spa y uñas** (en desarrollo). React 19 + Vite + Tailwind 4, misma paleta de marca que el panel
+**restaurantes, farmacias, minimarkets, ferreterías y repuestos** (disponibles)
+y **salones, barberías, spa y uñas** (en desarrollo). React 19 + Vite + Tailwind 4, misma paleta de marca que el panel
 de licencias (verde `#10b981`, logo robot, Plus Jakarta Sans).
 
 ## URLs
@@ -68,9 +68,12 @@ npm run deploy:qa   # QA
   del PDF oficial "BamarDev - Planes Restaurante (v7)". Si cambian precios o
   features, actualizar el PDF y este archivo a la vez. Ahí también viven el
   número de WhatsApp y la letra chica legal.
-- **Rubros** (activar farmacias/ferreterías cuando estén listos):
-  [src/components/Rubros.tsx](src/components/Rubros.tsx) — cambiar
-  `disponible: true` y ajustar los textos.
+- **Rubros**: [src/components/Rubros.tsx](src/components/Rubros.tsx) — el
+  `disponible` de cada tarjeta sigue al estado del rubro en el backend
+  (`GET /api/rubros`, DISPONIBLE / EN_DESARROLLO). Cuando un rubro cambia de
+  estado, cambiarlo ahí, en el hero, en el `<title>`/descripción de
+  `index.html` y en las opciones del formulario (`Contacto.tsx`, que deben
+  existir en el DTO de leads del backend).
 - **Términos y privacidad** — **OCULTOS hasta completar los textos (D1)**: el
   build no publica `terminos.html` ni `privacidad.html` (comentados en
   `vite.config.ts`), los links del pie están comentados en `Cierre.tsx` y

@@ -26,10 +26,10 @@ export function Planes() {
     <section id="planes" className="scroll-mt-16 bg-white py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <p className="text-center text-sm font-bold uppercase tracking-widest text-brand-600">
-          Planes para restaurantes
+          Planes
         </p>
         <h2 className="mx-auto mt-3 max-w-2xl text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-          De tu primera venta a administrar todo el restaurante.
+          De tu primera venta a administrar todo el negocio.
         </h2>
         <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-slate-600">
           Emprendedor es para arrancar: lo mismo que Básico, con{' '}
@@ -78,8 +78,8 @@ export function Planes() {
             const total = precioAnual(mensual, descuento)
             const porMes = anual ? mensualEquivalente(mensual, descuento) : mensual
             const mensajeWhatsApp = anual
-              ? `Hola BamarDev, me interesa el plan ${plan.nombre} con pago anual (Bs ${fmtBs(total)}/año) para mi restaurante.`
-              : `Hola BamarDev, me interesa el plan ${plan.nombre} (Bs ${mensual}/mes) para mi restaurante.`
+              ? `Hola BamarDev, me interesa el plan ${plan.nombre} con pago anual (Bs ${fmtBs(total)}/año) para mi negocio.`
+              : `Hola BamarDev, me interesa el plan ${plan.nombre} (Bs ${mensual}/mes) para mi negocio.`
             return (
               <article
                 key={plan.nombre}
@@ -178,16 +178,23 @@ export function Planes() {
           })}
         </div>
 
+        {/* Los planes son los mismos para todos los rubros; lo que cambia es
+            qué features recibe el alta según el vertical (FeatureVertical).
+            Las tarjetas detallan las de restaurante: esta nota cuenta las
+            diferencias de los demás rubros disponibles. */}
         <p className="mx-auto mt-12 max-w-2xl rounded-2xl bg-slate-50 px-6 py-4 text-center text-sm text-slate-600">
-          ¿Tenés una <strong>farmacia</strong> o una <strong>ferretería</strong>?
-          Los planes para tu rubro están en camino —{' '}
+          ¿Tenés una <strong>farmacia</strong>, un <strong>minimarket</strong>,
+          una <strong>ferretería</strong> o una <strong>casa de repuestos</strong>?
+          Los planes son los mismos: tu sistema deja afuera lo de restaurante
+          (comanda Mesa / Llevar, salón, insumos) y suma encargos; en farmacias
+          con Profesional, también lotes y vencimientos.{' '}
           <a
-            href={linkWhatsApp('Hola BamarDev, quiero que me avisen cuando estén los planes para mi rubro (farmacia / ferretería).')}
+            href={linkWhatsApp('Hola BamarDev, quiero saber cómo funciona el sistema para mi rubro.')}
             target="_blank"
             rel="noreferrer"
             className="font-bold text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-600"
           >
-            escribinos y te avisamos primero
+            Escribinos y te lo mostramos
           </a>
           .
         </p>

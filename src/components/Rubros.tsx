@@ -10,6 +10,15 @@ interface Rubro {
   quienEscribe?: string
 }
 
+/*
+  Qué rubros se muestran como disponibles lo decide el backend: el estado de
+  cada PerfilRubro (GET /api/rubros, migraciones 20261008100000_verticales_y_
+  perfiles y 20261009100000_perfiles_belleza). Hoy, DISPONIBLE: restaurante,
+  minimarket, ferretería, repuestos y farmacia; EN_DESARROLLO: peluquería,
+  barbería, spa y uñas. Las tarjetas van por vertical (Gastronomía, Farmacia,
+  Comercio, Belleza) y los puntos sólo nombran features que ese vertical
+  recibe (FeatureVertical); las que son de Profesional lo dicen.
+*/
 const RUBROS: Rubro[] = [
   {
     emoji: '🍽️',
@@ -26,28 +35,32 @@ const RUBROS: Rubro[] = [
   {
     emoji: '💊',
     nombre: 'Farmacias',
-    disponible: false,
+    disponible: true,
     descripcion:
-      'Estamos construyendo la experiencia para farmacias sobre el mismo motor de venta e inventario.',
+      'Venta de mostrador e inventario pensados para medicamentos, con el mismo control de caja.',
     puntos: [
-      'Control de stock y alertas de reposición',
-      'Ventas ágiles en mostrador',
-      'Reportes de rotación por producto',
+      // encargos
+      'Encargos: lo que pidieron y no había se anota y se avisa cuando llega',
+      // lotes (plantilla de Profesional)
+      'Lotes y vencimientos: sale primero lo que vence antes (Profesional)',
+      // inventario · reportes
+      'Stock real por medicamento y reportes de lo que más se vende',
     ],
-    quienEscribe: 'tengo una farmacia',
   },
   {
-    emoji: '🛠️',
-    nombre: 'Ferreterías',
-    disponible: false,
+    emoji: '🛒',
+    nombre: 'Minimarkets, ferreterías y repuestos',
+    disponible: true,
     descripcion:
-      'Pensado para inventarios grandes y venta al por mayor y al detalle.',
+      'Para tiendas de mostrador con muchos productos: vendés rápido y sabés qué te queda.',
     puntos: [
-      'Miles de productos organizados por categoría',
-      'Precios diferenciados y ventas mixtas',
-      'Control de caja y de stock real',
+      // catalogo · inventario
+      'Productos por categoría con stock real y aviso de stock crítico',
+      // encargos
+      'Encargos al proveedor de lo que el cliente pidió y no había',
+      // fiado
+      'Fiado por cliente, con sus abonos y lo que te debe',
     ],
-    quienEscribe: 'tengo una ferretería',
   },
   {
     emoji: '✂️',
@@ -75,8 +88,9 @@ export function Rubros() {
           Un solo sistema, pensado para tu rubro
         </h2>
         <p className="mt-4 max-w-2xl text-lg text-slate-600">
-          Empezamos por restaurantes y estamos llevando la misma experiencia a
-          farmacias, ferreterías y salones de belleza.
+          Ya disponible para restaurantes, farmacias, minimarkets, ferreterías
+          y casas de repuestos, cada uno con las herramientas de su rubro. Los
+          salones de belleza, barberías, spa y uñas vienen en camino.
         </p>
 
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">

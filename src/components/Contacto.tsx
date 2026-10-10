@@ -20,11 +20,14 @@ const API_LEADS_URL = `${import.meta.env.VITE_API_URL || '/api'}/leads`
 // Los textos viajan tal cual: el backend los valida contra su propia lista
 // (bamardev-backend/src/leads/dto/crear-lead.dto.ts). Uno que no esté allá
 // hace fallar el envío entero.
+// Primero los disponibles (PerfilRubro DISPONIBLE), después los de belleza
+// (EN_DESARROLLO), que se ofrecen igual para juntar interesados.
 const RUBROS = [
   'Restaurante',
   'Farmacia',
-  'Ferretería',
   'Minimarket',
+  'Ferretería',
+  'Repuestos',
   'Peluquería',
   'Barbería',
   'Spa',
