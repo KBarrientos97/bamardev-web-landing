@@ -2,12 +2,15 @@ import { useState } from 'react'
 import {
   PLANES,
   ahorroAnual,
+  descuentoDe,
+  featuresDe,
   fmtBs,
   linkWhatsApp,
   mensualEquivalente,
   precioAnual,
 } from '../data/planes'
 import { usePrecios } from '../data/precios'
+import { usePaquetes } from '../data/paquetes'
 import { CheckIcon } from './ui'
 
 export function Planes() {
@@ -15,22 +18,29 @@ export function Planes() {
   // muestra el equivalente mensual y, debajo, lo que se paga por el año.
   const [anual, setAnual] = useState(false)
   // Precios vigentes: los que administra el panel (con los fijos de respaldo).
-  const { precios, descuento } = usePrecios()
+  const { precios, descuento, cupo, descuentoPorPlazo } = usePrecios()
+  // El mismo pedido que la sección de créditos (se hace una sola vez).
+  const { regaloAlta } = usePaquetes()
   const pctDescuento = Math.round(descuento * 100)
+  // La marca del botón Anual sólo si algún plan la tiene: el Emprendedor paga
+  // el año a precio lleno (D25) y su tarjeta no muestra descuento.
+  const algunoConDescuento = PLANES.some((pl) => descuentoDe(pl.codigo, descuento, descuentoPorPlazo) > 0)
 
   return (
     <section id="planes" className="scroll-mt-16 bg-white py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <p className="text-center text-sm font-bold uppercase tracking-widest text-brand-600">
-          Planes para restaurantes
+          Planes
         </p>
         <h2 className="mx-auto mt-3 max-w-2xl text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-          De vender a administrar todo el restaurante.
+          De tu primera venta a administrar todo el negocio.
         </h2>
         <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-slate-600">
-          Básico te pone a vender desde el día uno, con inventario, caja y
-          reportes; Profesional suma delivery, salón con meseros, combos y
-          varias sucursales.
+          Emprendedor es para arrancar: lo mismo que Básico, con{' '}
+          {cupo.ventasDia} ventas por día. Básico te pone a vender sin límite,
+          con inventario, caja, gastos y reportes; Profesional suma delivery,
+          salón con meseros, combos, varios almacenes y una segunda sucursal
+          incluida.
         </p>
 
         {/* Mensual / Anual */}
@@ -59,21 +69,26 @@ export function Planes() {
               }`}
             >
               Anual
-              <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-extrabold text-brand-700">
-                −{pctDescuento} %
-              </span>
+              {algunoConDescuento && (
+                <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-extrabold text-brand-700">
+                  −{pctDescuento} %
+                </span>
+              )}
             </button>
           </div>
         </div>
 
-        <div className="mx-auto mt-12 grid max-w-4xl items-start gap-6 lg:grid-cols-2">
+        <div className="mx-auto mt-12 grid max-w-xl items-start gap-6 lg:max-w-6xl lg:grid-cols-3">
           {PLANES.map((plan) => {
-            const mensual = precios[plan.nombre] ?? plan.precio
-            const total = precioAnual(mensual, descuento)
-            const porMes = anual ? mensualEquivalente(mensual, descuento) : mensual
+            const mensual = precios[plan.codigo] ?? plan.precio
+            // 0 en un plan sin descuento por plazo: el año sale 12 × mes.
+            const d = descuentoDe(plan.codigo, descuento, descuentoPorPlazo)
+            const total = precioAnual(mensual, d)
+            const ahorro = ahorroAnual(mensual, d)
+            const porMes = anual ? mensualEquivalente(mensual, d) : mensual
             const mensajeWhatsApp = anual
-              ? `Hola BamarDev, me interesa el plan ${plan.nombre} con pago anual (Bs ${fmtBs(total)}/año) para mi restaurante.`
-              : `Hola BamarDev, me interesa el plan ${plan.nombre} (Bs ${mensual}/mes) para mi restaurante.`
+              ? `Hola BamarDev, me interesa el plan ${plan.nombre} con pago anual (Bs ${fmtBs(total)}/año) para mi negocio.`
+              : `Hola BamarDev, me interesa el plan ${plan.nombre} (Bs ${mensual}/mes) para mi negocio.`
             return (
               <article
                 key={plan.nombre}
@@ -83,10 +98,16 @@ export function Planes() {
                     : 'border border-slate-200 bg-white shadow-sm'
                 }`}
               >
-                {plan.destacado && (
+                {plan.destacado ? (
                   <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-brand-600 px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest text-white shadow-lg">
                     Más elegido
                   </span>
+                ) : (
+                  plan.etiqueta && (
+                    <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full border border-brand-200 bg-white px-4 py-1 text-xs font-extrabold uppercase tracking-widest text-brand-700 shadow-sm">
+                      {plan.etiqueta}
+                    </span>
+                  )
                 )}
 
                 <h3 className="text-2xl font-extrabold text-slate-900">
@@ -114,15 +135,18 @@ export function Planes() {
                 <p className="mt-1.5 min-h-10 text-sm text-slate-500">
                   {anual ? (
                     <>
-                      Bs {fmtBs(total)} al año, pagado por adelantado.{' '}
-                      <span className="font-bold text-brand-700">
-                        Ahorrás Bs {fmtBs(ahorroAnual(mensual, descuento))}.
-                      </span>
+                      Bs&nbsp;{fmtBs(total)} al año, pagado por adelantado.
+                      {ahorro > 0 && (
+                        <>
+                          {' '}
+                          <span className="font-bold text-brand-700">Ahorrás Bs&nbsp;{fmtBs(ahorro)}.</span>
+                        </>
+                      )}
                     </>
                   ) : (
                     <>
-                      Facturación mensual. Pagando el año: Bs {fmtBs(total)}{' '}
-                      (−{pctDescuento} %).
+                      Facturación mensual. Pagando el año: Bs&nbsp;{fmtBs(total)}
+                      {d > 0 ? ` (−${Math.round(d * 100)} %).` : '.'}
                     </>
                   )}
                 </p>
@@ -146,28 +170,43 @@ export function Planes() {
                   </p>
                 )}
                 <ul className={`space-y-3 text-sm text-slate-700 ${plan.notaPrevia ? 'mt-4' : 'mt-7'}`}>
-                  {plan.features.map((f) => (
+                  {featuresDe(plan, cupo, regaloAlta).map((f) => (
                     <li key={f} className="flex gap-2.5">
                       <CheckIcon />
                       <span>{f}</span>
                     </li>
                   ))}
                 </ul>
+                {plan.codigo === 'EMPRENDEDOR' && (
+                  <a
+                    href="#creditos"
+                    className="mt-6 text-sm font-bold text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-600"
+                  >
+                    Cómo funcionan los créditos →
+                  </a>
+                )}
               </article>
             )
           })}
         </div>
 
+        {/* Los planes son los mismos para todos los rubros; lo que cambia es
+            qué features recibe el alta según el vertical (FeatureVertical).
+            Las tarjetas detallan las de restaurante: esta nota cuenta las
+            diferencias de los demás rubros disponibles. */}
         <p className="mx-auto mt-12 max-w-2xl rounded-2xl bg-slate-50 px-6 py-4 text-center text-sm text-slate-600">
-          ¿Tenés una <strong>farmacia</strong> o una <strong>ferretería</strong>?
-          Los planes para tu rubro están en camino —{' '}
+          ¿Tenés una <strong>farmacia</strong>, un <strong>minimarket</strong>,
+          una <strong>ferretería</strong> o una <strong>casa de repuestos</strong>?
+          Los planes son los mismos: tu sistema deja afuera lo de restaurante
+          (comanda Mesa / Llevar, salón, insumos) y suma encargos; en farmacias
+          con Profesional, también lotes y vencimientos.{' '}
           <a
-            href={linkWhatsApp('Hola BamarDev, quiero que me avisen cuando estén los planes para mi rubro (farmacia / ferretería).')}
+            href={linkWhatsApp('Hola BamarDev, quiero saber cómo funciona el sistema para mi rubro.')}
             target="_blank"
             rel="noreferrer"
             className="font-bold text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-600"
           >
-            escribinos y te avisamos primero
+            Escribinos y te lo mostramos
           </a>
           .
         </p>

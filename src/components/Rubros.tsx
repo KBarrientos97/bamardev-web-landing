@@ -6,8 +6,19 @@ interface Rubro {
   disponible: boolean
   descripcion: string
   puntos: string[]
+  /** Cómo se presenta el interesado en el WhatsApp de "Avisame" (sólo si no está disponible). */
+  quienEscribe?: string
 }
 
+/*
+  Qué rubros se muestran como disponibles lo decide el backend: el estado de
+  cada PerfilRubro (GET /api/rubros, migraciones 20261008100000_verticales_y_
+  perfiles y 20261009100000_perfiles_belleza). Hoy, DISPONIBLE: restaurante,
+  minimarket, ferretería, repuestos y farmacia; EN_DESARROLLO: peluquería,
+  barbería, spa y uñas. Las tarjetas van por vertical (Gastronomía, Farmacia,
+  Comercio, Belleza) y los puntos sólo nombran features que ese vertical
+  recibe (FeatureVertical); las que son de Profesional lo dicen.
+*/
 const RUBROS: Rubro[] = [
   {
     emoji: '🍽️',
@@ -16,34 +27,53 @@ const RUBROS: Rubro[] = [
     descripcion:
       'Del punto de venta al control total de costos: el sistema crece con tu restaurante.',
     puntos: [
-      'Combos y platos que descuentan ingredientes solos',
-      'Panel de cocina y tablero TV en tiempo real',
+      'Comanda Mesa / Llevar y salón con meseros',
+      'Insumos, gastos y ganancia estimada por producto',
       'Delivery y recojo con app para el repartidor',
     ],
   },
   {
     emoji: '💊',
     nombre: 'Farmacias',
-    disponible: false,
+    disponible: true,
     descripcion:
-      'Estamos construyendo la experiencia para farmacias sobre el mismo motor de venta e inventario.',
+      'Venta de mostrador e inventario pensados para medicamentos, con el mismo control de caja.',
     puntos: [
-      'Control de stock y alertas de reposición',
-      'Ventas ágiles en mostrador',
-      'Reportes de rotación por producto',
+      // encargos
+      'Encargos: lo que pidieron y no había se anota y se avisa cuando llega',
+      // lotes (plantilla de Profesional)
+      'Lotes y vencimientos: sale primero lo que vence antes (Profesional)',
+      // inventario · reportes
+      'Stock real por medicamento y reportes de lo que más se vende',
     ],
   },
   {
-    emoji: '🛠️',
-    nombre: 'Ferreterías',
+    emoji: '🛒',
+    nombre: 'Minimarkets, ferreterías y repuestos',
+    disponible: true,
+    descripcion:
+      'Para tiendas de mostrador con muchos productos: vendés rápido y sabés qué te queda.',
+    puntos: [
+      // catalogo · inventario
+      'Productos por categoría con stock real y aviso de stock crítico',
+      // encargos
+      'Encargos al proveedor de lo que el cliente pidió y no había',
+      // fiado
+      'Fiado por cliente, con sus abonos y lo que te debe',
+    ],
+  },
+  {
+    emoji: '✂️',
+    nombre: 'Salones, barberías, spa y uñas',
     disponible: false,
     descripcion:
-      'Pensado para inventarios grandes y venta al por mayor y al detalle.',
+      'Agenda de citas para tu equipo y reservas online: tus clientes eligen servicio, profesional y horario desde un enlace.',
     puntos: [
-      'Miles de productos organizados por categoría',
-      'Precios diferenciados y ventas mixtas',
-      'Control de caja y de stock real',
+      'Agenda del día y de la semana por profesional',
+      'Reservas online, sin llamadas ni mensajes de ida y vuelta',
+      'La cita se cobra en la misma caja del sistema',
     ],
+    quienEscribe: 'tengo un salón de belleza, barbería, spa o local de uñas',
   },
 ]
 
@@ -58,11 +88,12 @@ export function Rubros() {
           Un solo sistema, pensado para tu rubro
         </h2>
         <p className="mt-4 max-w-2xl text-lg text-slate-600">
-          Empezamos por restaurantes y estamos llevando la misma experiencia a
-          farmacias y ferreterías.
+          Ya disponible para restaurantes, farmacias, minimarkets, ferreterías
+          y casas de repuestos, cada uno con las herramientas de su rubro. Los
+          salones de belleza, barberías, spa y uñas vienen en camino.
         </p>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {RUBROS.map((r) => (
             <article
               key={r.nombre}
@@ -114,7 +145,7 @@ export function Rubros() {
                 ) : (
                   <a
                     href={linkWhatsApp(
-                      `Hola BamarDev, tengo una ${r.nombre === 'Farmacias' ? 'farmacia' : 'ferretería'} y quiero que me avisen cuando el sistema esté listo para mi rubro.`,
+                      `Hola BamarDev, ${r.quienEscribe} y quiero que me avisen cuando el sistema esté listo para mi rubro.`,
                     )}
                     target="_blank"
                     rel="noreferrer"

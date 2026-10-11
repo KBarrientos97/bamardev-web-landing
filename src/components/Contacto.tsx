@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { WHATSAPP_DISPLAY, linkWhatsApp } from '../data/planes'
 import { WhatsAppIcon } from './ui'
+import { Captcha } from './Captcha'
+import { siteKeyTurnstile } from '../lib/turnstile'
 
 /**
  * El formulario escribe en el CRM del panel. Antes todo iba a WhatsApp: si
@@ -10,15 +12,39 @@ import { WhatsAppIcon } from './ui'
  * WhatsApp sigue estando como alternativa: hay gente que prefiere escribir
  * directo, y no hay razón para obligarla a llenar un formulario.
  */
-const API_LEADS_URL = 'https://api.bamardev.com/api/leads'
+// El API del ambiente, como la encuesta: la landing de QA escribe en el CRM
+// de QA (y valida su captcha allá), no en el de producción. En dev queda
+// `/api` y el proxy de Vite lo manda a QA.
+const API_LEADS_URL = `${import.meta.env.VITE_API_URL || '/api'}/leads`
 
-const RUBROS = ['Restaurante', 'Farmacia', 'Ferretería', 'Minimarket', 'Otro']
+// Los textos viajan tal cual: el backend los valida contra su propia lista
+// (bamardev-backend/src/leads/dto/crear-lead.dto.ts). Uno que no esté allá
+// hace fallar el envío entero.
+// Primero los disponibles (PerfilRubro DISPONIBLE), después los de belleza
+// (EN_DESARROLLO), que se ofrecen igual para juntar interesados.
+const RUBROS = [
+  'Restaurante',
+  'Farmacia',
+  'Minimarket',
+  'Ferretería',
+  'Repuestos',
+  'Peluquería',
+  'Barbería',
+  'Spa',
+  'Uñas',
+  'Otro',
+]
 
 type Estado = 'escribiendo' | 'enviando' | 'listo' | 'error'
 
 export function Contacto({ planInteres }: { planInteres?: string }) {
   const [estado, setEstado] = useState<Estado>('escribiendo')
   const [error, setError] = useState('')
+  // Turnstile, sólo si el build trae la site key. `vueltaCaptcha` remonta el
+  // widget para pedir otro token: el backend gasta el anterior en cada envío.
+  const siteKey = siteKeyTurnstile()
+  const [captcha, setCaptcha] = useState<string | null>(null)
+  const [vueltaCaptcha, setVueltaCaptcha] = useState(0)
 
   const enviar = async (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault()
@@ -31,9 +57,21 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
       setEstado('error')
       return
     }
+    if (siteKey && !captcha) {
+      setError('Completá la verificación anti-robots (el recuadro de arriba del botón) y volvé a enviar.')
+      setEstado('error')
+      return
+    }
 
     setEstado('enviando')
     setError('')
+    // Un token por envío: después de un intento fallido (también si la red se
+    // cortó con el pedido ya en el servidor) el siguiente necesita otro.
+    const pedirOtroCaptcha = () => {
+      if (!siteKey) return
+      setCaptcha(null)
+      setVueltaCaptcha((v) => v + 1)
+    }
     try {
       const res = await fetch(API_LEADS_URL, {
         method: 'POST',
@@ -47,11 +85,28 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
           planInteres,
           // Honeypot: va oculto, así que sólo lo completa un bot.
           web: String(datos.get('web') ?? ''),
+          ...(siteKey && captcha ? { captcha } : {}),
         }),
       })
-      if (!res.ok) throw new Error(String(res.status))
-      setEstado('listo')
+      if (res.ok) {
+        setEstado('listo')
+        return
+      }
+      // El 400 CAPTCHA tiene arreglo en la página (resolverlo de nuevo): se
+      // muestra el mensaje del backend en vez de mandar a WhatsApp. Sólo si
+      // hay widget: un build sin site key contra un backend que exige captcha
+      // no tiene arreglo acá, y "volvé a intentar" dejaría al visitante
+      // reintentando para siempre. Ahí va al mensaje de WhatsApp.
+      const cuerpo = (await res.json().catch(() => null)) as { codigo?: string; message?: string } | null
+      if (siteKey && cuerpo?.codigo === 'CAPTCHA') {
+        pedirOtroCaptcha()
+        setError(cuerpo.message || 'No pudimos verificar que seas una persona. Volvé a intentar.')
+        setEstado('error')
+        return
+      }
+      throw new Error(String(res.status))
     } catch {
+      pedirOtroCaptcha()
       // Si la API no responde, no se pierde el contacto: se ofrece WhatsApp.
       setError('No pudimos enviar el formulario. Escribinos por WhatsApp y te respondemos igual.')
       setEstado('error')
@@ -156,7 +211,15 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
         Dejanos al menos un teléfono o un email para poder responderte.
       </p>
 
-      {error && <p className="mt-3 text-sm text-rose-300">{error}</p>}
+      {siteKey && <Captcha key={vueltaCaptcha} siteKey={siteKey} onToken={setCaptcha} />}
+
+      {/* role="alert": el lector de pantalla lo anuncia al aparecer; si no,
+          quien no ve el formulario no se entera de por qué no se envió. */}
+      {error && (
+        <p role="alert" className="mt-3 text-sm text-rose-300">
+          {error}
+        </p>
+      )}
 
       <button
         type="submit"

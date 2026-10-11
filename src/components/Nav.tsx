@@ -13,7 +13,7 @@ export function Nav() {
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-md">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <a href="#" className="flex items-center gap-2.5">
-          <img src="/logo.png" alt="BamarDev" className="h-9 w-9 rounded-xl" />
+          <img src="/logo-marca.png" alt="BamarDev" className="h-9 w-9" />
           <span className="text-lg font-extrabold tracking-tight text-white">
             BamarDev
             <span className="ml-1.5 hidden font-medium text-slate-400 sm:inline">

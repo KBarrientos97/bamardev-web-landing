@@ -1,0 +1,10 @@
+# Textos legales ocultos hasta completarlos (D1): el build no publica
+# terminos.html ni privacidad.html (ver vite.config.ts). Sin estas reglas,
+# Pages respondería /terminos con la landing y un 200 (fallback de SPA, porque
+# no hay 404.html); así quien llegue por un link viejo o compartido aterriza en
+# el inicio con un 302, que avisa que es temporal. Borrarlas al volver a
+# publicar las páginas.
+/terminos     /  302
+/terminos/    /  302
+/privacidad   /  302
+/privacidad/  /  302

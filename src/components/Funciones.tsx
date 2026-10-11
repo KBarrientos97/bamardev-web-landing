@@ -15,31 +15,33 @@ const FUNCIONES: Funcion[] = [
     emoji: '📦',
     titulo: 'Inventario real',
     texto:
-      'Stock al día y combos que descuentan sus ingredientes automáticamente al cobrar.',
+      'Stock al día de productos e insumos, con cada entrada y salida registrada y aviso de stock crítico.',
   },
   {
     emoji: '🛵',
     titulo: 'Delivery y recojo',
     texto:
-      'Gestioná pedidos para llevar y a domicilio, con app propia para el repartidor.',
+      'Pedidos para recoger en todos los planes; en Profesional, delivery a domicilio con app propia para el repartidor.',
   },
   {
     emoji: '📊',
     titulo: 'Reportes que deciden',
     texto:
-      'Ventas por producto, categoría, horario y método de pago, con ganancia estimada.',
+      'Ventas por producto, categoría, horario y método de pago, con ganancia estimada y los gastos del negocio.',
   },
   {
-    emoji: '👨‍🍳',
-    titulo: 'Cocina en tiempo real',
+    // Antes acá iba "Cocina en tiempo real" (panel de cocina y tablero TV):
+    // la feature `cocina` está inactiva en el catálogo, no existe todavía.
+    emoji: '📒',
+    titulo: 'Fiado bajo control',
     texto:
-      'Panel de cocina y tablero TV para que los pedidos fluyan sin gritos ni papelitos.',
+      'Ventas a crédito por cliente, con sus abonos y lo que te debe cada uno a la vista.',
   },
   {
     emoji: '🔐',
     titulo: 'Control con roles y PIN',
     texto:
-      'Descuentos, anulaciones y ajustes solo con autorización del encargado.',
+      'Cada usuario con su rol; anular una venta o fiar por encima del límite pide el PIN del encargado.',
   },
 ]
 
