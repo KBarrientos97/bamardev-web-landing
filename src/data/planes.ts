@@ -25,8 +25,8 @@
   sección, que es de restaurantes, no los muestra.
 */
 
-export const WHATSAPP_NUMERO = '59170490686'
-export const WHATSAPP_DISPLAY = '+591 70490686'
+export const WHATSAPP_NUMERO = '59167865462'
+export const WHATSAPP_DISPLAY = '+591 67865462'
 
 export function linkWhatsApp(mensaje: string): string {
   return `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`

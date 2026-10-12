@@ -58,7 +58,7 @@ function seguir(e: PointerEvent<HTMLElement>) {
 
 export function Funciones() {
   return (
-    <section id="funciones" className="scroll-mt-16 bg-slate-50 py-20 lg:py-28">
+    <section id="funciones" className="scroll-mt-16 bg-slate-50 py-14 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Aparecer>
         <p className="text-sm font-bold uppercase tracking-widest text-brand-600">
@@ -69,7 +69,7 @@ export function Funciones() {
         </h2>
         </Aparecer>
 
-        <Escalonado paso={0.09} className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <Escalonado paso={0.06} className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {FUNCIONES.map((f) => (
             <m.article
               key={f.titulo}
@@ -77,7 +77,7 @@ export function Funciones() {
               whileHover={{ y: -6 }}
               transition={{ type: 'spring', stiffness: 300, damping: 22 }}
               onPointerMove={seguir}
-              className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition-[box-shadow,border-color] duration-300 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-100/60"
+              className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7 transition-[box-shadow,border-color] duration-300 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-100/60"
             >
               {/* Brillo verde que sigue al mouse dentro de la tarjeta */}
               <span

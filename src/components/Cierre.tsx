@@ -6,7 +6,7 @@ import { Contacto } from './Contacto'
 
 export function Cierre() {
   return (
-    <section id="contacto" className="scroll-mt-16 bg-white py-20 lg:py-28">
+    <section id="contacto" className="scroll-mt-16 bg-white py-14 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Aparecer className="relative overflow-hidden rounded-3xl bg-slate-950 px-8 py-16 text-center sm:px-16">
           <m.div

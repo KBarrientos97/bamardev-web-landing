@@ -27,7 +27,7 @@ export function Comparativa() {
   const { precios, descuento, cupo, descuentoPorPlazo } = usePrecios()
   const filas = comparativa(precios, descuento, cupo, descuentoPorPlazo)
   return (
-    <section className="bg-slate-50 py-20 lg:py-28">
+    <section className="bg-slate-50 py-14 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Aparecer>
         <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
