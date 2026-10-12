@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import { AnimatePresence, m } from 'motion/react'
 import { fmtBs, linkWhatsApp } from '../data/planes'
 import { usePaquetes } from '../data/paquetes'
 import { usePrecios } from '../data/precios'
 import { CheckIcon, WhatsAppIcon } from './ui'
+import { Aparecer, Escalonado, Numero, SUAVE, itemVariantes } from './animacion'
 
 type Modo = 'ventas' | 'agenda'
 
@@ -163,6 +165,7 @@ export function Rubros() {
       <span id="agenda" className="absolute top-0 scroll-mt-16" aria-hidden />
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <Aparecer>
         <p className="text-center text-sm font-bold uppercase tracking-widest text-brand-600">
           Rubros
         </p>
@@ -173,6 +176,7 @@ export function Rubros() {
           Un solo sistema que se arma según tu rubro: si vendés productos o si
           trabajás con citas, ves sólo lo que usás.
         </p>
+        </Aparecer>
 
         {/* Pestañas */}
         <div
@@ -196,20 +200,29 @@ export function Rubros() {
                 aria-selected={activa}
                 aria-controls={`panel-${t.m}`}
                 onClick={() => setModo(t.m)}
-                className={`flex items-center justify-center gap-3 rounded-2xl px-3 py-3 text-left transition sm:px-5 ${
-                  activa
-                    ? 'bg-white shadow-md ring-1 ring-brand-200'
-                    : 'text-slate-500 hover:bg-white/60 hover:text-slate-700'
+                className={`relative flex items-center justify-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors sm:px-5 ${
+                  activa ? '' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
-                <span
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl ${
+                {/* El fondo blanco de la pestaña activa es UNO solo que se
+                    desliza de una a otra (layoutId). */}
+                {activa && (
+                  <m.span
+                    layoutId="pestana-activa"
+                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                    className="absolute inset-0 rounded-2xl bg-white shadow-md ring-1 ring-brand-200"
+                  />
+                )}
+                <m.span
+                  animate={activa ? { scale: [1, 1.18, 1], rotate: [0, -8, 0] } : { scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.45, ease: SUAVE }}
+                  className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl transition-colors ${
                     activa ? 'bg-brand-50' : 'bg-slate-100'
                   }`}
                 >
                   {t.icono}
-                </span>
-                <span>
+                </m.span>
+                <span className="relative">
                   <span className={`block text-base font-extrabold ${activa ? 'text-slate-900' : ''}`}>
                     {t.titulo}
                   </span>
@@ -222,10 +235,18 @@ export function Rubros() {
           })}
         </div>
 
-        <div
+        <AnimatePresence mode="wait" initial={false}>
+        <m.div
+          key={modo}
           role="tabpanel"
           id={`panel-${modo}`}
           aria-labelledby={`tab-${modo}`}
+          // Al cambiar de pestaña el panel sale hacia el lado contrario y el
+          // nuevo entra desde el lado de su pestaña.
+          initial={{ opacity: 0, x: esAgenda ? 40 : -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: esAgenda ? -40 : 40 }}
+          transition={{ duration: 0.35, ease: SUAVE }}
           className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]"
         >
           {/* Columna oscura: lo común del modo y el cupo del Emprendedor. En el
@@ -258,12 +279,12 @@ export function Rubros() {
               </p>
               <div className={`mt-3 grid gap-3 ${esAgenda ? 'grid-cols-2' : 'grid-cols-1'}`}>
                 <div>
-                  <p className="text-4xl font-extrabold tracking-tight text-white">{cupo.ventasDia}</p>
+                  <p className="text-4xl font-extrabold tracking-tight text-white"><Numero valor={cupo.ventasDia} /></p>
                   <p className="text-sm font-semibold text-brand-300">ventas por día</p>
                 </div>
                 {esAgenda && (
                   <div className="border-l border-white/10 pl-3">
-                    <p className="text-4xl font-extrabold tracking-tight text-white">{cupo.citasDia}</p>
+                    <p className="text-4xl font-extrabold tracking-tight text-white"><Numero valor={cupo.citasDia} /></p>
                     <p className="text-sm font-semibold text-brand-300">citas por día</p>
                   </div>
                 )}
@@ -289,14 +310,17 @@ export function Rubros() {
           </aside>
 
           {/* Rubros del modo + "¿no está el tuyo?" */}
-          <div className="grid gap-5 sm:grid-cols-2">
+          <Escalonado paso={0.07} retraso={0.1} className="grid gap-5 sm:grid-cols-2">
             {RUBROS[modo].map((r) => (
-              <article
+              <m.article
                 key={r.nombre}
-                className="group flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-brand-200 hover:shadow-lg hover:shadow-brand-100"
+                variants={itemVariantes}
+                whileHover={{ y: -6 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+                className="group flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-[border-color,box-shadow] duration-300 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-100"
               >
                 <div className="flex items-center gap-3">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-2xl ring-1 ring-brand-100">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-2xl ring-1 ring-brand-100 transition-transform duration-300 ease-out group-hover:-rotate-6 group-hover:scale-110">
                     {r.emoji}
                   </span>
                   <h3 className="text-lg font-extrabold leading-tight text-slate-900">{r.nombre}</h3>
@@ -315,20 +339,31 @@ export function Rubros() {
                   rel="noreferrer"
                   className="mt-5 inline-flex items-center gap-1 text-sm font-bold text-brand-700 transition hover:text-brand-600"
                 >
-                  Quiero verlo →
+                  Quiero verlo{' '}
+                  <span className="transition-transform duration-300 ease-out group-hover:translate-x-1">→</span>
                 </a>
-              </article>
+              </m.article>
             ))}
 
             {/* El gancho para los rubros que todavía no están */}
-            <article className="relative overflow-hidden rounded-3xl border-2 border-dashed border-brand-300 bg-gradient-to-br from-brand-50 via-white to-amber-50 p-6 sm:col-span-2 sm:p-7">
+            <m.article
+              variants={itemVariantes}
+              className="relative overflow-hidden rounded-3xl border-2 border-dashed border-brand-300 bg-gradient-to-br from-brand-50 via-white to-amber-50 p-6 sm:col-span-2 sm:p-7">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-xs font-extrabold uppercase tracking-widest text-brand-700">
                     ¿No ves tu rubro?
                   </p>
                   <h3 className="mt-1.5 text-xl font-extrabold text-slate-900 sm:text-2xl">
-                    Pedilo y lo adaptamos a tu negocio ✨
+                    Pedilo y lo adaptamos a tu negocio{' '}
+                    <m.span
+                      aria-hidden
+                      className="inline-block"
+                      animate={{ rotate: [0, 18, -10, 0], scale: [1, 1.25, 1] }}
+                      transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
+                    >
+                      ✨
+                    </m.span>
                   </h3>
                   <p className="mt-2 max-w-md text-sm text-slate-600">
                     Contanos cómo trabajás y armamos tu versión con lo que tu
@@ -350,15 +385,16 @@ export function Rubros() {
                   href={linkWhatsApp('Hola BamarDev, mi rubro no está en la página y quiero que lo adapten para mi negocio. Mi negocio es: ')}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-slate-800"
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-800 active:scale-[0.97]"
                 >
                   <WhatsAppIcon className="h-4 w-4" />
                   Solicitar mi rubro
                 </a>
               </div>
-            </article>
-          </div>
-        </div>
+            </m.article>
+          </Escalonado>
+        </m.div>
+        </AnimatePresence>
 
         {esAgenda && (
           <p className="mt-6 text-center text-xs text-slate-500">

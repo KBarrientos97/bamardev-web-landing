@@ -1,3 +1,4 @@
+import { Aparecer } from './animacion'
 import { PLANES, comparativa } from '../data/planes'
 import { usePrecios } from '../data/precios'
 
@@ -28,14 +29,16 @@ export function Comparativa() {
   return (
     <section className="bg-slate-50 py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <Aparecer>
         <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
           Comparación rápida
         </h2>
         <p className="mt-3 text-lg text-slate-600">
           Lo mismo de arriba, en una sola mirada.
         </p>
+        </Aparecer>
 
-        <div className="mt-10 overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <Aparecer retraso={0.1} className="mt-10 overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
           {/* En el celular la tabla se desliza de costado; la columna del
               concepto queda fija para no perder de qué fila se trata. */}
           <table className="w-full min-w-[40rem] border-collapse">
@@ -70,7 +73,7 @@ export function Comparativa() {
               ))}
             </tbody>
           </table>
-        </div>
+        </Aparecer>
       </div>
     </section>
   )

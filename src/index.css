@@ -31,3 +31,27 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
+
+/*
+  Destello que cruza la cinta "Más elegido" cada pocos segundos para llevar
+  la mirada al plan recomendado. Sólo si el sistema no pide menos movimiento.
+*/
+.destello::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.55) 50%, transparent 70%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .destello::after {
+    animation: destello 3.6s ease-in-out 1.2s infinite;
+  }
+}
+
+@keyframes destello {
+  0% { transform: translateX(-120%); }
+  35%, 100% { transform: translateX(120%); }
+}
