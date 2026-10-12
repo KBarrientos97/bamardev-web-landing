@@ -199,7 +199,10 @@ export function Planes() {
           una <strong>ferretería</strong> o una <strong>casa de repuestos</strong>?
           Los planes son los mismos: tu sistema deja afuera lo de restaurante
           (comanda Mesa / Llevar, salón, insumos) y suma encargos; en farmacias
-          con Profesional, también lotes y vencimientos.{' '}
+          con Profesional, también lotes y vencimientos. ¿Trabajás con{' '}
+          <strong>agenda</strong> (peluquería, barbería, spa, uñas)? La agenda y la
+          ficha de clientes vienen en todos los planes, y en Emprendedor tus{' '}
+          {cupo.citasDia} citas por día van aparte de tus ventas.{' '}
           <a
             href={linkWhatsApp('Hola BamarDev, quiero saber cómo funciona el sistema para mi rubro.')}
             target="_blank"
