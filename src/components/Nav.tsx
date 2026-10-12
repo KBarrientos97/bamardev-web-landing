@@ -1,5 +1,7 @@
 import { linkWhatsApp } from '../data/planes'
 import { WhatsAppIcon } from './ui'
+import { m } from 'motion/react'
+import { SUAVE } from './animacion'
 
 const LINKS = [
   { href: '#rubros', label: 'Rubros' },
@@ -10,7 +12,12 @@ const LINKS = [
 
 export function Nav() {
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-md">
+    <m.header
+      initial={{ y: -64, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: SUAVE }}
+      className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-md"
+    >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <a href="#" className="flex items-center gap-2.5">
           <img src="/logo-marca.png" alt="BamarDev" className="h-9 w-9" />
@@ -27,7 +34,7 @@ export function Nav() {
             <a
               key={l.href}
               href={l.href}
-              className="text-sm font-semibold text-slate-300 transition hover:text-white"
+              className="relative text-sm font-semibold text-slate-300 transition-colors after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:rounded-full after:bg-brand-400 after:transition-transform after:duration-300 after:ease-out hover:text-white hover:after:scale-x-100"
             >
               {l.label}
             </a>
@@ -38,12 +45,12 @@ export function Nav() {
           href={linkWhatsApp('Hola BamarDev, quiero ver una demo del sistema.')}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-brand-500/25 transition hover:bg-brand-400"
+          className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-brand-500/25 transition hover:-translate-y-0.5 hover:bg-brand-400 active:scale-[0.97]"
         >
           <WhatsAppIcon className="h-4 w-4" />
           Pedir demo
         </a>
       </nav>
-    </header>
+    </m.header>
   )
 }
