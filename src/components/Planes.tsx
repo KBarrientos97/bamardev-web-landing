@@ -40,7 +40,7 @@ export function Planes() {
   const algunoConDescuento = PLANES.some((pl) => descuentoDe(pl.codigo, descuento, descuentoPorPlazo) > 0)
 
   return (
-    <section id="planes" className="scroll-mt-16 bg-white py-20 lg:py-28">
+    <section id="planes" className="scroll-mt-16 bg-white py-14 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Aparecer>
         <p className="text-center text-sm font-bold uppercase tracking-widest text-brand-600">
@@ -96,7 +96,7 @@ export function Planes() {
           </div>
         </div>
 
-        <Escalonado paso={0.12} className="mx-auto mt-12 grid max-w-xl items-start gap-6 lg:max-w-6xl lg:grid-cols-3">
+        <Escalonado paso={0.08} className="mx-auto mt-12 grid max-w-xl items-start gap-6 lg:max-w-6xl lg:grid-cols-3">
           {PLANES.map((plan) => {
             const mensual = precios[plan.codigo] ?? plan.precio
             // 0 en un plan sin descuento por plazo: el año sale 12 × mes.

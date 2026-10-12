@@ -73,7 +73,7 @@ export function PaquetesCreditos() {
   const hayTabla = paquetes.length > 0 || regaloAlta > 0
 
   return (
-    <section id="creditos" className="scroll-mt-16 bg-white pb-20 lg:pb-28">
+    <section id="creditos" className="scroll-mt-16 bg-white pb-14 sm:pb-20 lg:pb-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Aparecer className="grid gap-10 rounded-3xl border border-slate-200 bg-slate-50 px-5 py-10 sm:px-10 lg:grid-cols-2 lg:gap-12 lg:p-12">
           {/* Explicación */}
@@ -156,7 +156,7 @@ export function PaquetesCreditos() {
                     variants={{ visible: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } } }}
                     initial="oculto"
                     whileInView="visible"
-                    viewport={{ once: true, amount: 0.3 }}
+                    viewport={{ once: true, amount: 0 }}
                   >
                     {paquetes.map((p) => (
                       <m.tr
@@ -221,7 +221,7 @@ export function PaquetesCreditos() {
         <p className="mt-10 text-center text-sm font-bold uppercase tracking-widest text-slate-500">
           Así se ve en un día cualquiera
         </p>
-        <Escalonado paso={0.1} className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Escalonado paso={0.06} className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {ejemplos.map((e) => (
             <m.article
               key={e.titulo}

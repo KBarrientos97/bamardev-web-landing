@@ -19,15 +19,19 @@ import {
 /** Curva de entrada: arranca rápido y frena suave. */
 export const SUAVE = [0.22, 1, 0.36, 1] as const
 
-/** Cuánto de la sección tiene que verse para que arranque la animación. */
-const AL_VER = { once: true, amount: 0.25 } as const
+/**
+ * Cuándo arranca: apenas el bloque asoma por abajo (con un margen chico para
+ * que se vea el movimiento). Antes esperaba a que se viera un 25 % del bloque y,
+ * en el celular, las grillas altas quedaban en blanco un buen rato.
+ */
+const AL_VER = { once: true, amount: 0, margin: '0px 0px -40px 0px' } as const
 
 /** Bloque que aparece subiendo y con fundido al entrar en pantalla. */
 export function Aparecer({
   children,
   className,
   retraso = 0,
-  desde = 24,
+  desde = 16,
 }: {
   children: ReactNode
   className?: string
@@ -41,7 +45,7 @@ export function Aparecer({
       initial={{ opacity: 0, y: desde }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={AL_VER}
-      transition={{ duration: 0.7, ease: SUAVE, delay: retraso }}
+      transition={{ duration: 0.5, ease: SUAVE, delay: retraso }}
     >
       {children}
     </m.div>
@@ -55,14 +59,14 @@ const contenedor = (paso: number, retraso: number): Variants => ({
 })
 
 export const itemVariantes: Variants = {
-  oculto: { opacity: 0, y: 28, scale: 0.98 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.65, ease: SUAVE } },
+  oculto: { opacity: 0, y: 20, scale: 0.98 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: SUAVE } },
 }
 
 export function Escalonado({
   children,
   className,
-  paso = 0.08,
+  paso = 0.05,
   retraso = 0,
   alMontar = false,
 }: {
