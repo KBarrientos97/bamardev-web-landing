@@ -1,130 +1,157 @@
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
+import { Fragment, useState, type PointerEvent } from 'react'
 import { linkWhatsApp } from '../data/planes'
 import { WhatsAppIcon } from './ui'
+import { Escalonado, SUAVE, itemVariantes } from './animacion'
+import { HeroDemo } from './HeroDemo'
 
-/** Alturas (en %) de las barras del mini-gráfico ilustrativo del mockup. */
-const BARRAS = [35, 55, 42, 68, 50, 80, 95]
+/** El titular entra palabra por palabra, cada una subiendo desde abajo de su "ranura". */
+const palabra = {
+  oculto: { y: '110%' },
+  visible: { y: '0%', transition: { duration: 0.8, ease: SUAVE } },
+}
+
+function Palabras({ texto, className }: { texto: string; className?: string }) {
+  return (
+    <>
+      {texto.split(' ').map((p, i) => (
+        <Fragment key={i}>
+          {/* pb/-mb: la ranura recorta, y sin ese margen se comerían la "g" y la "q".
+              El espacio va afuera de la ranura para que el titular pueda partirse en líneas. */}
+          <span className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em] align-bottom">
+            <m.span variants={palabra} className={`inline-block ${className ?? ''}`}>
+              {p}
+            </m.span>
+          </span>{' '}
+        </Fragment>
+      ))}
+    </>
+  )
+}
+
+/** La grilla del fondo se ilumina donde está el mouse (variables CSS, sin re-render). */
+function iluminar(e: PointerEvent<HTMLElement>) {
+  if (e.pointerType !== 'mouse') return
+  const r = e.currentTarget.getBoundingClientRect()
+  e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`)
+  e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`)
+}
+
+const GRILLA =
+  'bg-[linear-gradient(to_right,rgb(255_255_255/0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255/0.05)_1px,transparent_1px)] bg-[size:56px_56px]'
 
 export function Hero() {
+  const reducir = useReducedMotion()
+  // El rubro que muestra la demo del celular: el titular lo acompaña.
+  const [rubro, setRubro] = useState('pollería')
+
   return (
-    <section className="relative overflow-hidden bg-slate-950 pt-16 text-white">
-      {/* Resplandores de marca sobre el fondo oscuro */}
-      <div
+    <section
+      onPointerMove={iluminar}
+      className="group/hero relative overflow-hidden bg-slate-950 pt-16 text-white"
+    >
+      {/* Resplandores de marca que derivan muy lento detrás del contenido */}
+      <m.div
         aria-hidden
+        animate={reducir ? undefined : { x: [0, 60, -40, 0], y: [0, 30, 10, 0] }}
+        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
         className="pointer-events-none absolute -top-40 left-1/2 h-[32rem] w-[52rem] -translate-x-1/2 rounded-full bg-brand-500/20 blur-3xl"
       />
-      <div
+      <m.div
         aria-hidden
+        animate={reducir ? undefined : { x: [0, -50, 20, 0], y: [0, -40, 0, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
         className="pointer-events-none absolute -bottom-52 -right-24 h-96 w-96 rounded-full bg-brand-600/15 blur-3xl"
       />
+      {/* Grilla tenue que se desvanece hacia abajo… */}
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 ${GRILLA} [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_75%)]`}
+      />
+      {/* …y la misma grilla en verde, visible sólo alrededor del mouse */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgb(52_211_153/0.35)_1px,transparent_1px),linear-gradient(to_bottom,rgb(52_211_153/0.35)_1px,transparent_1px)] bg-[size:56px_56px] opacity-0 transition-opacity duration-500 group-hover/hero:opacity-100 [mask-image:radial-gradient(220px_circle_at_var(--mx)_var(--my),black,transparent)]"
+      />
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-2 lg:pb-28 lg:pt-24">
-        <div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-brand-400/30 bg-brand-500/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-brand-300">
-            Restaurantes · Farmacias · Comercios
-          </span>
+      <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-14 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:pb-24 lg:pt-20">
+        <Escalonado alMontar paso={0.09} retraso={0.1}>
+          <m.span
+            variants={itemVariantes}
+            className="inline-flex items-center gap-2 rounded-full border border-brand-400/30 bg-brand-500/10 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-brand-300 sm:text-xs sm:tracking-widest"
+          >
+            Restaurantes · Comercios · Farmacias · Belleza
+          </m.span>
 
-          <h1 className="mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
-            El sistema que maneja tu negocio{' '}
-            <span className="bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text text-transparent">
-              y te dice cuánto ganás.
-            </span>
-          </h1>
+          <m.h1
+            variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
+            className="mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl"
+          >
+            <Palabras texto="El sistema que maneja tu" />
+            {/* El rubro cambia con la demo: la palabra vieja sube y sale, la
+                nueva entra desde abajo; el ancho se acomoda solo (layout). */}
+            <m.span
+              layout
+              transition={{ layout: { duration: 0.4, ease: SUAVE } }}
+              className="relative inline-flex overflow-hidden pb-[0.12em] -mb-[0.12em] align-bottom"
+            >
+              <AnimatePresence mode="popLayout" initial={false}>
+                <m.span
+                  key={rubro}
+                  initial={{ y: '100%', opacity: 0 }}
+                  animate={{ y: '0%', opacity: 1 }}
+                  exit={{ y: '-100%', opacity: 0 }}
+                  transition={{ duration: 0.5, ease: SUAVE }}
+                  className="inline-block whitespace-nowrap bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text text-transparent"
+                >
+                  {rubro}
+                </m.span>
+              </AnimatePresence>
+            </m.span>{' '}
+            <Palabras texto="y te dice cuánto ganás." />
+          </m.h1>
 
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300">
-            Punto de venta, inventario, delivery y control de costos en un solo
-            lugar. Se maneja desde el celular o la tablet, y sigue vendiendo
-            aunque se corte el internet.
-          </p>
+          <m.p variants={itemVariantes} className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300">
+            Vendé, cobrá con QR, agendá y controlá tu caja desde el celular.
+            Sigue funcionando aunque se corte el internet.
+          </m.p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <a
+          <m.div variants={itemVariantes} className="mt-8 flex flex-wrap items-center gap-4">
+            <m.a
               href="#planes"
-              className="rounded-full bg-brand-500 px-7 py-3.5 text-base font-bold text-white shadow-xl shadow-brand-500/30 transition hover:bg-brand-400"
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              className="rounded-full bg-brand-500 px-7 py-3.5 text-base font-bold text-white shadow-xl shadow-brand-500/30 transition-colors hover:bg-brand-400"
             >
               Ver planes
-            </a>
-            <a
+            </m.a>
+            <m.a
               href={linkWhatsApp('Hola BamarDev, quiero ver el sistema funcionando en mi negocio.')}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-7 py-3.5 text-base font-bold text-white transition hover:border-brand-400/60 hover:text-brand-300"
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-7 py-3.5 text-base font-bold text-white transition-colors hover:border-brand-400/60 hover:text-brand-300"
             >
               <WhatsAppIcon className="h-5 w-5" />
               Pedir una demo
-            </a>
-          </div>
+            </m.a>
+          </m.div>
 
-          <ul className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-slate-400">
-            <li className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
-              Funciona sin internet
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
-              App Android y tablet
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
-              Respaldo en la nube
-            </li>
-          </ul>
-        </div>
+          <m.ul
+            variants={itemVariantes}
+            className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-slate-400"
+          >
+            {['Funciona sin internet', 'App Android y web', 'Desde Bs 75 al mes'].map((t) => (
+              <li key={t} className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
+                {t}
+              </li>
+            ))}
+          </m.ul>
+        </Escalonado>
 
-        {/* Mockup ilustrativo del dashboard */}
-        <div className="relative mx-auto w-full max-w-sm lg:max-w-md">
-          <div className="rounded-3xl border border-white/10 bg-white p-6 text-slate-800 shadow-2xl shadow-black/40">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-bold text-slate-500">Ventas de hoy</p>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-700">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-500" />
-                En vivo
-              </span>
-            </div>
-            <p className="mt-2 text-4xl font-extrabold tracking-tight text-slate-900">
-              Bs 4.850
-            </p>
-            <p className="mt-1 text-sm font-semibold text-brand-600">
-              ▲ 18% vs. ayer
-            </p>
-
-            <div className="mt-6 flex h-24 items-end gap-2">
-              {BARRAS.map((h, i) => (
-                <div
-                  key={i}
-                  style={{ height: `${h}%` }}
-                  className={`flex-1 rounded-t-md ${
-                    i === BARRAS.length - 1 ? 'bg-brand-500' : 'bg-brand-100'
-                  }`}
-                />
-              ))}
-            </div>
-
-            <div className="mt-5 flex justify-between border-t border-slate-100 pt-4 text-sm">
-              <span className="font-semibold text-slate-500">
-                Efectivo <span className="text-slate-900">Bs 2.980</span>
-              </span>
-              <span className="font-semibold text-slate-500">
-                QR <span className="text-slate-900">Bs 1.870</span>
-              </span>
-            </div>
-          </div>
-
-          {/* Tarjetas flotantes */}
-          <div className="absolute -right-6 -top-12 hidden rotate-2 rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 shadow-xl sm:block">
-            <p className="text-xs font-bold text-slate-400">Pedido #42</p>
-            <p className="mt-0.5 flex items-center gap-1.5 text-sm font-bold text-white">
-              <span className="h-2 w-2 rounded-full bg-amber-400" />
-              Mesa 5 · 1 para llevar
-            </p>
-          </div>
-          <div className="absolute -bottom-12 -left-6 hidden -rotate-2 rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 shadow-xl sm:block">
-            <p className="text-xs font-bold text-slate-400">Alerta de stock</p>
-            <p className="mt-0.5 flex items-center gap-1.5 text-sm font-bold text-white">
-              <span className="h-2 w-2 rounded-full bg-rose-400" />
-              Queso mozzarella · 2 kg
-            </p>
-          </div>
-        </div>
+        <HeroDemo onRubro={setRubro} />
       </div>
     </section>
   )

@@ -12,6 +12,19 @@ import {
 import { usePrecios } from '../data/precios'
 import { usePaquetes } from '../data/paquetes'
 import { CheckIcon } from './ui'
+import { m } from 'motion/react'
+import { Aparecer, Escalonado, Numero, itemVariantes } from './animacion'
+
+/** El fondo blanco del selector Mensual/Anual: uno solo que se desliza. */
+function Pastilla() {
+  return (
+    <m.span
+      layoutId="pastilla-plazo"
+      transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+      className="absolute inset-0 rounded-full bg-white shadow-sm"
+    />
+  )
+}
 
 export function Planes() {
   // Mensual / Anual: el precio grande siempre es "por mes"; en anual se
@@ -29,6 +42,7 @@ export function Planes() {
   return (
     <section id="planes" className="scroll-mt-16 bg-white py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <Aparecer>
         <p className="text-center text-sm font-bold uppercase tracking-widest text-brand-600">
           Planes
         </p>
@@ -43,6 +57,8 @@ export function Planes() {
           incluida.
         </p>
 
+        </Aparecer>
+
         {/* Mensual / Anual */}
         <div className="mt-10 flex justify-center">
           <div
@@ -54,23 +70,25 @@ export function Planes() {
               type="button"
               onClick={() => setAnual(false)}
               aria-pressed={!anual}
-              className={`rounded-full px-5 py-2 transition ${
-                !anual ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+              className={`relative rounded-full px-5 py-2 transition-colors ${
+                !anual ? 'text-slate-900' : 'text-slate-500 hover:text-slate-700'
               }`}
             >
-              Mensual
+              {!anual && <Pastilla />}
+              <span className="relative">Mensual</span>
             </button>
             <button
               type="button"
               onClick={() => setAnual(true)}
               aria-pressed={anual}
-              className={`flex items-center gap-2 rounded-full px-5 py-2 transition ${
-                anual ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+              className={`relative flex items-center gap-2 rounded-full px-5 py-2 transition-colors ${
+                anual ? 'text-slate-900' : 'text-slate-500 hover:text-slate-700'
               }`}
             >
-              Anual
+              {anual && <Pastilla />}
+              <span className="relative">Anual</span>
               {algunoConDescuento && (
-                <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-extrabold text-brand-700">
+                <span className="relative rounded-full bg-brand-100 px-2 py-0.5 text-xs font-extrabold text-brand-700">
                   −{pctDescuento} %
                 </span>
               )}
@@ -78,7 +96,7 @@ export function Planes() {
           </div>
         </div>
 
-        <div className="mx-auto mt-12 grid max-w-xl items-start gap-6 lg:max-w-6xl lg:grid-cols-3">
+        <Escalonado paso={0.12} className="mx-auto mt-12 grid max-w-xl items-start gap-6 lg:max-w-6xl lg:grid-cols-3">
           {PLANES.map((plan) => {
             const mensual = precios[plan.codigo] ?? plan.precio
             // 0 en un plan sin descuento por plazo: el año sale 12 × mes.
@@ -90,16 +108,19 @@ export function Planes() {
               ? `Hola BamarDev, me interesa el plan ${plan.nombre} con pago anual (Bs ${fmtBs(total)}/año) para mi negocio.`
               : `Hola BamarDev, me interesa el plan ${plan.nombre} (Bs ${mensual}/mes) para mi negocio.`
             return (
-              <article
+              <m.article
                 key={plan.nombre}
-                className={`relative flex flex-col rounded-3xl p-8 ${
+                variants={itemVariantes}
+                whileHover={{ y: -6 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+                className={`relative flex flex-col rounded-3xl p-8 transition-shadow duration-300 hover:shadow-2xl ${
                   plan.destacado
                     ? 'border-2 border-brand-500 bg-brand-50/50 shadow-2xl shadow-brand-200 lg:-my-4 lg:py-12'
                     : 'border border-slate-200 bg-white shadow-sm'
                 }`}
               >
                 {plan.destacado ? (
-                  <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-brand-600 px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest text-white shadow-lg">
+                  <span className="destello absolute -top-4 left-1/2 -translate-x-1/2 overflow-hidden rounded-full bg-brand-600 px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest text-white shadow-lg">
                     Más elegido
                   </span>
                 ) : (
@@ -125,7 +146,7 @@ export function Planes() {
                     Bs
                   </span>{' '}
                   <span className="text-5xl font-extrabold tracking-tight text-slate-900">
-                    {porMes}
+                    <Numero valor={porMes} duracion={0.6} />
                   </span>
                   <span className="text-base font-semibold text-slate-500">
                     {' '}
@@ -185,10 +206,10 @@ export function Planes() {
                     Cómo funcionan los créditos →
                   </a>
                 )}
-              </article>
+              </m.article>
             )
           })}
-        </div>
+        </Escalonado>
 
         {/* Los planes son los mismos para todos los rubros; lo que cambia es
             qué features recibe el alta según el vertical (FeatureVertical).
@@ -199,7 +220,10 @@ export function Planes() {
           una <strong>ferretería</strong> o una <strong>casa de repuestos</strong>?
           Los planes son los mismos: tu sistema deja afuera lo de restaurante
           (comanda Mesa / Llevar, salón, insumos) y suma encargos; en farmacias
-          con Profesional, también lotes y vencimientos.{' '}
+          con Profesional, también lotes y vencimientos. ¿Trabajás con{' '}
+          <strong>agenda</strong> (peluquería, barbería, spa, uñas)? La agenda y la
+          ficha de clientes vienen en todos los planes, y en Emprendedor tus{' '}
+          {cupo.citasDia} citas por día van aparte de tus ventas.{' '}
           <a
             href={linkWhatsApp('Hola BamarDev, quiero saber cómo funciona el sistema para mi rubro.')}
             target="_blank"

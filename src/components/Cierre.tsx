@@ -1,3 +1,5 @@
+import { m } from 'motion/react'
+import { Aparecer } from './animacion'
 import { WHATSAPP_DISPLAY, linkWhatsApp, notaLegal } from '../data/planes'
 import { usePrecios } from '../data/precios'
 import { Contacto } from './Contacto'
@@ -6,13 +8,23 @@ export function Cierre() {
   return (
     <section id="contacto" className="scroll-mt-16 bg-white py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="relative overflow-hidden rounded-3xl bg-slate-950 px-8 py-16 text-center sm:px-16">
-          <div
+        <Aparecer className="relative overflow-hidden rounded-3xl bg-slate-950 px-8 py-16 text-center sm:px-16">
+          <m.div
             aria-hidden
+            animate={{ opacity: [0.7, 1, 0.7], scale: [1, 1.08, 1] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
             className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full bg-brand-500/25 blur-3xl"
           />
           <div className="relative">
-            <img src="/logo-marca.png" alt="" className="mx-auto h-16 w-16 drop-shadow-lg" />
+            <m.img
+              src="/logo-marca.png"
+              alt=""
+              initial={{ opacity: 0, y: 20, rotate: -12, scale: 0.8 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ type: 'spring', stiffness: 180, damping: 12, delay: 0.2 }}
+              className="mx-auto h-16 w-16 drop-shadow-lg"
+            />
             <h2 className="mx-auto mt-6 max-w-2xl text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
               ¿Querés ver el sistema funcionando en tu negocio?
             </h2>
@@ -24,7 +36,7 @@ export function Cierre() {
               <Contacto />
             </div>
           </div>
-        </div>
+        </Aparecer>
       </div>
     </section>
   )
