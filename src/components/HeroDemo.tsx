@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, m, useInView, useReducedMotion } from 'motion/react'
 import { Numero, SUAVE } from './animacion'
+import { usePrecios } from '../data/precios'
 
 /*
   Demo del hero: un celular que "usa" el sistema solo, rubro por rubro. En los
@@ -329,6 +330,11 @@ export function HeroDemo({ onRubro }: { onRubro: (rubro: string) => void }) {
   const [ventasDia, setVentasDia] = useState(13)
   const [citasDia, setCitasDia] = useState(4)
   const [aviso, setAviso] = useState<string | null>(null)
+  // El cupo vigente (API o respaldo): un "/50" fijo quedó viejo cuando bajó a 30.
+  // El contador se detiene en el tope para no mostrar "31/30".
+  const { cupo } = usePrecios()
+  const ventasHoy = Math.min(ventasDia, cupo.ventasDia)
+  const citasHoy = Math.min(citasDia, cupo.citasDia)
 
   const e = ESCENAS[n]
   const pasos = e.tipo === 'venta' ? PASOS_VENTA : PASOS_CITA
@@ -447,15 +453,15 @@ export function HeroDemo({ onRubro }: { onRubro: (rubro: string) => void }) {
         <p className="text-[11px] font-bold text-slate-400">Cupo de hoy</p>
         <div className="mt-1.5 space-y-1.5 text-[11px] font-semibold text-slate-300">
           <div>
-            <div className="flex justify-between"><span>Ventas</span><span className="tabular-nums text-white">{ventasDia}/50</span></div>
+            <div className="flex justify-between"><span>Ventas</span><span className="tabular-nums text-white">{ventasHoy}/{cupo.ventasDia}</span></div>
             <div className="mt-0.5 h-1 overflow-hidden rounded-full bg-white/10">
-              <m.div className="h-full origin-left rounded-full bg-brand-400" animate={{ scaleX: ventasDia / 50 }} transition={{ duration: 0.6, ease: SUAVE }} />
+              <m.div className="h-full origin-left rounded-full bg-brand-400" animate={{ scaleX: ventasHoy / cupo.ventasDia }} transition={{ duration: 0.6, ease: SUAVE }} />
             </div>
           </div>
           <div>
-            <div className="flex justify-between"><span>Citas</span><span className="tabular-nums text-white">{citasDia}/25</span></div>
+            <div className="flex justify-between"><span>Citas</span><span className="tabular-nums text-white">{citasHoy}/{cupo.citasDia}</span></div>
             <div className="mt-0.5 h-1 overflow-hidden rounded-full bg-white/10">
-              <m.div className="h-full origin-left rounded-full bg-brand-300" animate={{ scaleX: citasDia / 25 }} transition={{ duration: 0.6, ease: SUAVE }} />
+              <m.div className="h-full origin-left rounded-full bg-brand-300" animate={{ scaleX: citasHoy / cupo.citasDia }} transition={{ duration: 0.6, ease: SUAVE }} />
             </div>
           </div>
         </div>
