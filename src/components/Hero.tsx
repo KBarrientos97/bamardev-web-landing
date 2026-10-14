@@ -142,7 +142,7 @@ export function Hero() {
             variants={itemVariantes}
             className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-slate-400"
           >
-            {['Funciona sin internet', 'App Android y web', 'Desde Bs 75 al mes'].map((t) => (
+            {['Funciona sin internet', 'Android, iPhone y web', 'Desde Bs 75 al mes'].map((t) => (
               <li key={t} className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
                 {t}

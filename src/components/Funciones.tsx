@@ -12,8 +12,10 @@ const FUNCIONES: Funcion[] = [
   {
     emoji: '⚡',
     titulo: 'Vendé sin internet',
+    // En iPhone la venta sin señal es la de la app agregada a inicio (la web
+    // instalada, PLAN-IOS F3); en el navegador común no.
     texto:
-      'El punto de venta sigue cobrando aunque se corte la conexión; todo se sincroniza solo cuando vuelve.',
+      'En Android y en iPhone (agregada a inicio desde Safari, sin App Store) el punto de venta sigue cobrando aunque se corte la conexión; todo se sincroniza solo cuando vuelve.',
   },
   {
     emoji: '📦',

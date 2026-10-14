@@ -51,7 +51,7 @@ export function Planes() {
         </h2>
         <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-slate-600">
           Emprendedor es para arrancar: lo mismo que Básico, con{' '}
-          {cupo.ventasDia} ventas por día. Básico te pone a vender sin límite,
+          {cupo.ventasDia} ventas por día y 2 usuarios. Básico te pone a vender sin límite,
           con inventario, caja, gastos y reportes; Profesional suma delivery,
           salón con meseros, combos, varios almacenes y una segunda sucursal
           incluida.

@@ -48,9 +48,10 @@ export interface CupoPlan {
 
 /** Respaldo de los campos que el backend publica en el plan EMPRENDEDOR. */
 export const CUPO_EMPRENDEDOR: CupoPlan = {
-  ventasDia: 50,
-  // 1 cita = 2 créditos: 25 citas pesan lo mismo que 50 ventas (D26).
-  citasDia: 25,
+  // Documento estratégico v2.0 (13-oct-2026): bajó de 50 y 25 para que los
+  // días buenos ya pidan créditos y el que crece pase al Básico.
+  ventasDia: 30,
+  citasDia: 12,
   creditosPorVenta: 1,
   creditosPorCita: 2,
 }
@@ -157,7 +158,7 @@ export const PLANES: Plan[] = [
     precio: 75,
     descuentoPorPlazo: false,
     etiqueta: 'Nuevo',
-    notaPrevia: 'Todo lo de Básico, con un cupo diario',
+    notaPrevia: 'Todo lo de Básico, con un cupo diario y 2 usuarios',
     // Misma plantilla que el Básico (migración plan_emprendedor, D14): las
     // viñetas de features son las del Básico resumidas; lo propio es el cupo.
     features: (c, regalo) => [
@@ -172,8 +173,8 @@ export const PLANES: Plan[] = [
         : 'Los créditos no vencen',
       // pos · mesa_llevar · recoger · pago_qr_mixto · fiado · caja · inventario · gastos · reportes* · offline
       'Punto de venta, cobro con QR y fiado, caja, inventario, gastos, reportes y venta sin internet, igual que en Básico',
-      // usuarios · usuariosIncluidos = 4
-      'Usuarios con roles (administrador, supervisor, cajero) · hasta 4',
+      // usuarios · usuariosIncluidos = 2 (v2.0: un administrador y un cajero)
+      'Usuarios con roles (administrador, supervisor, cajero) · hasta 2',
       // sucursalesIncluidas = 1
       `1 sucursal incluida (${SUCURSAL_ADICIONAL})`,
     ],
@@ -247,10 +248,9 @@ export const PLANES: Plan[] = [
  * de `GET /licencia/paquetes-creditos`; los valores reales los edita el panel.
  */
 export const PAQUETES_CREDITOS: { creditos: number; precio: number }[] = [
-  { creditos: 20, precio: 10 },
-  { creditos: 50, precio: 20 },
-  { creditos: 100, precio: 35 },
-  { creditos: 300, precio: 90 },
+  { creditos: 20, precio: 15 },
+  { creditos: 50, precio: 30 },
+  { creditos: 100, precio: 50 },
 ]
 
 /** Créditos que se regalan al dar de alta un Emprendedor. */
@@ -259,8 +259,8 @@ export const REGALO_ALTA = 10
 /**
  * Hasta cuántas ventas por día conviene el Emprendedor frente al Básico.
  * Sale de §5 del plan: la diferencia de precio (hoy Bs 125) en el paquete más
- * barato por crédito alcanza para ~13 ventas extra por día (≈ 63, con meses
- * de 30 días). Se publica redondeado para abajo a múltiplos de 5 (hoy, 60)
+ * barato por crédito alcanza para ~8 ventas extra por día (≈ 38, con meses
+ * de 30 días). Se publica redondeado para abajo a múltiplos de 5 (hoy, 35)
  * porque es una recomendación, no un corte.
  *
  * Se calcula con los valores vigentes y no es un número fijo: los precios, el
@@ -322,7 +322,8 @@ export function comparativa(
  * Filas que no dependen del precio. Completa a propósito: una fila por cada
  * feature de la plantilla que aplica a un restaurante (el código, al lado).
  * Emprendedor tiene la misma plantilla que Básico: su columna es la misma en
- * todas las filas; lo que los separa son las de cupo de comparativa().
+ * todas las filas salvo la de usuarios; lo demás que los separa son las de
+ * cupo de comparativa().
  */
 const COMPARATIVA_FIJA: Fila[] = [
   ['Objetivo', 'Empezar', 'Vender', 'Administrar'],
@@ -345,7 +346,7 @@ const COMPARATIVA_FIJA: Fila[] = [
   ['Varios almacenes', '—', '—', 'Sí'], // multi_almacen
   ['Exportación de reportes (CSV)', '—', '—', 'Sí'], // exportacion
   ['Sucursales incluidas', '1', '1', '2'],
-  ['Usuarios incluidos', '4', '4', 'Ilimitados'],
+  ['Usuarios incluidos', '2', '4', 'Ilimitados'],
 ]
 
 /** "Básico", "Básico y Profesional", "A, B y C". */
