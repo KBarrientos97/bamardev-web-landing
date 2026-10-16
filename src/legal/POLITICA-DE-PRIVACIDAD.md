@@ -28,7 +28,7 @@ No vendemos datos ni los usamos para publicidad de terceros.
 ## 3. Con quién se comparten
 
 Solo con proveedores que necesitamos para operar: servidores y red
-(p. ej. Hetzner, Cloudflare), monitoreo de errores (PostHog), el banco que
+(p. ej. OVHcloud, Cloudflare), monitoreo de errores (PostHog), el banco que
 procesa los cobros QR y Meta (publicidad de la landing). También si lo
 exige una autoridad competente.
 
