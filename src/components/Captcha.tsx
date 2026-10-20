@@ -8,7 +8,16 @@ import { cargarTurnstile } from '../lib/turnstile'
  * Los tokens son de un solo uso: para pedir otro, el formulario lo vuelve a
  * montar con otra `key` (después de cada envío, que ya lo gastó).
  */
-export function Captcha({ siteKey, onToken }: { siteKey: string; onToken: (token: string | null) => void }) {
+export function Captcha({
+  siteKey,
+  onToken,
+  tema = 'dark',
+}: {
+  siteKey: string
+  onToken: (token: string | null) => void
+  /** La sección de contacto es oscura; el formulario del alta, claro. */
+  tema?: 'dark' | 'light'
+}) {
   const caja = useRef<HTMLDivElement>(null)
   const avisar = useRef(onToken)
   const [fallo, setFallo] = useState(false)
@@ -26,8 +35,7 @@ export function Captcha({ siteKey, onToken }: { siteKey: string; onToken: (token
         id = ts.render(caja.current, {
           sitekey: siteKey,
           language: 'es',
-          // La sección de contacto es oscura.
-          theme: 'dark',
+          theme: tema,
           // Ocupa el ancho del formulario (mínimo 300 px, ver abajo). Hasta
           // unos 50 px de menos el sobrante cae en el padding de la tarjeta
           // oscura; en un teléfono de 320 px el formulario deja ~224 px y el
@@ -47,7 +55,7 @@ export function Captcha({ siteKey, onToken }: { siteKey: string; onToken: (token
       vivo = false
       if (id) window.turnstile?.remove(id)
     }
-  }, [siteKey])
+  }, [siteKey, tema])
 
   return (
     <div className="mt-4">
@@ -56,7 +64,7 @@ export function Captcha({ siteKey, onToken }: { siteKey: string; onToken: (token
           debajo de 250 px se dibuja el compacto (arriba). */}
       <div ref={caja} aria-label="Verificación anti-robots" className="flex min-h-[65px] w-full justify-center" />
       {fallo && (
-        <p className="mt-1 text-xs text-rose-300">
+        <p className={`mt-1 text-xs ${tema === 'dark' ? 'text-rose-300' : 'text-rose-600'}`}>
           No pudimos cargar la verificación anti-robots. Revisá tu conexión (o el bloqueador de anuncios) y recargá la
           página, o escribinos por WhatsApp.
         </p>

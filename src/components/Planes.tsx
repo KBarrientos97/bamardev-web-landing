@@ -12,6 +12,7 @@ import {
 import { usePrecios } from '../data/precios'
 import { usePaquetes } from '../data/paquetes'
 import { CheckIcon } from './ui'
+import { useAbrirAlta } from './Alta'
 import { m } from 'motion/react'
 import { Aparecer, Escalonado, Numero, itemVariantes } from './animacion'
 
@@ -34,6 +35,7 @@ export function Planes() {
   const { precios, descuento, cupo, descuentoPorPlazo } = usePrecios()
   // El mismo pedido que la sección de créditos (se hace una sola vez).
   const { regaloAlta } = usePaquetes()
+  const abrirAlta = useAbrirAlta()
   const pctDescuento = Math.round(descuento * 100)
   // La marca del botón Anual sólo si algún plan la tiene: el Emprendedor paga
   // el año a precio lleno (D25) y su tarjeta no muestra descuento.
@@ -172,18 +174,41 @@ export function Planes() {
                   )}
                 </p>
 
-                <a
-                  href={linkWhatsApp(mensajeWhatsApp)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`mt-6 rounded-full px-6 py-3 text-center text-sm font-bold transition ${
-                    plan.destacado
-                      ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/30 hover:bg-brand-500'
-                      : 'border border-slate-300 text-slate-700 hover:border-brand-500 hover:text-brand-700'
-                  }`}
-                >
-                  Empezar con {plan.nombre}
-                </a>
+                {plan.codigo === 'EMPRENDEDOR' ? (
+                  // Sólo el Emprendedor se crea desde la landing (A1): la
+                  // cuenta sale sola, con 7 días de prueba. WhatsApp queda
+                  // para quien prefiere que se la armemos.
+                  <>
+                    <button
+                      type="button"
+                      onClick={abrirAlta}
+                      className="mt-6 rounded-full bg-brand-600 px-6 py-3 text-center text-sm font-bold text-white shadow-lg shadow-brand-500/30 transition hover:bg-brand-500"
+                    >
+                      Probar 7 días gratis
+                    </button>
+                    <a
+                      href={linkWhatsApp(mensajeWhatsApp)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-2 text-center text-xs font-semibold text-slate-500 underline-offset-2 hover:text-brand-700 hover:underline"
+                    >
+                      o escribinos por WhatsApp
+                    </a>
+                  </>
+                ) : (
+                  <a
+                    href={linkWhatsApp(mensajeWhatsApp)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`mt-6 rounded-full px-6 py-3 text-center text-sm font-bold transition ${
+                      plan.destacado
+                        ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/30 hover:bg-brand-500'
+                        : 'border border-slate-300 text-slate-700 hover:border-brand-500 hover:text-brand-700'
+                    }`}
+                  >
+                    Empezar con {plan.nombre}
+                  </a>
+                )}
 
                 {plan.notaPrevia && (
                   <p className="mt-7 text-xs font-extrabold uppercase tracking-widest text-brand-700">

@@ -4,6 +4,7 @@ import { linkWhatsApp } from '../data/planes'
 import { WhatsAppIcon } from './ui'
 import { Escalonado, SUAVE, itemVariantes } from './animacion'
 import { HeroDemo } from './HeroDemo'
+import { useAbrirAlta } from './Alta'
 
 /** El titular entra palabra por palabra, cada una subiendo desde abajo de su "ranura". */
 const palabra = {
@@ -44,6 +45,7 @@ export function Hero() {
   const reducir = useReducedMotion()
   // El rubro que muestra la demo del celular: el titular lo acompaña.
   const [rubro, setRubro] = useState('pollería')
+  const abrirAlta = useAbrirAlta()
 
   return (
     <section
@@ -116,15 +118,18 @@ export function Hero() {
             Sigue funcionando aunque se corte el internet.
           </m.p>
 
+          {/* La prueba del Emprendedor es lo principal; "Ver planes" queda
+              como enlace abajo, para quien quiere comparar antes. */}
           <m.div variants={itemVariantes} className="mt-8 flex flex-wrap items-center gap-4">
-            <m.a
-              href="#planes"
+            <m.button
+              type="button"
+              onClick={abrirAlta}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="rounded-full bg-brand-500 px-7 py-3.5 text-base font-bold text-white shadow-xl shadow-brand-500/30 transition-colors hover:bg-brand-400"
             >
-              Ver planes
-            </m.a>
+              Probar 7 días gratis
+            </m.button>
             <m.a
               href={linkWhatsApp('Hola BamarDev, quiero ver el sistema funcionando en mi negocio.')}
               target="_blank"
@@ -137,6 +142,13 @@ export function Hero() {
               Pedir una demo
             </m.a>
           </m.div>
+
+          <m.p variants={itemVariantes} className="mt-4 text-sm text-slate-400">
+            Plan Emprendedor, sin pagar nada por adelantado.{' '}
+            <a href="#planes" className="font-semibold text-brand-300 underline-offset-2 hover:underline">
+              Ver todos los planes →
+            </a>
+          </m.p>
 
           <m.ul
             variants={itemVariantes}
