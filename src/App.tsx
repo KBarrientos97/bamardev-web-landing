@@ -7,7 +7,6 @@ import { Planes } from './components/Planes'
 import { PaquetesCreditos } from './components/PaquetesCreditos'
 import { Comparativa } from './components/Comparativa'
 import { Cierre, Footer } from './components/Cierre'
-import { AltaProvider } from './components/Alta'
 
 /** Barrita verde arriba que muestra cuánto de la página se recorrió. */
 function Progreso() {
@@ -30,21 +29,18 @@ function App() {
   return (
     <LazyMotion features={domMax} strict>
       <MotionConfig reducedMotion="user">
-        {/* El alta de prueba la abren el hero y la tarjeta del Emprendedor. */}
-        <AltaProvider>
-          <Progreso />
-          <Nav />
-          <main>
-            <Hero />
-            <Rubros />
-            <Funciones />
-            <Planes />
-            <PaquetesCreditos />
-            <Comparativa />
-            <Cierre />
-          </main>
-          <Footer />
-        </AltaProvider>
+        <Progreso />
+        <Nav />
+        <main>
+          <Hero />
+          <Rubros />
+          <Funciones />
+          <Planes />
+          <PaquetesCreditos />
+          <Comparativa />
+          <Cierre />
+        </main>
+        <Footer />
       </MotionConfig>
     </LazyMotion>
   )

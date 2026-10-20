@@ -11,7 +11,7 @@
 import { API_BASE } from '../data/precios'
 
 export const API_ALTA_URL = `${API_BASE}/publico/alta`
-export const API_RUBROS_URL = `${API_BASE}/rubros`
+export const API_OPCIONES_URL = `${API_BASE}/publico/alta/opciones`
 
 /**
  * La app web del negocio de este ambiente: la landing de QA crea la cuenta en
@@ -20,36 +20,85 @@ export const API_RUBROS_URL = `${API_BASE}/rubros`
  */
 export const APP_URL = (import.meta.env.VITE_APP_URL?.trim() || 'https://app-qa.bamardev.com').replace(/\/+$/, '')
 
+/** La dirección de la app tal como se la dice a una persona: "app.bamardev.com". */
+export const APP_HOST = APP_URL.replace(/^https?:\/\//, '')
+
 /**
- * El código va en el fragmento (#), no en la query: el navegador no lo manda
- * a ningún servidor, así que no queda en logs de Cloudflare ni del backend.
- * Igual es de un solo uso y vence a los 60 segundos.
+ * "Abrir mi sistema" (B3). El código de entrada va en el fragmento (#), no en
+ * la query: el navegador no lo manda a ningún servidor, así que no queda en
+ * logs de Cloudflare ni del backend. Es de un solo uso y vence a los 10
+ * minutos (B4). El alias sí va en la query (B5): no es secreto, y si el
+ * código ya venció la app igual le deja el negocio escrito en el login.
  */
-export function urlEntrar(codigoEntrada: string): string {
-  return `${APP_URL}/entrar#c=${encodeURIComponent(codigoEntrada)}`
+export function urlEntrar(alias: string, codigoEntrada: string): string {
+  return `${APP_URL}/entrar?negocio=${encodeURIComponent(alias)}#c=${encodeURIComponent(codigoEntrada)}`
 }
 
-/** Lo que publica `GET /rubros` y el formulario usa (el resto se ignora). */
-export interface RubroApi {
+/** Un rubro que se puede crear desde la landing y el color que trae (B1). */
+export interface RubroAlta {
   rubro: string
   nombre: string
-  estado: string
+  temaClave: string
+}
+
+/** Una paleta del negocio, con un color de muestra en hex para el botón. */
+export interface PaletaAlta {
+  clave: string
+  nombre: string
+  color: string
+}
+
+export interface OpcionesAlta {
+  rubros: RubroAlta[]
+  paletas: PaletaAlta[]
+}
+
+const esTexto = (v: unknown): v is string => typeof v === 'string' && v.trim() !== ''
+
+/**
+ * Lo que publica `GET /publico/alta/opciones`, sin confiar en la forma: lo
+ * que no tenga los campos se descarta. El backend ya manda sólo los rubros
+ * DISPONIBLE (rechaza el alta de uno en desarrollo) y las paletas válidas.
+ * Un color que no sea hex no se pinta: CSS lo recibe tal cual.
+ */
+export function leerOpciones(cuerpo: unknown): OpcionesAlta {
+  const c = (cuerpo && typeof cuerpo === 'object' ? cuerpo : {}) as Record<string, unknown>
+  const rubros = (Array.isArray(c.rubros) ? c.rubros : []).filter(
+    (r): r is RubroAlta =>
+      !!r && typeof r === 'object' && esTexto((r as RubroAlta).rubro) && esTexto((r as RubroAlta).nombre),
+  )
+  const paletas = (Array.isArray(c.paletas) ? c.paletas : []).filter(
+    (p): p is PaletaAlta =>
+      !!p &&
+      typeof p === 'object' &&
+      esTexto((p as PaletaAlta).clave) &&
+      esTexto((p as PaletaAlta).nombre) &&
+      /^#[0-9a-f]{3,8}$/i.test(String((p as PaletaAlta).color)),
+  )
+  return {
+    rubros: rubros.map((r) => ({ rubro: r.rubro, nombre: r.nombre, temaClave: esTexto(r.temaClave) ? r.temaClave : '' })),
+    paletas: paletas.map((p) => ({ clave: p.clave, nombre: p.nombre, color: p.color })),
+  }
 }
 
 /**
- * Sólo los DISPONIBLE: el backend rechaza el alta de un rubro en desarrollo.
- * Los de belleza en desarrollo siguen ofreciéndose en el formulario de
- * contacto, que junta interesados sin crear nada.
+ * El código del negocio que va a salir de este nombre (B3): la misma regla
+ * que `slugAlias` del backend (alta-web.service.ts) y el slug del panel.
+ * Minúsculas, sin acentos (la ñ queda n), sólo letras, números y guiones, sin
+ * guiones en las puntas y hasta 30. Si ya existe, el backend le agrega un
+ * número: por eso la pantalla final muestra el que devolvió el servidor.
  */
-export function rubrosDisponibles(lista: unknown): RubroApi[] {
-  if (!Array.isArray(lista)) return []
-  return lista.filter(
-    (r): r is RubroApi =>
-      !!r &&
-      typeof r === 'object' &&
-      typeof (r as RubroApi).rubro === 'string' &&
-      typeof (r as RubroApi).nombre === 'string' &&
-      (r as RubroApi).estado === 'DISPONIBLE',
+export const LARGO_ALIAS = 30
+
+export function slugAlias(texto: string): string {
+  return (
+    texto
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, LARGO_ALIAS) || 'negocio'
   )
 }
 
@@ -93,6 +142,32 @@ export function validarAlta(d: DatosAlta): Partial<Record<CampoAlta, string>> {
   else if (d.password.length > 72) errores.password = 'La contraseña puede tener hasta 72 caracteres.'
   if (!d.aceptaTerminos) errores.aceptaTerminos = 'Para crear la cuenta tenés que aceptar los términos.'
   return errores
+}
+
+/** Los pasos del asistente de /empezar (B2). */
+export type Paso = 1 | 2 | 3
+
+/** Qué campos pide cada paso, en el orden de la pantalla (el foco va al primero con error). */
+export const CAMPOS_DEL_PASO: Record<Paso, CampoAlta[]> = {
+  1: ['nombreNegocio', 'rubro'],
+  2: ['nombre', 'whatsapp'],
+  3: ['password', 'aceptaTerminos'],
+}
+
+/** Los errores de un paso solo: para avanzar alcanza con que ése esté bien. */
+export function erroresDelPaso(paso: Paso, d: DatosAlta): Partial<Record<CampoAlta, string>> {
+  const todos = validarAlta(d)
+  const delPaso: Partial<Record<CampoAlta, string>> = {}
+  for (const c of CAMPOS_DEL_PASO[paso]) if (todos[c]) delPaso[c] = todos[c]
+  return delPaso
+}
+
+/**
+ * La contraseña en la pantalla final (B3): puntos y los últimos 3, para que
+ * la reconozca sin que quede a la vista de quien mira por encima del hombro.
+ */
+export function passwordOculta(password: string): string {
+  return '•••••••' + password.slice(-3)
 }
 
 /** Un bloque del adelanto de los términos: un título o un párrafo. */

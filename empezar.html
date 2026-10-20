@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#020617" />
+    <!--
+      Página aparte y no una ruta de la SPA (B2): la landing no tiene router, y
+      así Cloudflare Pages sirve este archivo en /empezar (como encuesta.html
+      en /encuesta), también al recargar. El link además se comparte por
+      WhatsApp, que arma la vista previa con este HTML sin JavaScript.
+    -->
+    <title>Probá BamarDev 7 días gratis · Plan Emprendedor</title>
+    <meta
+      name="description"
+      content="Creá la cuenta de tu negocio en 2 minutos y probá el plan Emprendedor de BamarDev 7 días gratis, sin pagar nada por adelantado."
+    />
+    <meta property="og:title" content="Probá BamarDev 7 días gratis" />
+    <meta
+      property="og:description"
+      content="Punto de venta, caja y reportes para tu negocio. Creá tu cuenta en 2 minutos, sin pagar nada por adelantado."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bamardev.com/empezar" />
+    <meta property="og:image" content="https://bamardev.com/logo-400.png" />
+    <link rel="canonical" href="https://bamardev.com/empezar" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/empezar/main.tsx"></script>
+  </body>
+</html>

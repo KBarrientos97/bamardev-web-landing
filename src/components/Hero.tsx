@@ -4,7 +4,6 @@ import { linkWhatsApp } from '../data/planes'
 import { WhatsAppIcon } from './ui'
 import { Escalonado, SUAVE, itemVariantes } from './animacion'
 import { HeroDemo } from './HeroDemo'
-import { useAbrirAlta } from './Alta'
 
 /** El titular entra palabra por palabra, cada una subiendo desde abajo de su "ranura". */
 const palabra = {
@@ -45,7 +44,6 @@ export function Hero() {
   const reducir = useReducedMotion()
   // El rubro que muestra la demo del celular: el titular lo acompaña.
   const [rubro, setRubro] = useState('pollería')
-  const abrirAlta = useAbrirAlta()
 
   return (
     <section
@@ -119,17 +117,17 @@ export function Hero() {
           </m.p>
 
           {/* La prueba del Emprendedor es lo principal; "Ver planes" queda
-              como enlace abajo, para quien quiere comparar antes. */}
+              como enlace abajo, para quien quiere comparar antes. El alta
+              vive en su propia página (/empezar, B2). */}
           <m.div variants={itemVariantes} className="mt-8 flex flex-wrap items-center gap-4">
-            <m.button
-              type="button"
-              onClick={abrirAlta}
+            <m.a
+              href="/empezar"
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="rounded-full bg-brand-500 px-7 py-3.5 text-base font-bold text-white shadow-xl shadow-brand-500/30 transition-colors hover:bg-brand-400"
             >
               Probar 7 días gratis
-            </m.button>
+            </m.a>
             <m.a
               href={linkWhatsApp('Hola BamarDev, quiero ver el sistema funcionando en mi negocio.')}
               target="_blank"
