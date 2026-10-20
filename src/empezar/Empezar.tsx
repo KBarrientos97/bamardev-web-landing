@@ -4,7 +4,6 @@ import { siteKeyTurnstile } from '../lib/turnstile'
 import {
   API_ALTA_URL,
   API_OPCIONES_URL,
-  APP_HOST,
   APP_URL,
   CAMPOS_DEL_PASO,
   adelantoLegal,
@@ -872,11 +871,14 @@ function Listo({ creada }: { creada: Creada }) {
           <span className="tracking-wider">{creada.oculta}</span>
           <span className="sr-only"> (sólo se muestran los últimos 3 caracteres)</span>
         </Dato>
-        <Dato titulo="Dirección">{APP_HOST}</Dato>
       </dl>
 
+      {/* En otra pestaña (pedido del dueño): esta queda con sus datos a la
+          vista para anotarlos mientras ya está adentro del sistema. */}
       <a
         href={urlEntrar(creada.alias, creada.codigoEntrada)}
+        target="_blank"
+        rel="noopener noreferrer"
         className={`mt-6 flex w-full items-center justify-center gap-2 py-4 text-lg ${PRIMARIO}`}
       >
         Abrir mi sistema
