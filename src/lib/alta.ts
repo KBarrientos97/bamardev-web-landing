@@ -20,14 +20,10 @@ export const API_OPCIONES_URL = `${API_BASE}/publico/alta/opciones`
  */
 export const APP_URL = (import.meta.env.VITE_APP_URL?.trim() || 'https://app-qa.bamardev.com').replace(/\/+$/, '')
 
-/** La dirección de la app tal como se la dice a una persona: "app.bamardev.com". */
-export const APP_HOST = APP_URL.replace(/^https?:\/\//, '')
-
 /**
  * "Abrir mi sistema" (B3): siempre al login, con el código del negocio ya
  * escrito (B5). El usuario y la contraseña los escribe él: el dueño prefiere
- * que aprenda a entrar desde el primer día (20-oct) antes que entrar directo
- * con el código de entrada, que el backend sigue emitiendo pero acá no se usa.
+ * que aprenda a entrar desde el primer día (B6, 20-oct).
  */
 export function urlLogin(alias: string): string {
   return `${APP_URL}/?negocio=${encodeURIComponent(alias)}`

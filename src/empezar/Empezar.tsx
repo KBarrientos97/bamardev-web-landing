@@ -115,7 +115,6 @@ interface Aviso {
 /** Lo que queda en pantalla con la cuenta creada. De la contraseña, sólo la versión oculta. */
 interface Creada {
   alias: string
-  codigoEntrada: string
   oculta: string
 }
 
@@ -296,7 +295,6 @@ function Asistente() {
       })
       const cuerpo = (await res.json().catch(() => null)) as {
         codigo?: string
-        codigoEntrada?: string
         alias?: string
         message?: string | string[]
       } | null
@@ -310,7 +308,7 @@ function Asistente() {
         if (cuerpo?.alias) {
           // Sin saltar sola a la app (B3): primero ve con qué va a entrar, y
           // con eso a la vista escribe sus datos en el login.
-          setCreada({ alias: cuerpo.alias, codigoEntrada: cuerpo.codigoEntrada ?? '', oculta: passwordOculta(datos.password) })
+          setCreada({ alias: cuerpo.alias, oculta: passwordOculta(datos.password) })
           // La contraseña no se queda en memoria más de lo necesario.
           setDatos((d) => ({ ...d, password: '' }))
           setEstado('listo')
