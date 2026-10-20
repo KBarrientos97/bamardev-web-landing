@@ -12,7 +12,7 @@ import {
   normalizarWhatsApp,
   passwordOculta,
   slugAlias,
-  urlEntrar,
+  urlLogin,
   validarAlta,
   type CampoAlta,
   type DatosAlta,
@@ -307,10 +307,10 @@ function Asistente() {
         return
       }
       if (res.ok) {
-        if (cuerpo?.codigoEntrada && cuerpo.alias) {
-          // Sin saltar sola a la app (B3): primero ve con qué va a entrar la
-          // próxima vez. El código vale 10 minutos (B4), tiempo de sobra.
-          setCreada({ alias: cuerpo.alias, codigoEntrada: cuerpo.codigoEntrada, oculta: passwordOculta(datos.password) })
+        if (cuerpo?.alias) {
+          // Sin saltar sola a la app (B3): primero ve con qué va a entrar, y
+          // con eso a la vista escribe sus datos en el login.
+          setCreada({ alias: cuerpo.alias, codigoEntrada: cuerpo.codigoEntrada ?? '', oculta: passwordOculta(datos.password) })
           // La contraseña no se queda en memoria más de lo necesario.
           setDatos((d) => ({ ...d, password: '' }))
           setEstado('listo')
@@ -876,7 +876,7 @@ function Listo({ creada }: { creada: Creada }) {
       {/* En otra pestaña (pedido del dueño): esta queda con sus datos a la
           vista para anotarlos mientras ya está adentro del sistema. */}
       <a
-        href={urlEntrar(creada.alias, creada.codigoEntrada)}
+        href={urlLogin(creada.alias)}
         target="_blank"
         rel="noopener noreferrer"
         className={`mt-6 flex w-full items-center justify-center gap-2 py-4 text-lg ${PRIMARIO}`}
@@ -902,8 +902,8 @@ function Listo({ creada }: { creada: Creada }) {
         {copiado === 'codigo' ? 'Código copiado.' : copiado === 'datos' ? 'Datos copiados, sin la contraseña.' : ''}
       </p>
       <p className="mt-4 text-center text-xs leading-relaxed text-slate-500">
-        «Abrir mi sistema» te deja entrar sin escribir nada durante 10 minutos. Después, entrás con estos datos. La
-        contraseña no la copiamos: anotala vos.
+        «Abrir mi sistema» te lleva al ingreso con el código de tu negocio ya puesto: escribí el usuario admin y tu
+        contraseña. La contraseña no la copiamos: anotala vos.
       </p>
     </div>
   )

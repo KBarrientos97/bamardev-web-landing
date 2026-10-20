@@ -24,14 +24,13 @@ export const APP_URL = (import.meta.env.VITE_APP_URL?.trim() || 'https://app-qa.
 export const APP_HOST = APP_URL.replace(/^https?:\/\//, '')
 
 /**
- * "Abrir mi sistema" (B3). El código de entrada va en el fragmento (#), no en
- * la query: el navegador no lo manda a ningún servidor, así que no queda en
- * logs de Cloudflare ni del backend. Es de un solo uso y vence a los 10
- * minutos (B4). El alias sí va en la query (B5): no es secreto, y si el
- * código ya venció la app igual le deja el negocio escrito en el login.
+ * "Abrir mi sistema" (B3): siempre al login, con el código del negocio ya
+ * escrito (B5). El usuario y la contraseña los escribe él: el dueño prefiere
+ * que aprenda a entrar desde el primer día (20-oct) antes que entrar directo
+ * con el código de entrada, que el backend sigue emitiendo pero acá no se usa.
  */
-export function urlEntrar(alias: string, codigoEntrada: string): string {
-  return `${APP_URL}/entrar?negocio=${encodeURIComponent(alias)}#c=${encodeURIComponent(codigoEntrada)}`
+export function urlLogin(alias: string): string {
+  return `${APP_URL}/?negocio=${encodeURIComponent(alias)}`
 }
 
 /** Un rubro que se puede crear desde la landing y el color que trae (B1). */
