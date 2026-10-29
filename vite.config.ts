@@ -14,9 +14,10 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), tailwindcss()],
     build: {
       rollupOptions: {
-        // Una página por ruta: la landing y la encuesta. Cloudflare Pages
-        // sirve `encuesta.html` en /encuesta (y así las demás) sin configurar
-        // nada.
+        // Una página por ruta: la landing, la encuesta y el alta de prueba
+        // (/empezar, B2). Cloudflare Pages sirve `encuesta.html` en /encuesta
+        // (y así las demás) sin configurar nada, también al recargar; el
+        // servidor de Vite hace lo mismo en desarrollo.
         //
         // Los textos legales NO se publican hasta completarlos (D1): tienen
         // [MARCADORES] sin llenar. Su código sigue en el repo (terminos.html,
@@ -26,6 +27,7 @@ export default defineConfig(({ mode }) => {
         input: {
           main: resolve(__dirname, 'index.html'),
           encuesta: resolve(__dirname, 'encuesta.html'),
+          empezar: resolve(__dirname, 'empezar.html'),
           // terminos: resolve(__dirname, 'terminos.html'),
           // privacidad: resolve(__dirname, 'privacidad.html'),
         },

@@ -116,14 +116,17 @@ export function Hero() {
             Sigue funcionando aunque se corte el internet.
           </m.p>
 
+          {/* La prueba del Emprendedor es lo principal; "Ver planes" queda
+              como enlace abajo, para quien quiere comparar antes. El alta
+              vive en su propia página (/empezar, B2). */}
           <m.div variants={itemVariantes} className="mt-8 flex flex-wrap items-center gap-4">
             <m.a
-              href="#planes"
+              href="/empezar"
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="rounded-full bg-brand-500 px-7 py-3.5 text-base font-bold text-white shadow-xl shadow-brand-500/30 transition-colors hover:bg-brand-400"
             >
-              Ver planes
+              Probar 7 días gratis
             </m.a>
             <m.a
               href={linkWhatsApp('Hola BamarDev, quiero ver el sistema funcionando en mi negocio.')}
@@ -137,6 +140,13 @@ export function Hero() {
               Pedir una demo
             </m.a>
           </m.div>
+
+          <m.p variants={itemVariantes} className="mt-4 text-sm text-slate-400">
+            Plan Emprendedor, sin pagar nada por adelantado.{' '}
+            <a href="#planes" className="font-semibold text-brand-300 underline-offset-2 hover:underline">
+              Ver todos los planes →
+            </a>
+          </m.p>
 
           <m.ul
             variants={itemVariantes}
