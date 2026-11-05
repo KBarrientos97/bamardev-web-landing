@@ -11,7 +11,8 @@ de licencias (verde `#10b981`, logo robot, Plus Jakarta Sans).
 |---|---|
 | Producción | https://bamardev.com |
 | Encuesta Plan Emprendedor | https://bamardev.com/encuesta |
-| QA | https://qa.bamardev-landing.pages.dev (y `/encuesta`) |
+| Cuestionario de necesidades | https://bamardev.com/necesidades?k=<clave> (el link lo arma el panel) |
+| QA | https://qa.bamardev-landing.pages.dev (y `/encuesta`, `/necesidades`) |
 | Alias Pages | https://bamardev-landing.pages.dev |
 
 ## Desarrollo
@@ -38,6 +39,27 @@ ejecutar JavaScript, así que necesita su propio título e imagen.
   público) y se leen en el panel de licencias → **Encuesta**.
 - `?origen=facebook` (o `whatsapp`, `visita`…) en el link marca por dónde llegó
   cada respuesta.
+
+## Cuestionario de necesidades (levantamiento de requerimientos)
+
+Página aparte (`necesidades.html` → `/necesidades`), sin usuario ni contraseña,
+para que un cliente (hoy, la Clínica Poli Central) marque qué módulos necesita
+y BamarDev pueda cotizar. No se enlaza desde la landing y no se indexa.
+
+- **El link lleva una clave larga**: `/necesidades?k=<clave>`. La clave abre UN
+  cuestionario; sin ella la página avisa que falta. Se crea, copia, renueva o
+  revoca en el panel de licencias → **Levantamientos**.
+- **El cuestionario no está en esta página**: lo manda el backend
+  (`bamardev-backend/src/levantamiento/levantamiento.catalogo.ts`) junto con lo
+  ya respondido. Agregar o cambiar una pregunta es tocar ese archivo, no esta
+  landing.
+- **Se guarda solo** (`PATCH /levantamientos/publico/:token`, cada vez que se deja
+  de escribir) y se puede seguir en otro momento con el mismo link. Si se corta
+  internet, lo pendiente queda en el navegador (`localStorage`) y se reenvía solo
+  al volver la conexión ([useAutoguardado.ts](src/necesidades/useAutoguardado.ts)).
+- Al enviar (`POST …/enviar`) queda de sólo lectura hasta que BamarDev lo
+  reabra desde el panel.
+- No hay ningún campo para datos de pacientes, y la página lo advierte.
 
 ## Despliegue
 
