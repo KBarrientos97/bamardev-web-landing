@@ -28,6 +28,11 @@ export default defineConfig(({ mode }) => {
           main: resolve(__dirname, 'index.html'),
           encuesta: resolve(__dirname, 'encuesta.html'),
           empezar: resolve(__dirname, 'empezar.html'),
+          // Cuestionario de necesidades (levantamiento de requerimientos) que
+          // llena un cliente desde un link con clave; las respuestas se leen
+          // en el panel de licencias → Levantamientos. No se enlaza desde la
+          // landing a propósito.
+          necesidades: resolve(__dirname, 'necesidades.html'),
           // terminos: resolve(__dirname, 'terminos.html'),
           // privacidad: resolve(__dirname, 'privacidad.html'),
         },

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/logo-192.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ecfdf5" />
+    <!--
+      Página aparte, como /encuesta: el enlace se comparte por WhatsApp, que
+      arma la vista previa leyendo este HTML sin ejecutar JavaScript.
+
+      El enlace lleva una clave larga (?k=…) que abre UN cuestionario: no hay
+      usuario ni contraseña. Por eso no se indexa en buscadores.
+    -->
+    <title>Cuestionario de necesidades · BamarDev</title>
+    <meta
+      name="description"
+      content="Cuéntenos qué necesita su clínica. Se guarda solo y puede continuar cuando quiera."
+    />
+    <meta property="og:title" content="Cuestionario de necesidades · BamarDev" />
+    <meta
+      property="og:description"
+      content="Marque qué módulos necesita su clínica. Se guarda solo y puede continuar cuando quiera, sin usuario ni contraseña."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://bamardev.com/logo-400.png" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/necesidades/main.tsx"></script>
+  </body>
+</html>
