@@ -34,8 +34,18 @@ type Pestana = (typeof PESTANAS)[number]['id']
 /** /descargas#tv abre directo la pestaña de TV (se puede compartir ese link). */
 const pestanaInicial = (): Pestana => (location.hash === '#tv' ? 'tv' : 'app')
 
-const fechaLarga = (iso: string) =>
-  new Date(iso).toLocaleDateString('es-BO', { day: 'numeric', month: 'long', year: 'numeric' })
+/**
+ * Fecha y hora del despliegue. A veces salen varias versiones el mismo día, y
+ * la hora es lo que las distingue. Hora de Bolivia fija (no la del visitante)
+ * para que quien la lea y el equipo de soporte hablen de la misma hora.
+ */
+const ZONA = 'America/La_Paz'
+const fechaHora = (iso: string) => {
+  const d = new Date(iso)
+  const fecha = d.toLocaleDateString('es-BO', { day: 'numeric', month: 'long', year: 'numeric', timeZone: ZONA })
+  const hora = d.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: ZONA })
+  return `${fecha} · ${hora}`
+}
 
 const megas = (bytes: number) => `${(bytes / 1024 / 1024).toFixed(1).replace('.', ',')} MB`
 
@@ -167,7 +177,7 @@ function PanelApp({ estado }: { estado: Estado }) {
                     )}
                   </p>
                   <p className="mt-0.5 text-sm text-slate-500">
-                    {fechaLarga(v.fecha)} · {megas(v.tamano)}
+                    {fechaHora(v.fecha)} · {megas(v.tamano)}
                   </p>
                 </div>
                 <a
@@ -193,6 +203,7 @@ function PanelApp({ estado }: { estado: Estado }) {
           ))}
         </ul>
       )}
+      {estado.tipo === 'listo' && <p className="mt-3 px-1 text-xs text-slate-400">Fecha y hora de Bolivia (GMT-4).</p>}
 
       <section className="mt-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
         <h2 className="font-extrabold text-slate-900">Antes de instalar</h2>
