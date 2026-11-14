@@ -28,6 +28,8 @@ export default defineConfig(({ mode }) => {
           main: resolve(__dirname, 'index.html'),
           encuesta: resolve(__dirname, 'encuesta.html'),
           empezar: resolve(__dirname, 'empezar.html'),
+          // «Descargar Mobile»: los últimos 3 APK, leídos de versiones.json en R2.
+          descargas: resolve(__dirname, 'descargas.html'),
           // Cuestionario de necesidades (levantamiento de requerimientos) que
           // llena un cliente desde un link con clave; las respuestas se leen
           // en el panel de licencias → Levantamientos. No se enlaza desde la
