@@ -8,7 +8,7 @@ const LINKS = [
   { href: '#funciones', label: 'Funciones' },
   { href: '#planes', label: 'Planes' },
   { href: '#contacto', label: 'Contacto' },
-  { href: '/descargas', label: 'Descargar Mobile' },
+  { href: '/descargas', label: 'Descargas' },
 ]
 
 export function Nav() {

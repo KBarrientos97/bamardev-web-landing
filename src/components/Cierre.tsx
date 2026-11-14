@@ -65,7 +65,7 @@ export function Footer() {
             </a>
             {/* En el celular el menú de arriba no muestra los links: acá sí se ve. */}
             <a href="/descargas" className="text-sm font-bold text-slate-600 hover:text-brand-600">
-              Descargar Mobile (Android)
+              Descargas
             </a>
           </div>
         </div>
