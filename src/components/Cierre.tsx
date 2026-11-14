@@ -54,14 +54,20 @@ export function Footer() {
               BamarDev <span className="font-medium text-slate-500">Technology</span>
             </span>
           </div>
-          <a
-            href={linkWhatsApp('Hola BamarDev, tengo una consulta.')}
-            target="_blank"
-            rel="noreferrer"
-            className="text-sm font-bold text-brand-700 hover:text-brand-600"
-          >
-            WhatsApp {WHATSAPP_DISPLAY}
-          </a>
+          <div className="flex flex-col items-start gap-2 sm:items-end">
+            <a
+              href={linkWhatsApp('Hola BamarDev, tengo una consulta.')}
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-bold text-brand-700 hover:text-brand-600"
+            >
+              WhatsApp {WHATSAPP_DISPLAY}
+            </a>
+            {/* En el celular el menú de arriba no muestra los links: acá sí se ve. */}
+            <a href="/descargas" className="text-sm font-bold text-slate-600 hover:text-brand-600">
+              Descargar Mobile (Android)
+            </a>
+          </div>
         </div>
         <p className="mt-8 max-w-4xl text-xs leading-relaxed text-slate-400">
           {notaLegal(descuento, cupo, descuentoPorPlazo)}

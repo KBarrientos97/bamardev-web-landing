@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#020617" />
+    <!--
+      Página aparte y no una sección de la SPA: la landing no tiene router, y así
+      Cloudflare Pages sirve este archivo en /descargas (como /empezar). El link se
+      comparte por WhatsApp, que arma la vista previa con este HTML sin JavaScript.
+    -->
+    <title>Descargar la app para Android · BamarDev</title>
+    <meta
+      name="description"
+      content="Descargá la app de BamarDev para Android: la última versión y las dos anteriores, con su fecha y tamaño."
+    />
+    <meta property="og:title" content="Descargar la app para Android · BamarDev" />
+    <meta
+      property="og:description"
+      content="Punto de venta, caja y reportes en tu celular. Bajá la última versión de BamarDev."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bamardev.com/descargas" />
+    <meta property="og:image" content="https://bamardev.com/logo-400.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/descargas/main.tsx"></script>
+  </body>
+</html>
