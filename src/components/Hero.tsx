@@ -1,7 +1,6 @@
 import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { Fragment, useEffect, useState, type PointerEvent } from 'react'
 import { linkWhatsApp } from '../data/planes'
-import { WhatsAppIcon } from './ui'
 import { Escalonado, SUAVE, itemVariantes } from './animacion'
 import { HeroDemoB } from './HeroDemoB'
 
@@ -192,14 +191,9 @@ export function Hero() {
             </span>
           </m.h1>
 
-          <m.p variants={itemVariantes} className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300">
-            Vendé, cobrá con QR, agendá y controlá tu caja desde el celular.
-            Sigue funcionando aunque se corte el internet.
-          </m.p>
-
           {/* Un solo botón principal: la prueba del Emprendedor (el alta vive en su
-              propia página, /empezar, B2). La demo por WhatsApp y los planes quedan
-              como enlaces de apoyo, y el WhatsApp además flota en toda la página. */}
+              propia página, /empezar, B2). Los planes están en el menú y el WhatsApp
+              flota en toda la página: por eso no hay más enlaces acá. */}
           <m.div variants={itemVariantes} className="mt-8">
             <m.a
               href="/empezar"
@@ -209,23 +203,6 @@ export function Hero() {
             >
               Probar 7 días gratis
             </m.a>
-          </m.div>
-
-          <m.div variants={itemVariantes} className="mt-4">
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold">
-              <a
-                href={linkWhatsApp('Hola BamarDev, quiero ver el sistema funcionando en mi negocio.')}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-brand-300 underline-offset-2 hover:underline"
-              >
-                <WhatsAppIcon className="h-4 w-4" />
-                Pedir una demo
-              </a>
-              <a href="#planes" className="whitespace-nowrap text-brand-300 underline-offset-2 hover:underline">
-                Ver los planes →
-              </a>
-            </div>
           </m.div>
 
           {/* El sistema se arma por rubro, pero lo que no exista también se construye */}
