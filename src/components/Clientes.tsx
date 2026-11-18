@@ -29,8 +29,9 @@ const CLIENTES: Cliente[] = [
 /*
   La cinta avanza UNA tarjeta cada CADA_MS y vuelve a empezar sin que se note: la
   lista se repite varias veces y, al completar una vuelta (N pasos), salta sin
-  animación al inicio, que se ve idéntico. Cinco repeticiones alcanzan para
-  cubrir hasta una pantalla ultra ancha más una vuelta completa.
+  animación al inicio, que se ve idéntico. En escritorio la ventana mide a lo sumo
+  max-w-5xl (menos que una vuelta de tarjetas): en pantallas grandes no se ve el
+  mismo negocio dos veces a la vez, sólo los existentes uno tras otro.
 */
 const REPETICIONES = 5
 const FILA = Array.from({ length: REPETICIONES }, () => CLIENTES).flat()
@@ -123,7 +124,7 @@ function CintaEscritorio() {
   return (
     // Con "reducir movimiento" no se desliza solo: queda quieta y se mueve a mano.
     <div
-      className="relative mt-10 overflow-hidden py-3 motion-reduce:overflow-x-auto [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)]"
+      className="relative mx-auto mt-10 max-w-5xl overflow-hidden py-3 motion-reduce:overflow-x-auto [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)]"
       onMouseEnter={() => setPausa(true)}
       onMouseLeave={() => setPausa(false)}
       onFocus={() => setPausa(true)}

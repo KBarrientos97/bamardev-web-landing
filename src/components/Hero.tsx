@@ -1,5 +1,5 @@
 import { AnimatePresence, m, useReducedMotion } from 'motion/react'
-import { Fragment, useState, type PointerEvent } from 'react'
+import { Fragment, useEffect, useState, type PointerEvent } from 'react'
 import { linkWhatsApp } from '../data/planes'
 import { WhatsAppIcon } from './ui'
 import { Escalonado, SUAVE, itemVariantes } from './animacion'
@@ -80,10 +80,35 @@ const PLATAFORMAS = [
   },
 ]
 
+/**
+ * Los negocios que ya trabajan con BamarDev, uno por segundo. Antes la palabra seguía a la
+ * demo del celular (cambiaba cada ~8 s) y la gente leía «sólo para pollerías»: así se ven
+ * todos los rubros en lo que tarda en leerse el titular. La última cierra con «a medida».
+ */
+const NEGOCIOS = [
+  'restaurante',
+  'farmacia',
+  'ferretería',
+  'minimarket',
+  'billar',
+  'peluquería',
+  'barbería',
+  'spa',
+  'academia',
+  'negocio a medida',
+]
+const CADA_MS = 1100
+
 export function Hero() {
   const reducir = useReducedMotion()
-  // El rubro que muestra la demo del celular: el titular lo acompaña.
-  const [rubro, setRubro] = useState('pollería')
+  const [i, setI] = useState(0)
+  // Con «reducir movimiento» el titular queda quieto en la palabra más general.
+  useEffect(() => {
+    if (reducir) return
+    const t = setInterval(() => setI((n) => (n + 1) % NEGOCIOS.length), CADA_MS)
+    return () => clearInterval(t)
+  }, [reducir])
+  const rubro = reducir ? 'negocio' : NEGOCIOS[i]
 
   return (
     <section
@@ -120,35 +145,34 @@ export function Hero() {
             variants={itemVariantes}
             className="inline-flex items-center gap-2 rounded-full border border-brand-400/30 bg-brand-500/10 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-brand-300 sm:text-xs sm:tracking-widest"
           >
-            Restaurantes · Comercios · Farmacias · Belleza
+            Para todo tipo de negocio · Y software a medida
           </m.span>
 
           <m.h1
             variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
+            aria-label="El sistema que maneja tu negocio y te dice cuánto ganás."
             className="mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl"
           >
-            <Palabras texto="El sistema que maneja tu" />
-            {/* El rubro cambia con la demo: la palabra vieja sube y sale, la
-                nueva entra desde abajo; el ancho se acomoda solo (layout). */}
-            <m.span
-              layout
-              transition={{ layout: { duration: 0.4, ease: SUAVE } }}
-              className="relative inline-flex overflow-hidden pb-[0.12em] -mb-[0.12em] align-bottom"
-            >
-              <AnimatePresence mode="popLayout" initial={false}>
-                <m.span
-                  key={rubro}
-                  initial={{ y: '100%', opacity: 0 }}
-                  animate={{ y: '0%', opacity: 1 }}
-                  exit={{ y: '-100%', opacity: 0 }}
-                  transition={{ duration: 0.5, ease: SUAVE }}
-                  className="inline-block whitespace-nowrap bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text text-transparent"
-                >
-                  {rubro}
-                </m.span>
-              </AnimatePresence>
-            </m.span>{' '}
-            <Palabras texto="y te dice cuánto ganás." />
+            <span aria-hidden>
+              <Palabras texto="El sistema que maneja tu" />
+              {/* La palabra va en su propia línea: así el resto del titular no se reacomoda
+                  cada segundo. La vieja sube y sale, la nueva entra desde abajo. */}
+              <span className="relative block h-[1.22em] overflow-hidden">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <m.span
+                    key={rubro}
+                    initial={{ y: '100%', opacity: 0 }}
+                    animate={{ y: '0%', opacity: 1 }}
+                    exit={{ y: '-100%', opacity: 0 }}
+                    transition={{ duration: 0.32, ease: SUAVE }}
+                    className="absolute left-0 top-0 inline-block whitespace-nowrap bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text pb-[0.12em] text-transparent"
+                  >
+                    {rubro}
+                  </m.span>
+                </AnimatePresence>
+              </span>
+              <Palabras texto="y te dice cuánto ganás." />
+            </span>
           </m.h1>
 
           <m.p variants={itemVariantes} className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300">
@@ -187,6 +211,25 @@ export function Hero() {
             </div>
           </m.div>
 
+          {/* El sistema se arma por rubro, pero lo que no exista también se construye */}
+          <m.a
+            variants={itemVariantes}
+            href={linkWhatsApp('Hola BamarDev, necesito un software a medida para mi negocio.')}
+            target="_blank"
+            rel="noreferrer"
+            className="group/medida mt-7 flex max-w-xl items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 pr-4 transition duration-300 hover:border-brand-400/50 hover:bg-white/10"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/15 text-brand-300 ring-1 ring-brand-400/25">
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14" />
+              </svg>
+            </span>
+            <span className="text-sm leading-snug text-slate-300">
+              <strong className="font-bold text-white">¿Tu negocio es distinto?</strong> También hacemos software a medida, pensado para cómo trabajás.
+            </span>
+            <span aria-hidden className="ml-auto text-brand-300 transition-transform duration-300 group-hover/medida:translate-x-1">→</span>
+          </m.a>
+
           <m.div variants={itemVariantes} className="mt-10">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Disponible en</p>
             <ul className="mt-3 flex flex-wrap gap-2.5">
@@ -205,7 +248,7 @@ export function Hero() {
           </m.div>
         </Escalonado>
 
-        <HeroDemo onRubro={setRubro} />
+        <HeroDemo />
       </div>
     </section>
   )

@@ -320,7 +320,7 @@ function PantallaCita({ e, paso }: { e: Extract<Escena, { tipo: 'cita' }>; paso:
   )
 }
 
-export function HeroDemo({ onRubro }: { onRubro: (rubro: string) => void }) {
+export function HeroDemo({ onRubro }: { onRubro?: (rubro: string) => void }) {
   const ref = useRef<HTMLDivElement>(null)
   const visible = useInView(ref, { amount: 0.3 })
   const reducir = useReducedMotion()
@@ -340,7 +340,7 @@ export function HeroDemo({ onRubro }: { onRubro: (rubro: string) => void }) {
   const pasos = e.tipo === 'venta' ? PASOS_VENTA : PASOS_CITA
   const pagado = paso >= pasos.length - 1
 
-  useEffect(() => onRubro(e.rubro), [e.rubro, onRubro])
+  useEffect(() => onRubro?.(e.rubro), [e.rubro, onRubro])
 
   // Con "reducir movimiento": la primera escena, ya cobrada, sin avanzar.
   useEffect(() => {
