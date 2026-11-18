@@ -131,8 +131,7 @@ export function Hero() {
           </m.div>
 
           <m.div variants={itemVariantes} className="mt-4">
-            <p className="text-sm text-slate-400">Plan Emprendedor, sin pagar nada por adelantado.</p>
-            <div className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold">
               <a
                 href={linkWhatsApp('Hola BamarDev, quiero ver el sistema funcionando en mi negocio.')}
                 target="_blank"
