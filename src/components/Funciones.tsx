@@ -1,16 +1,19 @@
-import type { PointerEvent } from 'react'
+import type { PointerEvent, ReactElement } from 'react'
 import { m } from 'motion/react'
 import { Aparecer, Escalonado, itemVariantes } from './animacion'
+import { EscenaFnOffline, EscenaFnInventario, EscenaFnDelivery } from './EscenasFuncionesA'
+import { EscenaFnReportes, EscenaFnFiado, EscenaFnRoles } from './EscenasFuncionesB'
 
 interface Funcion {
-  emoji: string
+  /** Ilustración animada que explica la función (EscenasFunciones*.tsx). */
+  Escena: () => ReactElement
   titulo: string
   texto: string
 }
 
 const FUNCIONES: Funcion[] = [
   {
-    emoji: '⚡',
+    Escena: EscenaFnOffline,
     titulo: 'Vendé sin internet',
     // En iPhone la venta sin señal es la de la app agregada a inicio (la web
     // instalada, PLAN-IOS F3); en el navegador común no.
@@ -18,19 +21,19 @@ const FUNCIONES: Funcion[] = [
       'En Android y en iPhone (agregada a inicio desde Safari, sin App Store) el punto de venta sigue cobrando aunque se corte la conexión; todo se sincroniza solo cuando vuelve.',
   },
   {
-    emoji: '📦',
+    Escena: EscenaFnInventario,
     titulo: 'Inventario real',
     texto:
       'Stock al día de productos e insumos, con cada entrada y salida registrada y aviso de stock crítico.',
   },
   {
-    emoji: '🛵',
+    Escena: EscenaFnDelivery,
     titulo: 'Delivery y recojo',
     texto:
       'Pedidos para recoger en todos los planes; en Profesional, delivery a domicilio con app propia para el repartidor.',
   },
   {
-    emoji: '📊',
+    Escena: EscenaFnReportes,
     titulo: 'Reportes que deciden',
     texto:
       'Ventas por producto, categoría, horario y método de pago, con ganancia estimada y los gastos del negocio.',
@@ -38,13 +41,13 @@ const FUNCIONES: Funcion[] = [
   {
     // Antes acá iba "Cocina en tiempo real" (panel de cocina y tablero TV):
     // la feature `cocina` está inactiva en el catálogo, no existe todavía.
-    emoji: '📒',
+    Escena: EscenaFnFiado,
     titulo: 'Fiado bajo control',
     texto:
       'Ventas a crédito por cliente, con sus abonos y lo que te debe cada uno a la vista.',
   },
   {
-    emoji: '🔐',
+    Escena: EscenaFnRoles,
     titulo: 'Control con roles y PIN',
     texto:
       'Cada usuario con su rol; anular una venta o fiar por encima del límite pide el PIN del encargado.',
@@ -87,10 +90,11 @@ export function Funciones() {
                 className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 style={{ background: 'radial-gradient(320px circle at var(--x) var(--y), rgb(16 185 129 / 0.12), transparent 60%)' }}
               />
-              <span className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-2xl transition-transform duration-300 ease-out group-hover:-translate-y-1 group-hover:rotate-[-8deg] group-hover:scale-110">
-                {f.emoji}
-              </span>
-              <h3 className="relative mt-4 text-lg font-extrabold text-slate-900">
+              {/* La ilustración ocupa el borde de arriba de la tarjeta */}
+              <div className="relative -mx-6 -mt-6 mb-5 overflow-hidden sm:-mx-7 sm:-mt-7">
+                <f.Escena />
+              </div>
+              <h3 className="relative text-lg font-extrabold text-slate-900">
                 {f.titulo}
               </h3>
               <p className="relative mt-2 text-sm leading-relaxed text-slate-600">

@@ -1,0 +1,324 @@
+/*
+  Keyframes propios de las ilustraciones de «Funciones», archivo A (EscenasFuncionesA.tsx):
+  sin internet, inventario y delivery. Sólo transform y opacity. Todo vive dentro de
+  `.escena`, así que la pausa fuera de pantalla y «reducir movimiento» vienen de index.css.
+
+  Ciclo maestro de las tres: 6,5 s, igual que el aviso (esc-chip), que asoma al 10 %
+  (0,65 s). Lo que «causa» el aviso (la última venta que llega a la nube, la barra que cae
+  a la zona roja, la moto que llega al pin) ocurre justo antes de ese punto.
+
+  Ojo: `.escena svg *` fija transform-origin al centro (especificidad 0,1,1); las clases
+  que necesitan otro pivote se escriben como `.escena .clase` (0,2,0).
+
+  El estilo base de cada clase (fuera del @keyframes) es la imagen que queda quieta cuando
+  el visitante pide «reducir movimiento»: se eligió para que cuente la historia sola.
+*/
+
+/* respiración del conjunto (2 px), común a las tres */
+@keyframes esc-fa-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+.escena .esc-fa-flota { animation: esc-fa-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+/* luz de «en vivo» (3,25 s = mitad exacta del ciclo) */
+@keyframes esc-fa-led {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.55; }
+}
+.escena .esc-fa-led { animation: esc-fa-led 3.25s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  1 · SIN INTERNET                                                   */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (% del ciclo):
+   52–55   se corta la señal: el wifi se apaga y la tacha se dibuja
+   57/64/71 tres cobros; cada uno suelta un ticket ámbar en la bandeja
+   80–85   vuelve la señal (la tacha se va, el wifi vuelve a verde con un pop)
+   86/93/100 los tickets salen en arco hacia la nube, uno cada 7 % (0,455 s)
+   92,5/99,5/106,5 llegan: cada uno enciende su tilde verde en la nube
+   10 %    aparece el aviso «Sincronizado»
+  Los tres tickets y los tres tildes comparten keyframes; cada uno se corre 7 % con
+  animation-delay negativo (así el bucle no tiene tirones).
+*/
+
+/* wifi verde (sobre el gris): se apaga al cortarse y vuelve con un pop */
+@keyframes esc-fa-senal {
+  0%, 51% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  54.5%, 80.5% { transform: scale(0.9); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  85% { transform: scale(1.12); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  88%, 100% { transform: scale(1); opacity: 1; }
+}
+/* la tacha: se dibuja desde la esquina de arriba a la izquierda, queda, y se va al volver la señal */
+@keyframes esc-fa-tacha {
+  0%, 51% { transform: scale(0); opacity: 0; }
+  51.1% { transform: scale(0); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  55% { transform: scale(1); opacity: 1; }
+  80% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  83% { transform: scale(1); opacity: 0; }
+  83.1%, 100% { transform: scale(0); opacity: 0; }
+}
+/* aro rojo del distintivo mientras no hay red */
+@keyframes esc-fa-alerta {
+  0%, 51% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  55%, 80% { opacity: 0.9; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  84%, 100% { opacity: 0; }
+}
+/* chip «sin red» de la pantalla del celular (ámbar sobre el verde) */
+@keyframes esc-fa-sinred {
+  0%, 52% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  55%, 82% { opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  85%, 100% { opacity: 0; }
+}
+/* el botón Cobrar se hunde en cada venta (57, 64 y 71 %) */
+@keyframes esc-fa-toque {
+  0%, 55% { transform: scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  57% { transform: scale(0.92); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  60%, 62% { transform: scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  64% { transform: scale(0.92); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  67%, 69% { transform: scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  71% { transform: scale(0.92); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  74%, 100% { transform: scale(1); }
+}
+/* tilde «cobrado» de la pantalla: un pop por venta */
+@keyframes esc-fa-cobrado {
+  0%, 57.5% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  60%, 62% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  63.5% { transform: scale(0.85); opacity: 0; }
+  64.5% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  67%, 69% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  70.5% { transform: scale(0.85); opacity: 0; }
+  71.5% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  74%, 76% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  78%, 100% { transform: scale(0.85); opacity: 0; }
+}
+/*
+  El ticket: nace del celular (57 %), espera en la bandeja y a los 86 % sale en arco hacia
+  su casilla de la nube (--dx/--dy = recorrido; --pk = cuánto sube en el punto alto).
+  Sube con salida rápida y cae acelerando; llega encogido y se «absorbe» en la nube.
+*/
+@keyframes esc-fa-tk {
+  0%, 56.9% { transform: translate(-36px, -14px) scale(0.55); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  61% { transform: translate(0, 0) scale(1.05); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  63%, 84% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  86% { transform: translate(0, 2px) scale(0.96); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  89.5% { transform: translate(calc(var(--dx) * 0.52), var(--pk)) scale(1.06); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 0.78, 0.45); }
+  92.5% { transform: translate(var(--dx), var(--dy)) scale(0.62); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  93.8%, 100% { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+}
+/* el punto del ticket pasa de ámbar (pendiente) a verde (sincronizado) en pleno vuelo */
+@keyframes esc-fa-dotv {
+  0%, 85% { opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  89%, 99.9% { opacity: 1; }
+  100% { opacity: 0; }
+}
+/* casilla de la nube: se enciende al llegar el ticket y se apaga antes del siguiente ciclo */
+@keyframes esc-fa-slot {
+  0% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  30% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  36%, 92% { transform: scale(0.7); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  95% { transform: scale(1.2); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  97%, 100% { transform: scale(1); opacity: 1; }
+}
+/* la nube recibe: un respingo cuando entra el último ticket, y un aro verde */
+@keyframes esc-fa-nube {
+  0%, 5% { transform: scale(1); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  8% { transform: scale(1.06); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  13%, 100% { transform: scale(1); }
+}
+@keyframes esc-fa-aro {
+  0%, 5.5% { transform: scale(0.95); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  6.5% { transform: scale(0.95); opacity: 0.8; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  17%, 100% { transform: scale(1.3); opacity: 0; }
+}
+
+.escena .esc-fa-senal { opacity: 0; animation: esc-fa-senal 6.5s infinite; }
+.escena .esc-fa-tacha { opacity: 1; transform-origin: 0 0; animation: esc-fa-tacha 6.5s infinite; }
+.escena .esc-fa-alerta { opacity: 0.9; animation: esc-fa-alerta 6.5s infinite; }
+.escena .esc-fa-sinred { opacity: 1; animation: esc-fa-sinred 6.5s infinite; }
+.escena .esc-fa-toque { animation: esc-fa-toque 6.5s infinite; }
+.escena .esc-fa-cobrado { opacity: 0; animation: esc-fa-cobrado 6.5s infinite; }
+.escena .esc-fa-tk { animation: esc-fa-tk 6.5s infinite; }
+.escena .esc-fa-dotv { opacity: 0; animation: esc-fa-dotv 6.5s infinite; }
+.escena .esc-fa-slot { opacity: 0; animation: esc-fa-slot 6.5s infinite; }
+.escena .esc-fa-nube { animation: esc-fa-nube 6.5s infinite; }
+.escena .esc-fa-aro { opacity: 0; animation: esc-fa-aro 6.5s infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  2 · INVENTARIO                                                     */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (% del ciclo):
+   20–28   entra una caja nueva en el hueco de la fila 1; su barra sube con rebote
+   32–40   entra otra en la fila 2; su barra sube y deja de estar en rojo
+   62–70   sale una caja de la fila 1 (retroceso, luego avanza hacia quien mira); su barra baja
+   82–90   sale la de la fila 2; la barra cae a la zona roja (94 %), aparece el «3» y pulsa
+   10 %    aparece el aviso «Stock crítico» (el rojo y los pulsos siguen hasta el 36 %)
+*/
+
+/* la caja que sale va hacia quien mira y la que entra viene de ahí (se «empuja» al estante) */
+@keyframes esc-fa-caja-a {
+  0%, 20% { transform: translateY(15px) scale(1.12); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  25.5% { transform: translateY(-1.5px) scale(0.99); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  28.5%, 62% { transform: translateY(0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  64.5% { transform: translateY(-3px) scale(1.02); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  70%, 100% { transform: translateY(15px) scale(1.12); opacity: 0; }
+}
+@keyframes esc-fa-caja-b {
+  0%, 32% { transform: translateY(15px) scale(1.12); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  37.5% { transform: translateY(-1.5px) scale(0.99); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  40.5%, 82% { transform: translateY(0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  84.5% { transform: translateY(-3px) scale(1.02); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  90%, 100% { transform: translateY(15px) scale(1.12); opacity: 0; }
+}
+/* barras de stock: scaleX con pivote a la izquierda; cada cambio rebota */
+@keyframes esc-fa-barra-a {
+  0%, 21% { transform: scaleX(0.68); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  27% { transform: scaleX(0.97); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  31%, 68% { transform: scaleX(0.9); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  72% { transform: scaleX(0.58); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  76%, 100% { transform: scaleX(0.68); }
+}
+@keyframes esc-fa-barra-b {
+  0%, 36% { transform: scaleX(0.14); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  41% { transform: scaleX(0.72); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  44%, 88% { transform: scaleX(0.62); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  94% { transform: scaleX(0.07); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  97%, 100% { transform: scaleX(0.14); }
+}
+/* capa roja de esa misma barra: aparece al cruzar el umbral y se va al reponer */
+@keyframes esc-fa-rojo {
+  0%, 37% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  43%, 92% { opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  95%, 100% { opacity: 1; }
+}
+/* aro rojo que late alrededor de la barra crítica: tres pulsos (95 %, 0 % y 6 %) */
+@keyframes esc-fa-pulso {
+  0% { transform: scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  1% { transform: scale(1); opacity: 0.9; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  5.5% { transform: scale(1.12); opacity: 0; }
+  6% { transform: scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  7% { transform: scale(1); opacity: 0.9; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  11.5%, 94.9% { transform: scale(1.12); opacity: 0; }
+  95% { transform: scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  96% { transform: scale(1); opacity: 0.9; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  100% { transform: scale(1.12); opacity: 0; }
+}
+/* chapa con las unidades que quedan */
+@keyframes esc-fa-badge {
+  0%, 38% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  42%, 92% { transform: scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  95.5% { transform: scale(1.18); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  97.5%, 100% { transform: scale(1); opacity: 1; }
+}
+
+.escena .esc-fa-caja-a { opacity: 1; animation: esc-fa-caja-a 6.5s infinite; }
+.escena .esc-fa-caja-b { opacity: 0; animation: esc-fa-caja-b 6.5s infinite; }
+.escena .esc-fa-barra-a { transform-origin: 0 50%; transform: scaleX(0.68); animation: esc-fa-barra-a 6.5s infinite; }
+.escena .esc-fa-barra-b { transform-origin: 0 50%; transform: scaleX(0.14); animation: esc-fa-barra-b 6.5s infinite; }
+.escena .esc-fa-rojo { opacity: 1; animation: esc-fa-rojo 6.5s infinite; }
+.escena .esc-fa-pulso { opacity: 0; animation: esc-fa-pulso 6.5s infinite; }
+.escena .esc-fa-badge { animation: esc-fa-badge 6.5s infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  3 · DELIVERY Y RECOJO                                              */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (% del ciclo):
+   58–100  la moto sale del local y recorre la ruta (tres tramos; en cada esquina frena);
+           la ruta punteada se va rellenando de azul detrás de ella
+   100 = 0 llega junto al pin; 1–5,5 % la cajita salta de la moto al pin
+   5–13 %  el pin late, se marca el tilde y salen ondas; la bolsa del mostrador da un salto
+   10 %    aparece el aviso «Entregado»
+   21–27 % la moto se va (se desvanece); 24–30 % la ruta se «borra»; 50–54 % la moto
+           vuelve a aparecer en el local
+  Tramos (porcentaje de la ruta): 54 u + 32 u + 102 u => 58–75, 75–85 y 85–100 %.
+*/
+
+/* la moto: 3 tramos con ease-in-out, así frena en cada esquina; fuera de plano se desvanece */
+@keyframes esc-fa-moto {
+  0%, 21% { transform: translate(102px, 32px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  27% { transform: translate(102px, 32px) scale(0.9); opacity: 0; }
+  27.1%, 49.9% { transform: translate(0, 0) scale(0.85); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  54% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  56.5% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  58% { transform: translate(-2px, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  75% { transform: translate(54px, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  85% { transform: translate(54px, 32px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  100% { transform: translate(102px, 32px) scale(1); opacity: 1; }
+}
+/* el paquete viaja con la moto y, al llegar, salta al pin (es hijo de la moto: coordenadas relativas) */
+@keyframes esc-fa-paquete {
+  0%, 1% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  3.2% { transform: translate(16px, -17px) scale(1.08); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  5.5% { transform: translate(32px, 0) scale(0.55); opacity: 0; }
+  5.6%, 49.9% { transform: translate(0, 0) scale(1); opacity: 0; }
+  54%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+/* ruta recorrida (azul sólido): cada tramo se rellena a la par que la moto, con su misma curva */
+@keyframes esc-fa-ruta-1 {
+  0%, 24% { transform: scaleX(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  30% { transform: scaleX(1); opacity: 0; }
+  30.1%, 58% { transform: scaleX(0); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  75%, 100% { transform: scaleX(1); opacity: 1; }
+}
+@keyframes esc-fa-ruta-2 {
+  0%, 24% { transform: scaleY(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  30% { transform: scaleY(1); opacity: 0; }
+  30.1%, 75% { transform: scaleY(0); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  85%, 100% { transform: scaleY(1); opacity: 1; }
+}
+@keyframes esc-fa-ruta-3 {
+  0%, 24% { transform: scaleX(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  30% { transform: scaleX(1); opacity: 0; }
+  30.1%, 85% { transform: scaleX(0); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+/* el pin late al llegar el paquete (y espera con un latido suave mientras viene la moto) */
+@keyframes esc-fa-pin {
+  0%, 4.5% { transform: scale(1); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  7% { transform: scale(1.24); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  9.5% { transform: scale(0.94); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  12%, 64% { transform: scale(1); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  70% { transform: scale(1.06); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  76%, 100% { transform: scale(1); }
+}
+/* el pin pasa de «pendiente» (punto) a «entregado» (tilde) */
+@keyframes esc-fa-punto {
+  0%, 4% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  6.5%, 30% { opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  36%, 100% { opacity: 1; }
+}
+@keyframes esc-fa-tilde {
+  0%, 4% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  7.5%, 30% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  36%, 100% { transform: scale(0.6); opacity: 0; }
+}
+/* ondas que nacen del pin (la segunda va retrasada con animation-delay) */
+@keyframes esc-fa-onda {
+  0%, 4.5% { transform: scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  5% { transform: scale(0.4); opacity: 0.8; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  17%, 100% { transform: scale(2.3); opacity: 0; }
+}
+/* la bolsa del mostrador da un saltito cuando el pedido queda entregado */
+@keyframes esc-fa-bolsa {
+  0%, 6% { transform: translateY(0) scale(1, 1); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  9.5% { transform: translateY(-6px) scale(0.96, 1.05); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  12% { transform: translateY(0) scale(1.06, 0.94); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  14.5%, 100% { transform: translateY(0) scale(1, 1); }
+}
+
+.escena .esc-fa-moto { animation: esc-fa-moto 6.5s infinite; }
+.escena .esc-fa-paquete { animation: esc-fa-paquete 6.5s infinite; }
+.escena .esc-fa-ruta-1 { transform-origin: 0 50%; opacity: 0; animation: esc-fa-ruta-1 6.5s infinite; }
+.escena .esc-fa-ruta-2 { transform-origin: 50% 0; opacity: 0; animation: esc-fa-ruta-2 6.5s infinite; }
+.escena .esc-fa-ruta-3 { transform-origin: 0 50%; opacity: 0; animation: esc-fa-ruta-3 6.5s infinite; }
+.escena .esc-fa-pin { transform-origin: 50% 100%; animation: esc-fa-pin 6.5s infinite; }
+.escena .esc-fa-punto { animation: esc-fa-punto 6.5s infinite; }
+.escena .esc-fa-tilde { opacity: 0; animation: esc-fa-tilde 6.5s infinite; }
+.escena .esc-fa-onda { opacity: 0; animation: esc-fa-onda 6.5s infinite; }
+.escena .esc-fa-bolsa { transform-origin: 50% 100%; animation: esc-fa-bolsa 6.5s infinite; }

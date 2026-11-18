@@ -13,9 +13,9 @@ import { useInView } from 'motion/react'
 /**
  * Marco común: pausa las animaciones cuando la escena no se ve en pantalla (ahorra
  * batería) y, con "reducir movimiento", index.css las apaga y queda la imagen quieta.
- * `fondo` son clases de Tailwind del degradado de fondo.
+ * `fondo` son clases de Tailwind del degradado de fondo; `alto` la altura (h-48 en los rubros).
  */
-export function Marco({ fondo, children }: { fondo: string; children: ReactNode }) {
+export function Marco({ fondo, children, alto = 'h-48' }: { fondo: string; children: ReactNode; alto?: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const visto = useInView(ref, { margin: '0px 0px -10% 0px' })
   return (
@@ -23,7 +23,7 @@ export function Marco({ fondo, children }: { fondo: string; children: ReactNode 
       ref={ref}
       aria-hidden
       data-vista={visto ? '' : undefined}
-      className={`escena relative h-48 overflow-hidden ${fondo}`}
+      className={`escena relative ${alto} overflow-hidden ${fondo}`}
     >
       {/* luz ambiente desde arriba a la izquierda + dos orbes de color que derivan despacio */}
       <div aria-hidden className="esc-luz pointer-events-none absolute inset-0" />
