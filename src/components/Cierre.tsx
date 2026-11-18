@@ -8,33 +8,35 @@ export function Cierre() {
   return (
     <section id="contacto" className="scroll-mt-16 bg-white py-14 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <Aparecer className="relative overflow-hidden rounded-3xl bg-slate-950 px-8 py-16 text-center sm:px-16">
+        <Aparecer className="relative overflow-hidden rounded-3xl bg-slate-950 px-6 py-10 sm:px-12 sm:py-12">
           <m.div
             aria-hidden
             animate={{ opacity: [0.7, 1, 0.7], scale: [1, 1.08, 1] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
             className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full bg-brand-500/25 blur-3xl"
           />
-          <div className="relative">
-            <m.img
-              src="/logo-marca.png"
-              alt=""
-              initial={{ opacity: 0, y: 20, rotate: -12, scale: 0.8 }}
-              whileInView={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ type: 'spring', stiffness: 180, damping: 12, delay: 0.2 }}
-              className="mx-auto h-16 w-16 drop-shadow-lg"
-            />
-            <h2 className="mx-auto mt-6 max-w-2xl text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-              ¿Querés ver el sistema funcionando en tu negocio?
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-slate-300">
-              Coordinamos una visita a tu local o te lo mostramos por
-              videollamada — sin compromiso.
-            </p>
-            <div className="mt-8">
-              <Contacto />
+          {/* Escritorio: el mensaje a la izquierda y el formulario a la derecha (así la tarjeta
+              no se alarga). Celular: uno bajo el otro. */}
+          <div className="relative grid items-center gap-8 lg:grid-cols-[1fr_24rem] lg:gap-14">
+            <div className="text-center lg:text-left">
+              <m.img
+                src="/logo-marca.png"
+                alt=""
+                initial={{ opacity: 0, y: 20, rotate: -12, scale: 0.8 }}
+                whileInView={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ type: 'spring', stiffness: 180, damping: 12, delay: 0.2 }}
+                className="mx-auto h-12 w-12 drop-shadow-lg lg:mx-0"
+              />
+              <h2 className="mt-4 max-w-2xl text-2xl font-extrabold tracking-tight text-white sm:text-3xl lg:text-4xl">
+                ¿Querés ver el sistema funcionando en tu negocio?
+              </h2>
+              <p className="mt-3 max-w-xl text-base text-slate-300 sm:text-lg lg:max-w-md">
+                Coordinamos una visita a tu local o te lo mostramos por
+                videollamada — sin compromiso.
+              </p>
             </div>
+            <Contacto />
           </div>
         </Aparecer>
       </div>

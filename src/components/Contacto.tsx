@@ -35,11 +35,17 @@ const RUBROS = [
   'Otro',
 ]
 
+/** Estilo común de los campos del formulario (compacto: py-2.5, texto chico). */
+const CAMPO =
+  'mt-1 w-full rounded-xl border border-white/15 bg-white/10 px-3.5 py-2.5 text-sm text-white placeholder-slate-400 outline-none focus:border-brand-400'
+
 type Estado = 'escribiendo' | 'enviando' | 'listo' | 'error'
 
 export function Contacto({ planInteres }: { planInteres?: string }) {
   const [estado, setEstado] = useState<Estado>('escribiendo')
   const [error, setError] = useState('')
+  // Email y mensaje van plegados: lo esencial (nombre, WhatsApp y rubro) basta para llamar.
+  const [mas, setMas] = useState(false)
   // Turnstile, sólo si el build trae la site key. `vueltaCaptcha` remonta el
   // widget para pedir otro token: el backend gasta el anterior en cada envío.
   const siteKey = siteKeyTurnstile()
@@ -53,7 +59,7 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
     const telefono = String(datos.get('telefono') ?? '').trim()
     const email = String(datos.get('email') ?? '').trim()
     if (!telefono && !email) {
-      setError('Dejanos un teléfono o un email para poder contactarte.')
+      setError(mas ? 'Dejanos un WhatsApp o un email para poder contactarte.' : 'Dejanos tu WhatsApp para poder contactarte.')
       setEstado('error')
       return
     }
@@ -134,7 +140,7 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
   }
 
   return (
-    <form onSubmit={enviar} className="mx-auto max-w-lg text-left">
+    <form onSubmit={enviar} className="mx-auto w-full max-w-md text-left lg:max-w-none">
       {/* Honeypot: oculto para personas, visible para bots que rellenan todo. */}
       <input
         type="text"
@@ -145,48 +151,34 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
         className="absolute left-[-9999px] h-0 w-0 opacity-0"
       />
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <label className="sm:col-span-2">
-          <span className="text-sm font-medium text-slate-300">Tu nombre *</span>
+      <div className="grid gap-2.5 sm:grid-cols-2">
+        <label>
+          <span className="text-xs font-medium text-slate-300">Tu nombre *</span>
           <input
             name="nombre"
             required
             minLength={2}
             maxLength={120}
-            className="mt-1 w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-white placeholder-slate-400 outline-none focus:border-brand-400"
+            className={CAMPO}
             placeholder="Juan Pérez"
           />
         </label>
 
         <label>
-          <span className="text-sm font-medium text-slate-300">WhatsApp</span>
+          <span className="text-xs font-medium text-slate-300">WhatsApp {mas ? '' : '*'}</span>
           <input
             name="telefono"
             inputMode="tel"
+            required={!mas}
             maxLength={30}
-            className="mt-1 w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-white placeholder-slate-400 outline-none focus:border-brand-400"
+            className={CAMPO}
             placeholder="700 00000"
           />
         </label>
 
-        <label>
-          <span className="text-sm font-medium text-slate-300">Email</span>
-          <input
-            name="email"
-            type="email"
-            maxLength={120}
-            className="mt-1 w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-white placeholder-slate-400 outline-none focus:border-brand-400"
-            placeholder="juan@ejemplo.com"
-          />
-        </label>
-
         <label className="sm:col-span-2">
-          <span className="text-sm font-medium text-slate-300">¿Qué tipo de negocio tenés?</span>
-          <select
-            name="rubro"
-            defaultValue="Restaurante"
-            className="mt-1 w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-white outline-none focus:border-brand-400"
-          >
+          <span className="text-xs font-medium text-slate-300">¿Qué tipo de negocio tenés?</span>
+          <select name="rubro" defaultValue="Restaurante" className={CAMPO}>
             {RUBROS.map((r) => (
               <option key={r} value={r} className="bg-slate-900">
                 {r}
@@ -195,21 +187,34 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
           </select>
         </label>
 
-        <label className="sm:col-span-2">
-          <span className="text-sm font-medium text-slate-300">Contanos qué necesitás</span>
-          <textarea
-            name="mensaje"
-            rows={3}
-            maxLength={1000}
-            className="mt-1 w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-white placeholder-slate-400 outline-none focus:border-brand-400"
-            placeholder="Tengo un restaurante y quiero controlar el stock…"
-          />
-        </label>
+        {/* Opcionales, plegados: el formulario se ve corto y quien quiera detallar lo abre. */}
+        {mas ? (
+          <>
+            <label className="sm:col-span-2">
+              <span className="text-xs font-medium text-slate-300">Email</span>
+              <input name="email" type="email" maxLength={120} className={CAMPO} placeholder="juan@ejemplo.com" />
+            </label>
+            <label className="sm:col-span-2">
+              <span className="text-xs font-medium text-slate-300">Contanos qué necesitás</span>
+              <textarea
+                name="mensaje"
+                rows={2}
+                maxLength={1000}
+                className={CAMPO}
+                placeholder="Tengo un restaurante y quiero controlar el stock…"
+              />
+            </label>
+          </>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setMas(true)}
+            className="sm:col-span-2 text-left text-xs font-semibold text-brand-300 underline-offset-2 hover:underline"
+          >
+            + Agregar email o un mensaje (opcional)
+          </button>
+        )}
       </div>
-
-      <p className="mt-2 text-xs text-slate-400">
-        Dejanos al menos un teléfono o un email para poder responderte.
-      </p>
 
       {siteKey && <Captcha key={vueltaCaptcha} siteKey={siteKey} onToken={setCaptcha} />}
 
@@ -224,22 +229,10 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
       <button
         type="submit"
         disabled={estado === 'enviando'}
-        className="mt-4 w-full rounded-full bg-brand-500 px-8 py-4 text-lg font-bold text-white shadow-xl shadow-brand-500/30 transition hover:bg-brand-400 disabled:opacity-60"
+        className="mt-3 w-full rounded-full bg-brand-500 px-6 py-3 text-base font-bold text-white shadow-lg shadow-brand-500/30 transition hover:bg-brand-400 disabled:opacity-60"
       >
         {estado === 'enviando' ? 'Enviando…' : 'Quiero que me contacten'}
       </button>
-
-      <p className="mt-4 text-center text-sm text-slate-400">
-        ¿Preferís escribir directo?{' '}
-        <a
-          href={linkWhatsApp('Hola BamarDev, quiero coordinar una demo del sistema para mi negocio.')}
-          target="_blank"
-          rel="noreferrer"
-          className="font-semibold text-brand-300 underline-offset-2 hover:underline"
-        >
-          WhatsApp {WHATSAPP_DISPLAY}
-        </a>
-      </p>
     </form>
   )
 }
