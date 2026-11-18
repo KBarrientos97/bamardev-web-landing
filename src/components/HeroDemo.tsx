@@ -40,9 +40,9 @@ type Escena =
 
 export const ESCENAS: Escena[] = [
   {
-    rubro: 'pollería',
+    rubro: 'restaurante',
     tipo: 'venta',
-    local: 'Mi pollería',
+    local: 'Mi restaurante',
     productos: [
       { emoji: '🍗', nombre: '1/4 de pollo', precio: 22 },
       { emoji: '🍗', nombre: '1/2 pollo', precio: 40 },

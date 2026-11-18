@@ -723,7 +723,7 @@ export default function Encuesta() {
                   onChange={(e) => setR({ ...r, nombreNegocio: e.target.value })}
                   maxLength={80}
                   autoComplete="organization"
-                  placeholder="Pollería Don Juan"
+                  placeholder="Restaurante Don Juan"
                   className={CLASE_INPUT}
                 />
               </label>

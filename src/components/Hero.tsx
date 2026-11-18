@@ -3,7 +3,7 @@ import { Fragment, useEffect, useState, type PointerEvent } from 'react'
 import { linkWhatsApp } from '../data/planes'
 import { WhatsAppIcon } from './ui'
 import { Escalonado, SUAVE, itemVariantes } from './animacion'
-import { HeroDemo } from './HeroDemo'
+import { HeroDemoB } from './HeroDemoB'
 
 /** El titular entra palabra por palabra, cada una subiendo desde abajo de su "ranura". */
 const palabra = {
@@ -99,8 +99,17 @@ const NEGOCIOS = [
 ]
 const CADA_MS = 1100
 
+/** Clases de cada promesa del titular: se enciende la que la demo está mostrando en ese momento. */
+function claseChip(fase: number | null, i: number): string {
+  const base = 'rounded-md px-1 -mx-1 transition-colors duration-300 '
+  if (fase === null) return base + 'text-brand-300'
+  return base + (fase === i ? 'bg-brand-500/25 text-white ring-1 ring-brand-300/40' : 'text-brand-300/45')
+}
+
 export function Hero() {
   const reducir = useReducedMotion()
+  // Qué promesa del titular muestra la demo ahora (0 venta rápida · 1 stock · 2 caja), o ninguna.
+  const [fase, setFase] = useState<0 | 1 | 2 | null>(null)
   const [i, setI] = useState(0)
   // Con «reducir movimiento» el titular queda quieto en una frase general.
   useEffect(() => {
@@ -159,8 +168,8 @@ export function Hero() {
                 <Palabras texto="El sistema que maneja todo tu negocio" />
               </span>
               <span className="mt-3 block text-xl font-bold leading-snug text-slate-300 sm:text-2xl">
-                <span className="text-brand-300">stock al día</span>, <span className="text-brand-300">venta rápida</span> y{' '}
-                <span className="text-brand-300">caja sin fugas</span>
+                <span className={claseChip(fase, 1)}>stock al día</span>, <span className={claseChip(fase, 0)}>venta rápida</span> y{' '}
+                <span className={claseChip(fase, 2)}>caja sin fugas</span>
               </span>
               {/* «para» + la palabra que cambia cada segundo, en su propia línea para que nada se reacomode */}
               <span className="mt-4 flex items-start gap-3 text-3xl leading-[1.12] sm:text-4xl lg:text-[2.7rem]">
@@ -256,7 +265,7 @@ export function Hero() {
           </m.div>
         </Escalonado>
 
-        <HeroDemo />
+        <HeroDemoB onFase={setFase} />
       </div>
     </section>
   )

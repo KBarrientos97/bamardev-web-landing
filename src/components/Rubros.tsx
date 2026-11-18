@@ -36,7 +36,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
   ventas: [
     {
       emoji: '🍗',
-      nombre: 'Restaurantes y pollerías',
+      nombre: 'Restaurantes',
       puntos: [
         'Comanda Mesa / Llevar y pedidos para recoger',
         'Insumos y recetas: sabés cuánto te cuesta cada plato',
