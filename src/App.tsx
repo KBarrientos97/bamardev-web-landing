@@ -1,6 +1,7 @@
 import { LazyMotion, MotionConfig, domMax, m, useScroll, useSpring } from 'motion/react'
 import { Nav } from './components/Nav'
 import { Hero } from './components/Hero'
+import { Clientes } from './components/Clientes'
 import { Rubros } from './components/Rubros'
 import { Funciones } from './components/Funciones'
 import { Planes } from './components/Planes'
@@ -33,6 +34,7 @@ function App() {
         <Nav />
         <main>
           <Hero />
+          <Clientes />
           <Rubros />
           <Funciones />
           <Planes />
