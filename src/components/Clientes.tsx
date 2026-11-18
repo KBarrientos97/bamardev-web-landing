@@ -36,9 +36,8 @@ const CLIENTES: Cliente[] = [
 */
 const REPETICIONES = 5
 const FILA = Array.from({ length: REPETICIONES }, () => CLIENTES).flat()
-const CADA_MS = 5000
-/** Escritorio: un negocio por segundo (pedido del dueño: «cada 1 segundo»). */
-const CADA_ESCRITORIO_MS = 1000
+/** Un negocio por segundo, en escritorio y en celular (pedido del dueño: «cada 1 segundo»). */
+const CADA_MS = 1000
 const DESLIZ_MS = 650
 
 function Tarjeta({ c, oculta, movil = false }: { c: Cliente; oculta: boolean; movil?: boolean }) {
@@ -102,7 +101,7 @@ function CintaEscritorio() {
     const t = setTimeout(() => {
       setAnimar(true)
       setPaso((p) => p + 1)
-    }, CADA_ESCRITORIO_MS)
+    }, CADA_MS)
     return () => clearTimeout(t)
   }, [paso, reducir, pausa])
 
@@ -178,7 +177,7 @@ function useMovil(): boolean {
 const ESPERA_TRAS_TOQUE_MS = 8000
 
 /**
- * Celular: una tarjeta a la vez. Pasa sola cada 5 s y también se puede deslizar a
+ * Celular: una tarjeta a la vez. Pasa sola cada segundo y también se puede deslizar a
  * mano (el scroll nativo con "imán" deja cada tarjeta centrada). Es infinita igual
  * que la de escritorio: arranca en la segunda repetición y, al detenerse, vuelve
  * en silencio a la zona del medio, donde se ve idéntico.
