@@ -83,32 +83,32 @@ const PLATAFORMAS = [
 /**
  * Los negocios que ya trabajan con BamarDev, uno por segundo. Antes la palabra seguía a la
  * demo del celular (cambiaba cada ~8 s) y la gente leía «sólo para pollerías»: así se ven
- * todos los rubros en lo que tarda en leerse el titular. La última cierra con «a medida».
+ * todos los rubros en lo que tarda en leerse el titular, tras «para». La última cierra con «a medida».
  */
 const NEGOCIOS = [
-  'restaurante',
-  'farmacia',
-  'ferretería',
-  'minimarket',
-  'billar',
-  'peluquería',
-  'barbería',
-  'spa',
-  'academia',
-  'negocio a medida',
+  'restaurantes',
+  'farmacias',
+  'ferreterías',
+  'minimarkets',
+  'billares',
+  'peluquerías',
+  'barberías',
+  'spas',
+  'academias',
+  'negocios a medida',
 ]
 const CADA_MS = 1100
 
 export function Hero() {
   const reducir = useReducedMotion()
   const [i, setI] = useState(0)
-  // Con «reducir movimiento» el titular queda quieto en la palabra más general.
+  // Con «reducir movimiento» el titular queda quieto en una frase general.
   useEffect(() => {
     if (reducir) return
     const t = setInterval(() => setI((n) => (n + 1) % NEGOCIOS.length), CADA_MS)
     return () => clearInterval(t)
   }, [reducir])
-  const rubro = reducir ? 'negocio' : NEGOCIOS[i]
+  const rubro = reducir ? 'cada negocio' : NEGOCIOS[i]
 
   return (
     <section
@@ -150,28 +150,36 @@ export function Hero() {
 
           <m.h1
             variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
-            aria-label="El sistema que maneja tu negocio y te dice cuánto ganás."
-            className="mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl"
+            aria-label="El sistema que maneja todo tu negocio, sin faltantes, venta rápida y sin fugas de caja, para restaurantes, farmacias, ferreterías, minimarkets, billares, peluquerías, barberías, spas y academias."
+            className="mt-6 font-extrabold tracking-tight"
           >
             <span aria-hidden>
-              <Palabras texto="El sistema que maneja tu" />
-              {/* La palabra va en su propia línea: así el resto del titular no se reacomoda
-                  cada segundo. La vieja sube y sale, la nueva entra desde abajo. */}
-              <span className="relative block h-[1.22em] overflow-hidden">
-                <AnimatePresence mode="popLayout" initial={false}>
-                  <m.span
-                    key={rubro}
-                    initial={{ y: '100%', opacity: 0 }}
-                    animate={{ y: '0%', opacity: 1 }}
-                    exit={{ y: '-100%', opacity: 0 }}
-                    transition={{ duration: 0.32, ease: SUAVE }}
-                    className="absolute left-0 top-0 inline-block whitespace-nowrap bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text pb-[0.12em] text-transparent"
-                  >
-                    {rubro}
-                  </m.span>
-                </AnimatePresence>
+              {/* Los tres dolores que resolvemos, en una sola frase: inventario, venta rápida y cajeros */}
+              <span className="block text-3xl leading-[1.12] sm:text-4xl lg:text-[2.7rem]">
+                <Palabras texto="El sistema que maneja todo tu negocio" />
               </span>
-              <Palabras texto="y te dice cuánto ganás." />
+              <span className="mt-3 block text-xl font-bold leading-snug text-slate-300 sm:text-2xl">
+                <span className="text-brand-300">sin faltantes</span>, <span className="text-brand-300">venta rápida</span> y{' '}
+                <span className="text-brand-300">sin fugas de caja</span>
+              </span>
+              {/* «para» + la palabra que cambia cada segundo, en su propia línea para que nada se reacomode */}
+              <span className="mt-4 flex items-start gap-3 text-3xl leading-[1.12] sm:text-4xl lg:text-[2.7rem]">
+                <span>para</span>
+                <span className="relative block h-[1.22em] flex-1 overflow-hidden">
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    <m.span
+                      key={rubro}
+                      initial={{ y: '100%', opacity: 0 }}
+                      animate={{ y: '0%', opacity: 1 }}
+                      exit={{ y: '-100%', opacity: 0 }}
+                      transition={{ duration: 0.32, ease: SUAVE }}
+                      className="absolute left-0 top-0 inline-block whitespace-nowrap bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text pb-[0.12em] text-transparent"
+                    >
+                      {rubro}
+                    </m.span>
+                  </AnimatePresence>
+                </span>
+              </span>
             </span>
           </m.h1>
 
