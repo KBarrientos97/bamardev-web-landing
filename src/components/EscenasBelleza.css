@@ -4,118 +4,165 @@
   especificidad a la regla global `.escena svg * { transform-origin: center }`
   y poder fijar pivotes propios (base del pétalo, borde de la uña…). Los pivotes
   en coordenadas del viewBox van en `style` desde el componente.
+
+  Ciclo maestro de 6,5 s en las dos (el mismo del aviso `esc-chip`): el aviso llega
+  al ~10 % y la acción arranca justo después. Lo que se repite más rápido divide
+  el ciclo exacto (3,25 s, 1,3 s). Curvas: entradas (.22,1,.36,1), salidas
+  (.64,0,.78,0), vaivenes (.45,0,.55,1).
+
   Con "reducir movimiento" no hay animación: cada clase deja su pose final
   (flor abierta, uña pintada, pincel oculto).
 */
 
+/* ---------------- COMÚN ---------------- */
+
+/* Flotación mínima del héroe (≤ 2 px). */
+@keyframes esc-belleza-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.8px); }
+}
+.escena .esc-belleza-flota { animation: esc-belleza-flota 6.5s cubic-bezier(.45, 0, .55, 1) infinite; }
+
 /* ---------------- SPA ---------------- */
 
-/* El pétalo gira sobre su base entre casi cerrado (30% del ángulo) y abierto. */
+/*
+  El pétalo gira sobre su base. Se recoge un poco (anticipación) justo cuando llega
+  el aviso, se abre con un pequeño rebasamiento, se asienta, aguanta y se cierra
+  despacio. --a es el ángulo final de cada pétalo.
+*/
 @keyframes esc-belleza-abrir {
-  0%, 100% { transform: rotate(calc(var(--a) * 0.3)) scale(0.9); }
-  38%, 62% { transform: rotate(var(--a)) scale(1); }
+  0% { transform: rotate(calc(var(--a) * 0.22)) scale(0.88); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  8% { transform: rotate(calc(var(--a) * 0.14)) scale(0.86); animation-timing-function: cubic-bezier(.22, 1, .36, 1); }
+  36% { transform: rotate(calc(var(--a) * 1.06)) scale(1.02); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  44%, 66% { transform: rotate(var(--a)) scale(1); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  94%, 100% { transform: rotate(calc(var(--a) * 0.22)) scale(0.88); }
 }
-/* El corazón dorado de la flor se enciende al abrirse. */
-@keyframes esc-belleza-centro {
-  0%, 100% { transform: scale(0.55); opacity: 0.1; }
-  38%, 62% { transform: scale(1); opacity: 1; }
+/* Resplandor y corazón dorado: se encienden con la flor. */
+@keyframes esc-belleza-encender {
+  0%, 8% { transform: scale(0.6); opacity: 0.1; animation-timing-function: cubic-bezier(.22, 1, .36, 1); }
+  40%, 64% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  94%, 100% { transform: scale(0.6); opacity: 0.1; }
 }
-/* Ondas de agua que nacen bajo la flor y se expanden. */
+/* Ondas que se expanden desde la base de la flor (dos por ciclo). */
 @keyframes esc-belleza-onda {
-  0% { transform: scale(0.35); opacity: 0; }
-  14% { opacity: 0.85; }
-  100% { transform: scale(3.3); opacity: 0; }
+  0% { transform: scale(0.3); opacity: 0; }
+  12% { opacity: 0.7; }
+  100% { transform: scale(2.6); opacity: 0; }
 }
-/* Pila de piedras zen que se mece apenas. */
+/* Hilos de vapor: suben, se estiran y se disuelven. */
+@keyframes esc-belleza-vapor {
+  0% { transform: translate(0, 6px) scaleY(0.7); opacity: 0; }
+  25% { opacity: 0.6; }
+  100% { transform: translate(var(--dx, 0), -14px) scaleY(1.15); opacity: 0; }
+}
 @keyframes esc-belleza-mecer {
-  0%, 100% { transform: rotate(-1.6deg); }
-  50% { transform: rotate(1.6deg); }
+  0%, 100% { transform: rotate(-0.8deg); }
+  50% { transform: rotate(0.8deg); }
 }
 @keyframes esc-belleza-llama {
-  0%, 100% { transform: scale(1, 0.9) rotate(-2deg); }
-  30% { transform: scale(0.9, 1.14) rotate(2.5deg); }
-  65% { transform: scale(1.06, 0.97) rotate(-1deg); }
+  0%, 100% { transform: scale(1, 0.92) rotate(-1.5deg); }
+  22% { transform: scale(0.92, 1.12) rotate(2deg); }
+  48% { transform: scale(1.04, 0.96) rotate(-0.5deg); }
+  74% { transform: scale(0.95, 1.08) rotate(1.4deg); }
 }
 @keyframes esc-belleza-halo {
-  0%, 100% { transform: scale(0.86); opacity: 0.5; }
-  50% { transform: scale(1.14); opacity: 0.95; }
+  0%, 100% { transform: scale(0.9); opacity: 0.55; }
+  50% { transform: scale(1.1); opacity: 0.95; }
 }
 @keyframes esc-belleza-nenufar {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(1.3px) rotate(2deg); }
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(0.9px) rotate(1.5deg); }
 }
 @keyframes esc-belleza-reflejo {
-  0%, 100% { transform: translateX(-7px); opacity: 0.2; }
-  50% { transform: translateX(7px); opacity: 0.6; }
-}
-@keyframes esc-belleza-fronda {
-  0%, 100% { transform: rotate(-2.6deg); }
-  50% { transform: rotate(2.6deg); }
+  0%, 100% { transform: translateX(-9px); opacity: 0.15; }
+  50% { transform: translateX(9px); opacity: 0.45; }
 }
 
 .escena .esc-belleza-petalo {
-  animation: esc-belleza-abrir 6s ease-in-out infinite;
+  animation: esc-belleza-abrir 6.5s infinite;
   transform: rotate(var(--a));
 }
-.escena .esc-belleza-centro { animation: esc-belleza-centro 6s ease-in-out infinite; }
-.escena .esc-belleza-onda { animation: esc-belleza-onda 4.4s ease-out infinite; }
+.escena .esc-belleza-brillo { animation: esc-belleza-encender 6.5s infinite; }
+.escena .esc-belleza-centro { animation: esc-belleza-encender 6.5s infinite; }
+.escena .esc-belleza-onda { animation: esc-belleza-onda 3.25s cubic-bezier(.22, 1, .36, 1) infinite; }
+.escena .esc-belleza-vapor { animation: esc-belleza-vapor 3.25s cubic-bezier(.22, 1, .36, 1) infinite; }
 .escena .esc-belleza-piedras {
-  animation: esc-belleza-mecer 5s ease-in-out infinite;
+  animation: esc-belleza-mecer 6.5s cubic-bezier(.45, 0, .55, 1) infinite;
   transform-origin: 50% 100%;
 }
 .escena .esc-belleza-llama {
-  animation: esc-belleza-llama 1.4s ease-in-out infinite;
+  animation: esc-belleza-llama 1.3s cubic-bezier(.45, 0, .55, 1) infinite;
   transform-origin: 50% 100%;
 }
-.escena .esc-belleza-halo { animation: esc-belleza-halo 2.4s ease-in-out infinite; }
-.escena .esc-belleza-nenufar { animation: esc-belleza-nenufar 4.2s ease-in-out infinite; }
-.escena .esc-belleza-reflejo { animation: esc-belleza-reflejo 5s ease-in-out infinite; }
-.escena .esc-belleza-fronda {
-  animation: esc-belleza-fronda 4.4s ease-in-out infinite;
-  transform-origin: 50% 100%;
-}
+.escena .esc-belleza-halo { animation: esc-belleza-halo 3.25s cubic-bezier(.45, 0, .55, 1) infinite; }
+.escena .esc-belleza-nenufar { animation: esc-belleza-nenufar 6.5s cubic-bezier(.45, 0, .55, 1) infinite; }
+.escena .esc-belleza-reflejo { animation: esc-belleza-reflejo 6.5s cubic-bezier(.45, 0, .55, 1) infinite; }
 
 /* ---------------- UÑAS ---------------- */
 
 /*
-  Un ciclo de 7 s. El esmalte (scaleY desde el borde inferior) y el pincel
-  (translateY) comparten los mismos porcentajes de subida (6% a 58%) y la misma
-  curva, así la punta del pincel siempre queda en el borde del esmalte. Alto de
-  la uña pintable: 55 unidades del viewBox.
+  Esmalte y pincel comparten tramos (20 % a 54 %) y curva: la punta del pincel
+  siempre queda en el borde del esmalte. La uña pintable mide 17 unidades del
+  viewBox: el pincel sube -17 px mientras el esmalte pasa de scaleY(0) a scaleY(1)
+  desde la cutícula. Al final se desvanece (90 % a 97 %) y reinicia sin saltos.
 */
 @keyframes esc-belleza-esmalte {
-  0%, 6% { transform: scaleY(0); opacity: 1; }
-  58%, 90% { transform: scaleY(1); opacity: 1; }
+  0%, 20% { transform: scaleY(0); opacity: 1; animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  54%, 90% { transform: scaleY(1); opacity: 1; animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
   97% { transform: scaleY(1); opacity: 0; }
   100% { transform: scaleY(0); opacity: 0; }
 }
 @keyframes esc-belleza-pincel {
-  0% { transform: translate(34px, 30px); opacity: 0; }
-  6% { transform: translate(0, 0); opacity: 1; }
-  58% { transform: translate(0, -55px); opacity: 1; }
-  70% { transform: translate(36px, -34px); opacity: 0; }
-  100% { transform: translate(34px, 30px); opacity: 0; }
+  0%, 8% { transform: translate(30px, 12px); opacity: 0; animation-timing-function: cubic-bezier(.22, 1, .36, 1); }
+  20% { transform: translate(0, 0); opacity: 1; animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  54% { transform: translate(0, -17px); opacity: 1; animation-timing-function: cubic-bezier(.64, 0, .78, 0); }
+  66%, 100% { transform: translate(28px, -12px); opacity: 0; }
 }
-/* Destello blanco que cruza la uña ya pintada. */
+/* Brillo fino de la uña: aparece cuando el esmalte ya cubrió esa zona. */
+@keyframes esc-belleza-gloss {
+  0%, 46% { opacity: 0; }
+  58%, 90% { opacity: 0.55; }
+  97%, 100% { opacity: 0; }
+}
+/* Destello diagonal que cruza la uña ya pintada. */
 @keyframes esc-belleza-destello {
-  0%, 57% { transform: translateX(-34px); opacity: 0; }
-  61% { transform: translateX(-26px); opacity: 0.9; }
-  73% { transform: translateX(34px); opacity: 0.9; }
-  76%, 100% { transform: translateX(38px); opacity: 0; }
+  0%, 56% { transform: translateX(-12px); opacity: 0; animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  60% { opacity: 0.85; }
+  70% { transform: translateX(13px); opacity: 0.85; }
+  73%, 100% { transform: translateX(15px); opacity: 0; }
 }
-/* Estrellitas que titilan. */
-@keyframes esc-belleza-estrella {
-  0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
-  50% { transform: scale(1) rotate(45deg); opacity: 1; }
+/* Chispa que aparece con el destello y se desvanece. */
+@keyframes esc-belleza-chispa {
+  0%, 60% { transform: scale(0) rotate(0deg); opacity: 0; animation-timing-function: cubic-bezier(.22, 1, .36, 1); }
+  70% { transform: scale(1.15) rotate(45deg); opacity: 1; animation-timing-function: cubic-bezier(.64, 0, .78, 0); }
+  82%, 100% { transform: scale(0) rotate(90deg); opacity: 0; }
+}
+/* El frasco responde con un brillo que lo cruza cuando la uña termina. */
+@keyframes esc-belleza-brillo-frasco {
+  0%, 68% { transform: translateX(-24px); opacity: 0; animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  72% { opacity: 0.5; }
+  82% { transform: translateX(26px); opacity: 0.5; }
+  86%, 100% { transform: translateX(28px); opacity: 0; }
 }
 
-.escena .esc-belleza-esmalte { animation: esc-belleza-esmalte 7s ease-in-out infinite; }
+.escena .esc-belleza-esmalte { animation: esc-belleza-esmalte 6.5s infinite; }
 .escena .esc-belleza-pincel {
-  animation: esc-belleza-pincel 7s ease-in-out infinite;
+  animation: esc-belleza-pincel 6.5s infinite;
   opacity: 0;
+}
+.escena .esc-belleza-gloss {
+  animation: esc-belleza-gloss 6.5s infinite;
+  opacity: 0.55;
 }
 .escena .esc-belleza-destello {
-  animation: esc-belleza-destello 7s ease-in-out infinite;
+  animation: esc-belleza-destello 6.5s infinite;
   opacity: 0;
 }
-.escena .esc-belleza-estrella { animation: esc-belleza-estrella 2.8s ease-in-out infinite; }
+.escena .esc-belleza-chispa {
+  animation: esc-belleza-chispa 6.5s infinite;
+  opacity: 0;
+}
+.escena .esc-belleza-brillo-frasco {
+  animation: esc-belleza-brillo-frasco 6.5s infinite;
+  opacity: 0;
+}

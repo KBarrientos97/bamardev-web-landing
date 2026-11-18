@@ -7,6 +7,10 @@ import { Aviso, Marco, svgBase, v } from './escenasBase'
   Escenas.tsx: SVG propio, sólo transform y opacity, keyframes `esc-belleza-*`
   en EscenasBelleza.css y los compartidos `esc-*` de index.css.
 
+  Las dos comparten el ciclo maestro de 6,5 s del aviso (`esc-chip` de index.css):
+  el aviso llega al ~10 % del ciclo y la acción empieza justo después, así la
+  notificación se lee como la causa de lo que pasa en la escena.
+
   OJO con los giros: la regla global `.escena svg *` pone transform-origin al
   centro de cada caja, y eso también afecta a un `transform="rotate()"` puesto
   como atributo. Por eso todo está dibujado en coordenadas absolutas y los
@@ -20,18 +24,18 @@ const girar = (grados: number, x: number, y: number): CSSProperties => ({
   transformOrigin: `${x}px ${y}px`,
 })
 
-/** Hoja/pétalo en forma de gota apuntando hacia arriba desde la base (bx, by). */
-const gota = (bx: number, by: number, largo: number, ancho: number) =>
-  `M${bx} ${by}C${bx - ancho} ${by - largo * 0.3} ${bx - ancho * 0.8} ${by - largo * 0.75} ${bx} ${by - largo}` +
-  `C${bx + ancho * 0.8} ${by - largo * 0.75} ${bx + ancho} ${by - largo * 0.3} ${bx} ${by}Z`
+/** Pétalo puntiagudo apuntando hacia arriba desde la base (bx, by). */
+const petaloPath = (bx: number, by: number, largo: number, ancho: number) =>
+  `M${bx} ${by}C${bx - ancho} ${by - largo * 0.28} ${bx - ancho * 0.7} ${by - largo * 0.78} ${bx} ${by - largo}` +
+  `C${bx + ancho * 0.7} ${by - largo * 0.78} ${bx + ancho} ${by - largo * 0.28} ${bx} ${by}Z`
 
 /** Destello de cuatro puntas centrado en (x, y). */
-function Estrella({ x, y, s = 1, retraso, color = '#fff' }: { x: number; y: number; s?: number; retraso: number; color?: string }) {
+function Chispa({ x, y, s = 1, retraso, color = '#fff' }: { x: number; y: number; s?: number; retraso: number; color?: string }) {
   const r = 6 * s
-  const c = 1.7 * s
+  const c = 1.6 * s
   return (
     <path
-      className="esc-belleza-estrella"
+      className="esc-belleza-chispa"
       d={`M${x} ${y - r}L${x + c} ${y - c}L${x + r} ${y}L${x + c} ${y + c}L${x} ${y + r}L${x - c} ${y + c}L${x - r} ${y}L${x - c} ${y - c}Z`}
       fill={color}
       style={{ animationDelay: `${retraso}s` }}
@@ -39,208 +43,218 @@ function Estrella({ x, y, s = 1, retraso, color = '#fff' }: { x: number; y: numb
   )
 }
 
+/** Plataforma común de las dos escenas: losa elíptica con canto y sombra de contacto difusa. */
+function Plataforma({ g, sombra }: { g: (n: string) => string; sombra: string }) {
+  return (
+    <>
+      <ellipse cx="150" cy="154" rx="136" ry="7" fill={sombra} opacity=".1" />
+      <path d="M22 144v4a128 9 0 0 0 256 0v-4Z" fill={`url(#${g('ls')})`} />
+      <ellipse cx="150" cy="144" rx="128" ry="9" fill={`url(#${g('lt')})`} />
+      <path d="M30 142.4A128 9 0 0 1 270 142.4" stroke="#fff" strokeWidth=".9" fill="none" opacity=".6" />
+    </>
+  )
+}
+
 /* ------------------------------------------------------------------ */
 /*  SPA                                                                */
 /* ------------------------------------------------------------------ */
 
-/** Fronda de hojas que se mece desde la base (bx, by). */
-function Fronda({ bx, by, hojas, retraso, g }: { bx: number; by: number; hojas: [number, number, number][]; retraso: number; g: (n: string) => string }) {
-  return (
-    <g className="esc-belleza-fronda" style={{ animationDelay: `${retraso}s` }}>
-      {hojas.map(([ang, largo, ancho], i) => (
-        <path key={i} d={gota(bx, by, largo, ancho)} fill={`url(#${g(i % 2 ? 'ho2' : 'ho1')})`} style={girar(ang, bx, by)} />
-      ))}
-    </g>
-  )
-}
-
-/** Una flor de loto que se abre y se cierra sobre el agua, con ondas, piedras zen y una vela. */
+/** Un loto que se abre sobre una fuente de piedra: pila de piedras a un lado, vela al otro, vapor en el centro. */
 export function EscenaSpa() {
   const id = useId().replace(/:/g, '')
   const g = (n: string) => `${id}${n}`
-  // Pivote de los pétalos: la base de la flor, en el agua.
+  // Pivote de los pétalos: la base de la flor, en el centro del agua.
   const PX = 150
-  const PY = 127
-  const atras = [-68, -34, 34, 68, 0]
-  const frente = [-52, -18, 18, 52]
-  const petalo = (ang: number, i: number, largo: number, ancho: number, relleno: string, retraso0: number) => (
+  const PY = 118
+  const petalo = (ang: number, largo: number, ancho: number, relleno: string, lag: number) => (
     <path
       key={`${relleno}${ang}`}
       className="esc-belleza-petalo"
-      d={gota(PX, PY, largo, ancho)}
+      d={petaloPath(PX, PY, largo, ancho)}
       fill={`url(#${g(relleno)})`}
       style={{
-        ...v({ '--a': `${ang}deg`, animationDelay: `${retraso0 + i * 0.14}s` }),
+        ...v({ '--a': `${ang}deg`, animationDelay: `${-0.2 + lag}s` }),
         transformBox: 'view-box',
         transformOrigin: `${PX}px ${PY}px`,
       }}
     />
   )
+  // Los pétalos del centro abren primero y los de los lados los siguen.
+  const lagAtras = (a: number) => (Math.abs(a) / 66) * 0.14
+  const lagFrente = (a: number) => 0.05 + (Math.abs(a) / 48) * 0.08
   return (
     <Marco fondo="bg-gradient-to-b from-teal-100 via-emerald-50 to-white">
-      <div aria-hidden className="absolute -left-10 -top-12 h-40 w-40 rounded-full bg-white/60 blur-2xl" />
       <svg viewBox="0 0 300 170" preserveAspectRatio="xMidYMax meet" className={svgBase}>
         <defs>
           <linearGradient id={g('lt')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#f9f0de" />
-            <stop offset="1" stopColor="#e6d5b2" />
+            <stop offset="0" stopColor="#f6f3ea" />
+            <stop offset="1" stopColor="#dfe6dd" />
           </linearGradient>
           <linearGradient id={g('ls')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#d2bd93" />
-            <stop offset="1" stopColor="#bda677" />
+            <stop offset="0" stopColor="#c8d3c9" />
+            <stop offset="1" stopColor="#aebdb3" />
           </linearGradient>
           <linearGradient id={g('cu')} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#d3dcda" />
-            <stop offset=".45" stopColor="#eef3f1" />
-            <stop offset="1" stopColor="#a9bab7" />
+            <stop offset="0" stopColor="#e4dfd1" />
+            <stop offset=".4" stopColor="#f6f3ea" />
+            <stop offset="1" stopColor="#b6ae9c" />
+          </linearGradient>
+          <linearGradient id={g('cs')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#5c5443" stopOpacity="0" />
+            <stop offset="1" stopColor="#5c5443" stopOpacity=".22" />
+          </linearGradient>
+          <linearGradient id={g('ri')} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#fdfcf7" />
+            <stop offset=".6" stopColor="#ece7d9" />
+            <stop offset="1" stopColor="#d3ccb9" />
           </linearGradient>
           <linearGradient id={g('ag')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#9be8dd" />
-            <stop offset="1" stopColor="#3fb5ad" />
+            <stop offset="0" stopColor="#4fbdb1" />
+            <stop offset="1" stopColor="#a6ece1" />
           </linearGradient>
-          <linearGradient id={g('pa')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#fbcfe8" />
-            <stop offset="1" stopColor="#e864a8" />
+          <linearGradient id={g('pa')} x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stopColor="#fbeef5" />
+            <stop offset="1" stopColor="#e872ab" />
           </linearGradient>
-          <linearGradient id={g('pf')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#fff1f8" />
-            <stop offset="1" stopColor="#f58cc2" />
+          <linearGradient id={g('pf')} x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stopColor="#ffffff" />
+            <stop offset="1" stopColor="#f59cc6" />
           </linearGradient>
           <radialGradient id={g('ce')}>
-            <stop offset="0" stopColor="#fff6b0" />
-            <stop offset="1" stopColor="#fbbf24" />
+            <stop offset="0" stopColor="#fff3a8" />
+            <stop offset="1" stopColor="#f5b52c" />
           </radialGradient>
-          <radialGradient id={g('ha')}>
-            <stop offset="0" stopColor="#fff3a6" stopOpacity=".95" />
-            <stop offset="1" stopColor="#fde68a" stopOpacity="0" />
+          <radialGradient id={g('gl')}>
+            <stop offset="0" stopColor="#fff" stopOpacity=".95" />
+            <stop offset="1" stopColor="#fff" stopOpacity="0" />
           </radialGradient>
-          <linearGradient id={g('p1')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#cfd8d7" />
-            <stop offset="1" stopColor="#8d9e9f" />
-          </linearGradient>
-          <linearGradient id={g('p2')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#efe3d6" />
-            <stop offset="1" stopColor="#b9a894" />
-          </linearGradient>
-          <linearGradient id={g('p3')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#dbe9e3" />
-            <stop offset="1" stopColor="#a2bdb4" />
-          </linearGradient>
-          <linearGradient id={g('ho1')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#7fdcb6" />
-            <stop offset="1" stopColor="#2f9f85" />
-          </linearGradient>
-          <linearGradient id={g('ho2')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#5cc7a0" />
-            <stop offset="1" stopColor="#23846f" />
-          </linearGradient>
+          <radialGradient id={g('p1')} cx=".35" cy=".28" r=".85">
+            <stop offset="0" stopColor="#d6dedb" />
+            <stop offset="1" stopColor="#85969a" />
+          </radialGradient>
+          <radialGradient id={g('p2')} cx=".35" cy=".28" r=".85">
+            <stop offset="0" stopColor="#ece1d3" />
+            <stop offset="1" stopColor="#ae9d89" />
+          </radialGradient>
+          <radialGradient id={g('p3')} cx=".35" cy=".28" r=".85">
+            <stop offset="0" stopColor="#e1ece7" />
+            <stop offset="1" stopColor="#97b3aa" />
+          </radialGradient>
           <linearGradient id={g('ja')} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#fde4f0" />
-            <stop offset=".6" stopColor="#f9b4d6" />
-            <stop offset="1" stopColor="#e88fbc" />
+            <stop offset="0" stopColor="#f8efdf" />
+            <stop offset=".55" stopColor="#e6d8c0" />
+            <stop offset="1" stopColor="#bfae92" />
           </linearGradient>
+          <linearGradient id={g('fl')} x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stopColor="#ffb13b" />
+            <stop offset="1" stopColor="#ffe28a" />
+          </linearGradient>
+          <radialGradient id={g('ha')}>
+            <stop offset="0" stopColor="#ffe9a8" stopOpacity=".8" />
+            <stop offset="1" stopColor="#ffe9a8" stopOpacity="0" />
+          </radialGradient>
         </defs>
 
-        {/* sol pálido detrás de la flor */}
-        <circle className="esc-latido" cx="150" cy="96" r="50" fill="#fff" opacity=".42" style={{ animationDuration: '5.5s' }} />
-        <circle cx="150" cy="96" r="34" fill="#fff" opacity=".35" />
+        <Plataforma g={g} sombra="#0b4f4a" />
 
-        {/* sombra y losa */}
-        <ellipse className="esc-sombra" cx="150" cy="165" rx="128" ry="5.5" fill="#0b5a55" opacity=".15" />
-        <rect x="22" y="151" width="256" height="10" rx="5" fill={`url(#${g('ls')})`} />
-        <rect x="22" y="145" width="256" height="12" rx="6" fill={`url(#${g('lt')})`} />
-        <rect x="30" y="147" width="240" height="3" rx="1.5" fill="#fff" opacity=".6" />
+        {/* sombras de contacto de los tres objetos */}
+        <ellipse cx="150" cy="146" rx="56" ry="5.4" fill="#0b4f4a" opacity=".16" />
+        <ellipse cx="47" cy="147" rx="24" ry="4" fill="#0b4f4a" opacity=".16" />
+        <ellipse cx="256" cy="146" rx="17" ry="3.2" fill="#0b4f4a" opacity=".16" />
 
-        {/* frondas de fondo */}
-        <Fronda bx={30} by={149} g={g} retraso={-1.2} hojas={[[-48, 44, 7], [-20, 56, 8], [8, 48, 7], [32, 38, 6]]} />
-        <Fronda bx={274} by={149} g={g} retraso={-2.6} hojas={[[-34, 38, 6], [-8, 50, 7], [20, 56, 8], [46, 42, 7]]} />
+        {/* pila de piedras: objeto secundario, tonos más apagados */}
+        <g className="esc-belleza-piedras">
+          <ellipse cx="46" cy="141.5" rx="21" ry="8.5" fill={`url(#${g('p1')})`} />
+          <ellipse cx="40" cy="138.6" rx="7" ry="1.7" fill="#fff" opacity=".26" />
+          <ellipse cx="48" cy="136" rx="14" ry="3" fill="#2a3a3a" opacity=".16" />
+          <ellipse cx="47" cy="131" rx="15" ry="6.8" fill={`url(#${g('p2')})`} />
+          <ellipse cx="41.5" cy="128.6" rx="5.4" ry="1.5" fill="#fff" opacity=".28" />
+          <ellipse cx="48" cy="126" rx="9.5" ry="2.4" fill="#2a3a3a" opacity=".16" />
+          <ellipse cx="46.5" cy="122.4" rx="10" ry="5" fill={`url(#${g('p3')})`} />
+          <ellipse cx="43" cy="120.6" rx="3.6" ry="1.1" fill="#fff" opacity=".3" />
+        </g>
 
-        {/* cuenco de piedra */}
-        <path d="M64 128V140A86 17 0 0 0 236 140V128Z" fill={`url(#${g('cu')})`} />
-        <path d="M64 130V134A86 17 0 0 0 236 134V130Z" fill="#fff" opacity=".18" />
-        <ellipse cx="150" cy="128" rx="86" ry="17" fill="#f7f6f0" />
-        <ellipse cx="150" cy="128.6" rx="79" ry="14.6" fill="#c3d3cf" />
-        <ellipse cx="150" cy="129.6" rx="76" ry="13.6" fill={`url(#${g('ag')})`} />
-        <rect x="74" y="123" width="40" height="3" rx="1.5" fill="#fff" opacity=".35" />
+        {/* fuente: pie, cuerpo de piedra y borde */}
+        <ellipse cx="150" cy="143" rx="34" ry="5" fill="#a39b87" />
+        <path d="M80 116C80 132 108 140 126 141.6A24 4 0 0 0 174 141.6C192 140 220 132 220 116Z" fill={`url(#${g('cu')})`} />
+        <path d="M80 116C80 132 108 140 126 141.6A24 4 0 0 0 174 141.6C192 140 220 132 220 116Z" fill={`url(#${g('cs')})`} />
+        <path d="M81.4 125C88 133 112 139.4 150 139.4S212 133 218.6 125" stroke="#fff" strokeWidth="1" fill="none" opacity=".3" />
+        <ellipse cx="150" cy="116" rx="71" ry="13.5" fill={`url(#${g('ri')})`} />
+        <ellipse cx="150" cy="116.4" rx="64" ry="11.4" fill="#b5ad99" />
+        <ellipse cx="150" cy="118" rx="62.5" ry="9.6" fill={`url(#${g('ag')})`} />
+        <path d="M84 112.6A71 13.5 0 0 1 130 103.2" stroke="#fff" strokeWidth="1.1" strokeLinecap="round" fill="none" opacity=".7" />
 
-        {/* reflejos que se deslizan por el agua */}
-        <ellipse className="esc-belleza-reflejo" cx="112" cy="128" rx="14" ry="1.8" fill="#fff" style={{ animationDelay: '-1.5s' }} />
-        <ellipse className="esc-belleza-reflejo" cx="194" cy="133" rx="10" ry="1.5" fill="#fff" style={{ animationDelay: '-3.4s' }} />
+        {/* reflejo que se desliza por el agua */}
+        <ellipse className="esc-belleza-reflejo" cx="116" cy="114.2" rx="13" ry="1.4" fill="#fff" />
 
-        {/* ondas que se expanden bajo la flor */}
-        {[0, -1.5, -3].map((d, i) => (
+        {/* ondas que nacen bajo la flor: dos por ciclo, una al abrir y otra al cerrar */}
+        {[0, -1.625].map((d, i) => (
           <ellipse
             key={i}
             className="esc-belleza-onda"
             cx="150"
-            cy="131"
-            rx="20"
-            ry="4.2"
+            cy="119"
+            rx="22"
+            ry="3.7"
             fill="none"
             stroke="#fff"
-            strokeWidth="1.4"
+            strokeWidth="1.1"
             style={{ animationDelay: `${d}s` }}
           />
         ))}
 
-        {/* nenúfares */}
+        {/* dos hojas de nenúfar */}
         <g className="esc-belleza-nenufar" style={{ animationDelay: '-1s' }}>
-          <ellipse cx="104" cy="134" rx="11" ry="3.3" fill="#4cb98d" />
-          <ellipse cx="104" cy="133.2" rx="10" ry="2.8" fill="#6fd3a5" />
+          <ellipse cx="102" cy="122.6" rx="9" ry="2.5" fill="#2f9c78" />
+          <ellipse cx="102" cy="122" rx="8.2" ry="2" fill="#6cd2a3" />
         </g>
-        <g className="esc-belleza-nenufar" style={{ animationDelay: '-2.7s' }}>
-          <ellipse cx="200" cy="130" rx="9" ry="2.8" fill="#4cb98d" />
-          <ellipse cx="200" cy="129.3" rx="8" ry="2.3" fill="#6fd3a5" />
-          <circle cx="202" cy="127.6" r="2.4" fill="#fbcfe8" />
+        <g className="esc-belleza-nenufar" style={{ animationDelay: '-3.2s' }}>
+          <ellipse cx="197" cy="120.6" rx="7.6" ry="2.2" fill="#2f9c78" />
+          <ellipse cx="197" cy="120" rx="6.9" ry="1.8" fill="#6cd2a3" />
         </g>
 
-        {/* la flor de loto: se abre y se cierra */}
-        <g className="esc-flotar-suave">
-          {atras.map((a, i) => petalo(a, i, 40, 13, 'pa', -2.6))}
-          {frente.map((a, i) => petalo(a, i, 32, 11.5, 'pf', -2.3))}
-          <circle
-            className="esc-belleza-centro"
-            cx="150"
-            cy="107"
-            r="5.5"
-            fill={`url(#${g('ce')})`}
-            style={{ transformOrigin: '50% 100%', animationDelay: '-2.6s' }}
+        {/* resplandor detrás de la flor: se enciende al abrirse */}
+        <circle className="esc-belleza-brillo" cx="150" cy="99" r="46" fill={`url(#${g('gl')})`} />
+
+        {/* la flor de loto flota apenas sobre el agua */}
+        <g className="esc-belleza-flota">
+          <ellipse cx="150" cy="119.4" rx="16" ry="3.2" fill="#0b6b63" opacity=".22" />
+          {[-66, -33, 0, 33, 66].map((a) => petalo(a, 40, 12.5, 'pa', lagAtras(a)))}
+          {[-48, -16, 16, 48].map((a) => petalo(a, 31, 11, 'pf', lagFrente(a)))}
+          <ellipse className="esc-belleza-centro" cx="150" cy="108.6" rx="5.4" ry="5" fill={`url(#${g('ce')})`} style={{ animationDelay: '-0.2s' }} />
+        </g>
+
+        {/* vapor del agua tibia: hilos que suben y se disuelven */}
+        {[
+          { x: 106, y: 108, dx: -5, d: 0 },
+          { x: 194, y: 107, dx: 6, d: -1.1 },
+          { x: 128, y: 104, dx: -3, d: -2.2 },
+        ].map((h, i) => (
+          <path
+            key={i}
+            className="esc-belleza-vapor"
+            d={`M${h.x} ${h.y}c4-5-4-9 0-14s4-9 0-14`}
+            fill="none"
+            stroke="#7ec8bd"
+            strokeWidth="2.3"
+            strokeLinecap="round"
+            style={v({ '--dx': `${h.dx}px`, animationDelay: `${h.d}s` })}
           />
-          <ellipse cx="150" cy="127" rx="9" ry="3" fill="#f58cc2" opacity=".55" />
-        </g>
+        ))}
 
-        {/* polen brillante que sube de la flor */}
-        <circle className="esc-subir" cx="142" cy="108" r="1.7" fill="#fff6b0" style={v({ '--dx': '-8px', '--giro': '0deg', animationDelay: '-1s' })} />
-        <circle className="esc-subir" cx="158" cy="106" r="1.5" fill="#fff" style={v({ '--dx': '9px', '--giro': '0deg', animationDelay: '-2.8s' })} />
-        <circle className="esc-subir" cx="150" cy="104" r="1.9" fill="#fde68a" style={v({ '--dx': '2px', '--giro': '0deg', animationDelay: '-4s' })} />
-
-        {/* vapor del agua tibia */}
-        <circle className="esc-humo" cx="118" cy="112" r="5" fill="#fff" style={{ animationDelay: '-0.6s' }} />
-        <circle className="esc-humo" cx="184" cy="112" r="5.5" fill="#fff" style={{ animationDelay: '-2s' }} />
-        <circle className="esc-humo" cx="166" cy="110" r="4" fill="#fff" style={{ animationDelay: '-3s' }} />
-
-        {/* pila de piedras zen */}
-        <g className="esc-belleza-piedras" style={{ animationDelay: '-1.8s' }}>
-          <ellipse cx="44" cy="146" rx="18" ry="8" fill={`url(#${g('p1')})`} />
-          <ellipse cx="38" cy="143" rx="7" ry="2.2" fill="#fff" opacity=".35" />
-          <ellipse cx="45" cy="134" rx="13.5" ry="7" fill={`url(#${g('p2')})`} />
-          <ellipse cx="40.5" cy="131.4" rx="5.5" ry="1.9" fill="#fff" opacity=".4" />
-          <ellipse cx="43" cy="124" rx="9" ry="5.3" fill={`url(#${g('p3')})`} />
-          <ellipse cx="40" cy="122" rx="3.8" ry="1.4" fill="#fff" opacity=".45" />
-        </g>
-
-        {/* vela: halo que late y llama que parpadea */}
-        <circle className="esc-belleza-halo" cx="258" cy="128" r="21" fill={`url(#${g('ha')})`} />
-        <rect x="248" y="137" width="20" height="15" rx="4.5" fill={`url(#${g('ja')})`} />
-        <rect x="250.5" y="139" width="3" height="10" rx="1.5" fill="#fff" opacity=".5" />
-        <ellipse cx="258" cy="137.4" rx="10" ry="2.6" fill="#fff7ed" />
-        <rect x="257.4" y="132.5" width="1.4" height="5" rx=".7" fill="#7c5a49" />
-        <g className="esc-belleza-llama" style={{ animationDelay: '-0.5s' }}>
-          <path d="M258 134C253.5 131 254.5 125 258 119C261.5 125 262.5 131 258 134Z" fill="#fbbf24" />
-          <path d="M258 133.4C256 131.6 256.4 128.4 258 125.4C259.6 128.4 260 131.6 258 133.4Z" fill="#fff7c2" />
+        {/* vela en un frasco de cerámica: halo que late y llama que parpadea */}
+        <circle className="esc-belleza-halo" cx="256" cy="115" r="27" fill={`url(#${g('ha')})`} />
+        <path d="M243 128H269V138Q269 144 263 144H249Q243 144 243 138Z" fill={`url(#${g('ja')})`} />
+        <rect x="245.4" y="131" width="2.8" height="9" rx="1.4" fill="#fff" opacity=".4" />
+        <ellipse cx="256" cy="128" rx="13" ry="3.3" fill="#efe4d0" />
+        <ellipse cx="256" cy="128.3" rx="10.6" ry="2.5" fill="#fff6e4" />
+        <rect x="255.4" y="121.6" width="1.2" height="6.6" rx=".6" fill="#5a4638" />
+        <g className="esc-belleza-llama">
+          <path d="M256 122.4C251.6 119 252.4 113 256 106.4C259.6 113 260.4 119 256 122.4Z" fill={`url(#${g('fl')})`} />
+          <path d="M256 121.8C254.2 120 254.4 116.8 256 113.8C257.6 116.8 257.8 120 256 121.8Z" fill="#fffbe0" />
         </g>
       </svg>
-      <Aviso texto="Reserva 5:00 pm" />
+      <Aviso etiqueta="Reserva" texto="Hoy 5:00 pm · Ana" tono="verde" />
     </Marco>
   )
 }
@@ -249,160 +263,211 @@ export function EscenaSpa() {
 /*  UÑAS                                                               */
 /* ------------------------------------------------------------------ */
 
-// Geometría de la uña (coordenadas del viewBox). El esmalte crece desde la
-// cutícula (y = 101) hasta la punta (y = 46): 55 unidades.
-const UNA = 'M115 94V66Q115 46 135 46Q155 46 155 66V94Q155 101 148 101H122Q115 101 115 94Z'
-
-function Corazon({ x, y, retraso, dx }: { x: number; y: number; retraso: number; dx: number }) {
-  return (
-    <path
-      className="esc-subir"
-      d={`M${x} ${y + 2}C${x - 6} ${y - 2} ${x - 5} ${y - 7} ${x - 2.5} ${y - 7}C${x - 1} ${y - 7} ${x} ${y - 6} ${x} ${y - 5}C${x} ${y - 6} ${x + 1} ${y - 7} ${x + 2.5} ${y - 7}C${x + 5} ${y - 7} ${x + 6} ${y - 2} ${x} ${y + 2}Z`}
-      fill="#fb7185"
-      style={v({ '--dx': `${dx}px`, '--giro': '0deg', animationDelay: `${retraso}s` })}
-    />
-  )
+/** Contorno de una uña: punta redondeada arriba y cutícula casi recta abajo. */
+const unaPath = (cx: number, top: number, w: number, h: number) => {
+  const r = w / 2
+  const b = top + h
+  return `M${cx - r} ${top + r}A${r} ${r} 0 0 1 ${cx + r} ${top + r}V${b - 3}Q${cx + r} ${b} ${cx + r - 3} ${b}H${cx - r + 3}Q${cx - r} ${b} ${cx - r} ${b - 3}Z`
 }
 
-/** Un pincel pinta de rosa una uña, de la base a la punta; luego un destello y vuelta a empezar. */
+/** Dedo con la punta redondeada; baja hasta `base` para quedar metido en la palma. */
+const dedoPath = (cx: number, w: number, punta: number, base: number) => {
+  const r = w / 2
+  return `M${cx - r} ${base}V${punta + r}A${r} ${r} 0 0 1 ${cx + r} ${punta + r}V${base}Z`
+}
+
+// Dedos de la mano derecha vistos por el dorso, con el pulgar a la izquierda.
+const DEDOS = [
+  { c: 154, w: 16.5, punta: 42, nh: 16 }, // índice
+  { c: 170.5, w: 16.5, punta: 34, nh: 17 }, // medio
+  { c: 187, w: 16.5, punta: 40, nh: 17 }, // anular: el que se esmalta
+  { c: 202, w: 13.5, punta: 54, nh: 13.5 }, // meñique
+]
+// Uña que se pinta (anular): el esmalte crece desde la cutícula (y = 60) hasta la punta (y = 43).
+const AC = DEDOS[2].c
+const A_TOP = DEDOS[2].punta + 3
+const A_ALTO = DEDOS[2].nh
+const A_BASE = A_TOP + A_ALTO
+
+/** Una mano apoyada sobre un cojín: el pincel esmalta una uña de la cutícula a la punta, brilla y el frasco responde. */
 export function EscenaUnas() {
   const id = useId().replace(/:/g, '')
   const g = (n: string) => `${id}${n}`
-  const cic = 'M105 170V72Q105 34 135 34Q165 34 165 72V170Z'
   return (
     <Marco fondo="bg-gradient-to-b from-fuchsia-100 via-pink-50 to-white">
-      <div aria-hidden className="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white/60 blur-2xl" />
       <svg viewBox="0 0 300 170" preserveAspectRatio="xMidYMax meet" className={svgBase}>
         <defs>
           <clipPath id={g('cl')}>
-            <path d={UNA} />
+            <path d={unaPath(AC, A_TOP, 11, A_ALTO)} />
           </clipPath>
-          <linearGradient id={g('pi')} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#fde3cd" />
-            <stop offset=".62" stopColor="#f9c9a6" />
-            <stop offset="1" stopColor="#e9a57d" />
+          <clipPath id={g('fb')}>
+            <rect x="52" y="106" width="36" height="38" rx="11" />
+          </clipPath>
+          <linearGradient id={g('lt')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#f8eef8" />
+            <stop offset="1" stopColor="#eadbef" />
           </linearGradient>
+          <linearGradient id={g('ls')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#d9c4e4" />
+            <stop offset="1" stopColor="#c6aad8" />
+          </linearGradient>
+          {/* un solo degradé de piel para toda la mano: así no hay costuras entre dedos y palma */}
+          <linearGradient id={g('sk')} gradientUnits="userSpaceOnUse" x1="116" y1="0" x2="214" y2="0">
+            <stop offset="0" stopColor="#fcdcc4" />
+            <stop offset=".55" stopColor="#f5c3a0" />
+            <stop offset="1" stopColor="#e1a67f" />
+          </linearGradient>
+          {/* volumen del dedo: luz a la izquierda, sombra a la derecha */}
+          <linearGradient id={g('vo')} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#fff" stopOpacity=".26" />
+            <stop offset=".45" stopColor="#fff" stopOpacity="0" />
+            <stop offset=".55" stopColor="#a85a30" stopOpacity="0" />
+            <stop offset="1" stopColor="#a85a30" stopOpacity=".2" />
+          </linearGradient>
+          {/* el volumen de los dedos se diluye hacia los nudillos, sin corte seco */}
+          <linearGradient id={g('df')} gradientUnits="userSpaceOnUse" x1="0" y1="62" x2="0" y2="97">
+            <stop offset="0" stopColor="#fff" />
+            <stop offset="1" stopColor="#000" />
+          </linearGradient>
+          <mask id={g('mk')} maskUnits="userSpaceOnUse" x="140" y="30" width="76" height="70">
+            <rect x="140" y="30" width="76" height="70" fill={`url(#${g('df')})`} />
+          </mask>
           <linearGradient id={g('nb')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#fff0ec" />
-            <stop offset="1" stopColor="#f8cdc7" />
+            <stop offset="0" stopColor="#fff1ec" />
+            <stop offset="1" stopColor="#f6cbc3" />
           </linearGradient>
-          <linearGradient id={g('es')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#ff9fcf" />
-            <stop offset="1" stopColor="#ee4d9f" />
+          <linearGradient id={g('es')} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#ff8cc4" />
+            <stop offset="1" stopColor="#e63e8f" />
           </linearGradient>
-          <linearGradient id={g('bo')} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#ffa6d2" />
-            <stop offset="1" stopColor="#ec4899" />
+          <linearGradient id={g('bo')} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#ff93c8" />
+            <stop offset="1" stopColor="#e23a8b" />
           </linearGradient>
           <linearGradient id={g('ne')} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#4a4a58" />
-            <stop offset=".5" stopColor="#23232e" />
-            <stop offset="1" stopColor="#12121a" />
+            <stop offset="0" stopColor="#52525f" />
+            <stop offset=".5" stopColor="#2b2b36" />
+            <stop offset="1" stopColor="#16161e" />
           </linearGradient>
-          <linearGradient id={g('pl')} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#f4f4f8" />
-            <stop offset="1" stopColor="#aeb0c0" />
+          <linearGradient id={g('ma')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#5d5d6c" />
+            <stop offset="1" stopColor="#1c1c26" />
           </linearGradient>
-          <linearGradient id={g('pt')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#f0e4ff" />
-            <stop offset="1" stopColor="#d3bbf7" />
+          <linearGradient id={g('pl')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#f8f8fc" />
+            <stop offset="1" stopColor="#a4a6b8" />
           </linearGradient>
           <linearGradient id={g('cr')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#ffd0e6" />
-            <stop offset="1" stopColor="#f472b6" />
+            <stop offset="0" stopColor="#ff8cc4" />
+            <stop offset="1" stopColor="#e63e8f" />
+          </linearGradient>
+          <linearGradient id={g('co')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#f0e6fb" />
+            <stop offset=".55" stopColor="#d3c0f2" />
+            <stop offset="1" stopColor="#a98fe0" />
           </linearGradient>
         </defs>
 
-        <ellipse className="esc-sombra" cx="150" cy="166" rx="120" ry="4.5" fill="#86198f" opacity=".1" />
+        <Plataforma g={g} sombra="#6b2a7a" />
 
-        {/* pedestal del frasco */}
-        <rect x="204" y="152" width="68" height="12" rx="6" fill="#bd9df0" />
-        <rect x="204" y="146" width="68" height="14" rx="7" fill={`url(#${g('pt')})`} />
-        <rect x="212" y="148" width="52" height="3" rx="1.5" fill="#fff" opacity=".6" />
+        {/* sombras de contacto: cojín y frasco */}
+        <ellipse cx="179" cy="148" rx="58" ry="5" fill="#5b2a6b" opacity=".16" />
+        <ellipse cx="71" cy="147" rx="24" ry="4" fill="#5b2a6b" opacity=".16" />
 
-        {/* frasco de esmalte */}
-        <ellipse className="esc-sombra" cx="238" cy="150" rx="19" ry="3" fill="#6b21a8" opacity=".18" style={{ animationDelay: '-2s' }} />
-        <g className="esc-flotar-suave" style={{ animationDelay: '-2s' }}>
-          <clipPath id={g('fb')}>
-            <rect x="218" y="108" width="40" height="40" rx="11" />
-          </clipPath>
-          <rect x="228" y="76" width="20" height="26" rx="5" fill={`url(#${g('ne')})`} />
-          <rect x="231" y="79" width="3" height="19" rx="1.5" fill="#fff" opacity=".4" />
-          <rect x="228" y="88" width="20" height="1.4" fill="#000" opacity=".35" />
-          <rect x="230" y="100" width="16" height="10" rx="3" fill="#fbe3f0" />
-          <g clipPath={`url(#${g('fb')})`}>
-            <rect x="218" y="108" width="40" height="40" fill={`url(#${g('bo')})`} />
-            <rect x="246" y="108" width="14" height="40" fill="#a3175f" opacity=".2" />
-            <rect x="221.5" y="112" width="4.5" height="30" rx="2.2" fill="#fff" opacity=".45" />
-            <rect x="218" y="108" width="40" height="5" fill="#fff" opacity=".25" />
+        {/* frasco de esmalte: objeto secundario a la izquierda */}
+        <rect x="58" y="70" width="24" height="29" rx="5.5" fill={`url(#${g('ne')})`} />
+        <rect x="60.6" y="73" width="2.6" height="22" rx="1.3" fill="#fff" opacity=".28" />
+        {[67, 70.6, 74.2, 77.8].map((x) => (
+          <rect key={x} x={x + 1.2} y="73" width=".9" height="22" rx=".45" fill="#fff" opacity=".07" />
+        ))}
+        <rect x="62" y="98" width="16" height="9" rx="2" fill="#f4d5e4" />
+        <rect x="62" y="100.6" width="16" height="1" fill="#fff" opacity=".5" />
+        <rect x="62" y="103.4" width="16" height="1" fill="#fff" opacity=".5" />
+        <rect x="52" y="106" width="36" height="38" rx="11" fill="#fbe4f0" />
+        <g clipPath={`url(#${g('fb')})`}>
+          <rect x="53.6" y="108" width="32.8" height="34.6" rx="9.4" fill={`url(#${g('bo')})`} />
+          <rect x="76" y="108" width="12" height="36" fill="#7a0f45" opacity=".22" />
+          <rect x="57" y="111" width="3.6" height="26" rx="1.8" fill="#fff" opacity=".4" />
+          <rect x="59" y="122" width="24" height="12" rx="3" fill="#fff" opacity=".9" />
+          <path d="M71 132.4C67.4 129.6 67.8 126.8 69.2 125.2L71 123 72.8 125.2C74.2 126.8 74.6 129.6 71 132.4Z" fill="#e23a8b" />
+          {/* brillo que cruza el frasco cuando la uña termina */}
+          <g style={girar(18, 70, 125)}>
+            <rect className="esc-belleza-brillo-frasco" x="66" y="96" width="7" height="58" rx="3.5" fill="#fff" />
           </g>
-          <rect x="226" y="124" width="24" height="14" rx="5" fill="#fff" opacity=".88" />
-          <path d="M238 135C233 131.8 233.6 128 235.8 128C237 128 238 128.8 238 129.6C238 128.8 239 128 240.2 128C242.4 128 243 131.8 238 135Z" fill="#f472b6" />
         </g>
 
-        {/* corazones que salen del frasco */}
-        <Corazon x={236} y={104} dx={-10} retraso={-0.8} />
-        <Corazon x={242} y={104} dx={12} retraso={-3} />
+        {/* la mano flota apenas sobre el cojín; pincel, esmalte y destellos van con ella */}
+        <g className="esc-belleza-flota">
+          {/* pulgar */}
+          <path d="M146.1 120.1L117.3 92.5A8.5 8.5 0 0 1 129.1 80.3L157.9 107.9Z" fill={`url(#${g('sk')})`} />
+          <path d="M146.1 120.1L117.3 92.5A8.5 8.5 0 0 1 129.1 80.3" fill="none" stroke="#fff" strokeWidth="1" opacity=".3" strokeLinecap="round" />
+          <path d={unaPath(129, 82, 9, 12)} fill={`url(#${g('nb')})`} style={girar(-46, 129, 88)} />
+          {/* palma */}
+          <path d="M145.75 92H208.75V100C208.75 108 205 118 199 130H157C150 118 145.75 108 145.75 100Z" fill={`url(#${g('sk')})`} />
+          {/* dedos */}
+          {DEDOS.map((d) => (
+            <path key={d.c} d={dedoPath(d.c, d.w, d.punta, 100)} fill={`url(#${g('sk')})`} />
+          ))}
+          <g mask={`url(#${g('mk')})`}>
+            {DEDOS.map((d) => (
+              <path key={d.c} d={dedoPath(d.c, d.w, d.punta, 100)} fill={`url(#${g('vo')})`} />
+            ))}
+          </g>
+          {/* separaciones y pliegues, muy sutiles */}
+          <g stroke="#c98a63" strokeLinecap="round" fill="none">
+            <path d="M162.25 50V96M178.75 48.5V96M195.25 61V96" strokeWidth="1" opacity=".5" />
+            <path d="M150 88Q154 89.6 158 88M166.5 88Q170.5 89.6 174.5 88M183 88Q187 89.6 191 88M198.5 88Q202 89.6 205.5 88" strokeWidth=".8" opacity=".35" />
+            <path d="M150 66Q154 67.6 158 66M166.5 60Q170.5 61.6 174.5 60M183 64Q187 65.6 191 64M198.5 72Q202 73.6 205.5 72" strokeWidth=".8" opacity=".3" />
+            <path d="M149 110Q153 100 157 96" strokeWidth=".9" opacity=".3" />
+          </g>
 
-        {/* la mano: dedo + uña + pincel flotan juntos */}
-        <g className="esc-flotar">
-          <path d={cic} fill={`url(#${g('pi')})`} />
-          <rect x="110" y="48" width="5" height="120" rx="2.5" fill="#fff" opacity=".28" />
-          <path d="M108 122Q135 128 162 122M108 148Q135 154 162 148" stroke="#d98f68" strokeWidth="1.3" strokeLinecap="round" fill="none" opacity=".45" />
+          {/* uñas al natural */}
+          {[DEDOS[0], DEDOS[1], DEDOS[3]].map((d) => (
+            <g key={d.c}>
+              <path d={unaPath(d.c, d.punta + 3, d.w - 5.5, d.nh)} fill={`url(#${g('nb')})`} />
+              <rect x={d.c - d.w / 2 + 3.6} y={d.punta + 6} width="1.8" height={d.nh - 8} rx=".9" fill="#fff" opacity=".5" />
+            </g>
+          ))}
 
-          {/* uña desnuda */}
-          <path d={UNA} fill={`url(#${g('nb')})`} />
-
-          {/* esmalte que crece de la base a la punta */}
+          {/* uña que se esmalta */}
+          <path d={unaPath(AC, A_TOP, 11, A_ALTO)} fill={`url(#${g('nb')})`} />
           <g clipPath={`url(#${g('cl')})`}>
-            <g
-              className="esc-belleza-esmalte"
-              style={{ transformBox: 'view-box', transformOrigin: '135px 101px', animationDelay: '-3.4s' }}
-            >
-              <rect x="112" y="46" width="46" height="55" fill={`url(#${g('es')})`} />
-              <rect x="147" y="46" width="11" height="55" fill="#a3175f" opacity=".2" />
-              <ellipse cx="125" cy="64" rx="3.4" ry="9" fill="#fff" opacity=".5" />
-              <ellipse cx="125" cy="80" rx="1.8" ry="2.4" fill="#fff" opacity=".4" />
+            <g className="esc-belleza-esmalte" style={{ transformBox: 'view-box', transformOrigin: `${AC}px ${A_BASE}px` }}>
+              <rect x={AC - 6} y={A_TOP} width="12" height={A_ALTO} fill={`url(#${g('es')})`} />
+              <rect x={AC + 2.6} y={A_TOP} width="3.4" height={A_ALTO} fill="#7a0f45" opacity=".2" />
             </g>
-            {/* destello diagonal sobre la uña ya pintada */}
-            <g style={girar(18, 135, 73)}>
-              <rect
-                className="esc-belleza-destello"
-                x="131"
-                y="30"
-                width="9"
-                height="86"
-                rx="4.5"
-                fill="#fff"
-                style={{ animationDelay: '-3.4s' }}
-              />
+            <rect className="esc-belleza-gloss" x={AC - 3.8} y={A_TOP + 3} width="1.8" height="9" rx=".9" fill="#fff" />
+            {/* destello diagonal que cruza la uña ya pintada */}
+            <g style={girar(18, AC, A_TOP + 8)}>
+              <rect className="esc-belleza-destello" x={AC - 2} y={A_TOP - 6} width="3.6" height="30" rx="1.8" fill="#fff" />
             </g>
           </g>
-          <path d="M115.6 70Q116 47.5 135 47.4Q154 47.5 154.4 70" stroke="#fff" strokeWidth="1.2" fill="none" opacity=".55" strokeLinecap="round" />
-          {/* cutícula */}
-          <path d="M113 101Q135 91 157 101Q150 106 135 106Q120 106 113 101Z" fill="#f6c19c" />
-          <path d="M118 102Q135 95 152 102" stroke="#fff" strokeWidth="1" fill="none" opacity=".4" strokeLinecap="round" />
+          {/* cutícula sobre el borde del esmalte */}
+          <path d={`M${AC - 6.4} ${A_BASE + 0.6}Q${AC} ${A_BASE - 5.6} ${AC + 6.4} ${A_BASE + 0.6}Q${AC} ${A_BASE + 3.4} ${AC - 6.4} ${A_BASE + 0.6}Z`} fill="#f2b995" />
 
-          {/* pincel: sube junto al borde del esmalte y se retira */}
-          <g className="esc-belleza-pincel" style={{ animationDelay: '-3.4s' }}>
-            <g style={girar(-28, 135, 101)}>
-              <rect x="131" y="123" width="8" height="78" rx="4" fill={`url(#${g('ne')})`} />
-              <rect x="132.6" y="127" width="1.8" height="60" rx=".9" fill="#fff" opacity=".35" />
-              <rect x="129.5" y="114" width="11" height="10" rx="2.4" fill={`url(#${g('pl')})`} />
-              <rect x="129.5" y="117" width="11" height="1.2" fill="#8d90a6" opacity=".6" />
-              <path d="M135 101C132 105 130 110 130 115H140C140 110 138 105 135 101Z" fill={`url(#${g('cr')})`} />
+          {/* destellos al terminar */}
+          <Chispa x={AC + 8} y={A_TOP - 1} s={1} retraso={0} color="#ff8cc4" />
+          <Chispa x={AC - 9} y={A_TOP + 9} s={0.65} retraso={0.22} color="#ffd6ea" />
+
+          {/* pincel: entra, sube con el borde del esmalte y se retira */}
+          <g className="esc-belleza-pincel">
+            <g style={girar(-20, AC, A_BASE)}>
+              <path d={`M${AC} ${A_BASE}C${AC + 3} ${A_BASE - 3.5} ${AC + 8} ${A_BASE - 4.2} ${AC + 12} ${A_BASE - 4}V${A_BASE + 4}C${AC + 8} ${A_BASE + 4.2} ${AC + 3} ${A_BASE + 3.5} ${AC} ${A_BASE}Z`} fill={`url(#${g('cr')})`} />
+              <rect x={AC + 12} y={A_BASE - 3.7} width="11" height="7.4" rx="1.2" fill={`url(#${g('pl')})`} />
+              <rect x={AC + 17} y={A_BASE - 3.7} width=".9" height="7.4" fill="#8d90a6" opacity=".6" />
+              <path d={`M${AC + 23} ${A_BASE - 3}L${AC + 42} ${A_BASE - 4.4}Q${AC + 65} ${A_BASE - 3.4} ${AC + 65} ${A_BASE}Q${AC + 65} ${A_BASE + 3.4} ${AC + 42} ${A_BASE + 4.4}L${AC + 23} ${A_BASE + 3}Z`} fill={`url(#${g('ma')})`} />
+              <path d={`M${AC + 27} ${A_BASE - 1.4}L${AC + 60} ${A_BASE - 1.6}`} stroke="#fff" strokeWidth="1" strokeLinecap="round" opacity=".28" />
             </g>
           </g>
         </g>
 
-        {/* destellos */}
-        <Estrella x={92} y={62} s={1.1} retraso={-0.4} />
-        <Estrella x={186} y={50} s={1.3} retraso={-1.5} color="#fde68a" />
-        <Estrella x={176} y={118} s={0.9} retraso={-2.3} />
-        <Estrella x={206} y={92} s={0.8} retraso={-0.9} color="#fbcfe8" />
-        <Estrella x={84} y={118} s={0.8} retraso={-1.9} color="#fde68a" />
+        {/* el cojín va delante de la muñeca: la mano queda apoyada en él */}
+        <path d="M130 134A12 12 0 0 0 142 146H216A12 12 0 0 0 228 134V133Z" fill="#8f73d1" opacity=".18" />
+        <rect x="130" y="122" width="98" height="24" rx="12" fill={`url(#${g('co')})`} />
+        <rect x="140" y="125" width="62" height="2.6" rx="1.3" fill="#fff" opacity=".5" />
+        <path d="M141 124.5Q138.6 134 141 143.5M217 124.5Q219.4 134 217 143.5" stroke="#7d5fc4" strokeWidth="1" strokeLinecap="round" fill="none" opacity=".3" />
       </svg>
-      <Aviso texto="Cita 3:00 pm" lado="izq" />
+      <Aviso etiqueta="Cita" texto="Hoy 3:00 pm" tono="rosa" lado="izq" />
     </Marco>
   )
 }

@@ -1,177 +1,189 @@
 /*
-  Keyframes de las escenas de Billar y Academia (EscenasBillarYAcademia.tsx).
-  Sólo transform y opacity. Los pivotes (lámpara, lomo del libro, punta del
-  lápiz…) se fijan en línea desde el .tsx porque `.escena svg *` (index.css)
-  tiene más especificidad que cualquier clase suelta de este archivo.
+  Keyframes de las escenas de Billar y Restobar y de Academia (EscenasBillarYAcademia.tsx).
+  Sólo transform y opacity. Las dos escenas comparten un ciclo maestro de 6.5 s (el mismo
+  del Aviso, `esc-chip` en index.css, que aparece al 10 %): lo que «causa» el aviso
+  ocurre justo antes de ese 10 % y lo demás se escalona sobre la misma duración.
+  Los pivotes que no son el centro (lámpara, lomo del libro, borla…) se fijan en línea
+  desde el .tsx o con `.escena .clase`, porque `.escena svg *` (index.css) pesa más que
+  una clase suelta.
+  Easings con intención: entradas cubic-bezier(.22,1,.36,1), salidas (.64,0,.78,0),
+  vaivenes (.45,0,.55,1). `linear` sólo en la aguja del reloj (giro continuo).
 */
 
 /* ================= BILLAR =================
-   Una sola secuencia de 6 s para todas las piezas (misma duración y sin
-   retraso, así quedan sincronizadas):
-     0-26%  el taco tantea y se echa hacia atrás
-     26-31% golpe y la blanca vuela hacia el triángulo
-     31-46% las bolas se dispersan; la amarilla rueda hacia el buzón
-     47-52% la amarilla cae (se achica y desaparece)
-     88-100% todo se desvanece y las bolas reaparecen en su sitio  */
+   0 - 1.6 %   el taco ya está echado atrás y ataca la blanca
+   1.6 - 4.6 % la blanca rueda hasta la punta del triángulo
+   4.5 - 16 %  las bolas se abren; la amarilla cae al buzón (9 - 10.5 %)
+   10 %        aparece el aviso de la mesa
+   30 - 70 %   el taco se retira, la jarra baja de nivel (se bebe)
+   74 - 88 %   la jarra se rellena
+   85 - 100 %  las bolas se desvanecen, vuelven a su sitio y reaparecen  */
 
 @keyframes esc-billaracad-taco {
-  0% { transform: translateX(0); opacity: 1; animation-timing-function: ease-in-out; }
-  5% { transform: translateX(-5px); animation-timing-function: ease-in-out; }
-  9% { transform: translateX(-1px); animation-timing-function: ease-in-out; }
-  17% { transform: translateX(-17px); }
-  24% { transform: translateX(-17px); animation-timing-function: cubic-bezier(0.6, 0, 1, 1); }
-  26.5% { transform: translateX(3px); animation-timing-function: ease-out; }
-  30% { transform: translateX(9px); opacity: 1; }
-  36% { transform: translateX(9px); opacity: 1; }
-  41% { transform: translateX(9px); opacity: 0; }
-  92% { transform: translateX(9px); opacity: 0; }
-  94% { transform: translateX(0); opacity: 0; }
+  0% { transform: translateX(-16px); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  1.6% { transform: translateX(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  3% { transform: translateX(3px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  14% { transform: translateX(2.4px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  34% { transform: translateX(-5px); }
+  80% { transform: translateX(-5px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  95% { transform: translateX(-16px); }
+  100% { transform: translateX(-16px); }
+}
+
+/* la blanca sale rodando, se frena contra el triángulo y se queda */
+@keyframes esc-billaracad-blanca {
+  0%, 1.6% { transform: translateX(0); opacity: 1; animation-timing-function: cubic-bezier(0.22, 0.7, 0.4, 1); }
+  4.6% { transform: translateX(42px); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  14% { transform: translateX(45px); opacity: 1; }
+  82% { transform: translateX(45px); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  87% { transform: translateX(45px); opacity: 0; }
+  87.1% { transform: translateX(0); opacity: 0; }
+  94% { transform: translateX(0); opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
   100% { transform: translateX(0); opacity: 1; }
 }
 
-@keyframes esc-billaracad-blanca {
-  0%, 26% { transform: translate(0, 0); opacity: 1; animation-timing-function: cubic-bezier(0.5, 0, 1, 1); }
-  31% { transform: translate(67px, 0); animation-timing-function: ease-out; }
-  46% { transform: translate(59px, 4px); opacity: 1; }
-  88% { transform: translate(59px, 4px); opacity: 1; }
-  92% { transform: translate(59px, 4px); opacity: 0; }
-  92.5% { transform: translate(0, 0); opacity: 0; }
+/* las del triángulo se abren; cada una trae su destino en --dx / --dy */
+@keyframes esc-billaracad-rueda {
+  0%, 4.5% { transform: translate(0, 0); opacity: 1; animation-timing-function: cubic-bezier(0.16, 0.84, 0.3, 1); }
+  16% { transform: translate(var(--dx, 0px), var(--dy, 0px)); opacity: 1; }
+  82% { transform: translate(var(--dx, 0px), var(--dy, 0px)); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  87% { transform: translate(var(--dx, 0px), var(--dy, 0px)); opacity: 0; }
+  87.1% { transform: translate(0, 0); opacity: 0; }
+  94% { transform: translate(0, 0); opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
   100% { transform: translate(0, 0); opacity: 1; }
 }
 
-/* la roja (la de adelante) sigue derecho */
-@keyframes esc-billaracad-bola-a {
-  0%, 31% { transform: translate(0, 0); opacity: 1; animation-timing-function: ease-out; }
-  46% { transform: translate(57px, 2px); opacity: 1; }
-  88% { transform: translate(57px, 2px); opacity: 1; }
-  92% { transform: translate(57px, 2px); opacity: 0; }
-  92.5% { transform: translate(0, 0); opacity: 0; }
-  100% { transform: translate(0, 0); opacity: 1; }
-}
-
-/* la amarilla va al buzón de arriba a la derecha y cae */
-@keyframes esc-billaracad-bola-b {
-  0%, 31% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: ease-out; }
-  47% { transform: translate(63px, -28px) scale(1); opacity: 1; animation-timing-function: ease-in; }
-  52% { transform: translate(63px, -28px) scale(0.2); opacity: 0; }
-  92% { transform: translate(63px, -28px) scale(0.2); opacity: 0; }
-  92.5% { transform: translate(0, 0) scale(1); opacity: 0; }
+/* la amarilla rueda hasta el buzón de atrás a la derecha y cae (se achica y se oculta) */
+@keyframes esc-billaracad-cae {
+  0%, 4.5% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.3, 0.55, 0.5, 1); }
+  9% { transform: translate(29.8px, -11.4px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  10.6% { transform: translate(29.8px, -10.6px) scale(0.3); opacity: 0; }
+  87% { transform: translate(29.8px, -10.6px) scale(0.3); opacity: 0; }
+  87.1% { transform: translate(0, 0) scale(1); opacity: 0; }
+  94% { transform: translate(0, 0) scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
   100% { transform: translate(0, 0) scale(1); opacity: 1; }
 }
 
-/* la azul rueda hacia abajo */
-@keyframes esc-billaracad-bola-c {
-  0%, 31% { transform: translate(0, 0); opacity: 1; animation-timing-function: ease-out; }
-  46% { transform: translate(25px, 20px); opacity: 1; }
-  88% { transform: translate(25px, 20px); opacity: 1; }
-  92% { transform: translate(25px, 20px); opacity: 0; }
-  92.5% { transform: translate(0, 0); opacity: 0; }
-  100% { transform: translate(0, 0); opacity: 1; }
-}
-
-/* destello del choque y aro del buzón */
+/* onda del choque y aro del buzón */
 @keyframes esc-billaracad-choque {
-  0%, 30% { transform: scale(0.3); opacity: 0; }
-  31.5% { transform: scale(0.7); opacity: 1; }
-  37%, 100% { transform: scale(1.7); opacity: 0; }
+  0%, 4% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  4.6% { transform: scale(0.6); opacity: 0.9; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  9%, 100% { transform: scale(1.7); opacity: 0; }
 }
-@keyframes esc-billaracad-buzon {
-  0%, 46% { transform: scale(0.4); opacity: 0; }
-  48% { transform: scale(0.7); opacity: 0.9; }
-  55%, 100% { transform: scale(1.9); opacity: 0; }
+@keyframes esc-billaracad-aro {
+  0%, 9% { transform: scale(0.5); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  10% { transform: scale(0.8); opacity: 0.95; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  17%, 100% { transform: scale(1.8); opacity: 0; }
 }
 
+/* lámpara: se mece (≤ 2°) y su luz respira; el foco acompaña */
 @keyframes esc-billaracad-lampara {
-  0%, 100% { transform: rotate(-2.6deg); }
-  50% { transform: rotate(2.6deg); }
+  0%, 100% { transform: rotate(-1.5deg); }
+  50% { transform: rotate(1.5deg); }
 }
 @keyframes esc-billaracad-luz {
-  0%, 100% { opacity: 0.8; }
+  0%, 100% { opacity: 0.78; }
   50% { opacity: 1; }
 }
-@keyframes esc-billaracad-burbuja {
-  0% { transform: translateY(0) scale(0.6); opacity: 0; }
-  20% { opacity: 0.9; }
-  100% { transform: translateY(-15px) scale(1); opacity: 0; }
+@keyframes esc-billaracad-foco {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+/* la jarra: el nivel baja despacio mientras se juega y se rellena; la espuma lo sigue (24 px de alto × 0.4 = 9.6) */
+@keyframes esc-billaracad-cerveza {
+  0%, 8% { transform: scaleY(1); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  70%, 74% { transform: scaleY(0.6); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  88%, 100% { transform: scaleY(1); }
 }
 @keyframes esc-billaracad-espuma {
-  0%, 100% { transform: scale(1, 1); }
-  50% { transform: scale(1.06, 1.18); }
+  0%, 8% { transform: translateY(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  70%, 74% { transform: translateY(9.6px); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  86% { transform: translateY(-1.2px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  90%, 100% { transform: translateY(0); }
+}
+@keyframes esc-billaracad-burbuja {
+  0% { transform: translateY(0) scale(0.7); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  25% { opacity: 0.9; }
+  100% { transform: translateY(-16px) scale(1); opacity: 0; }
 }
 @keyframes esc-billaracad-aguja {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-.esc-billaracad-taco { animation: esc-billaracad-taco 6s linear infinite; }
-.esc-billaracad-blanca { animation: esc-billaracad-blanca 6s linear infinite; }
-.esc-billaracad-bola-a { animation: esc-billaracad-bola-a 6s linear infinite; }
-.esc-billaracad-bola-b { animation: esc-billaracad-bola-b 6s linear infinite; }
-.esc-billaracad-bola-c { animation: esc-billaracad-bola-c 6s linear infinite; }
-.esc-billaracad-choque { animation: esc-billaracad-choque 6s linear infinite; }
-.esc-billaracad-buzon { animation: esc-billaracad-buzon 6s linear infinite; }
-.esc-billaracad-lampara { animation: esc-billaracad-lampara 4.6s ease-in-out infinite; }
-.esc-billaracad-luz { animation: esc-billaracad-luz 3.2s ease-in-out infinite; }
-.esc-billaracad-burbuja { animation: esc-billaracad-burbuja 2.6s ease-out infinite; }
-.esc-billaracad-espuma { animation: esc-billaracad-espuma 2.4s ease-in-out infinite; }
-.esc-billaracad-aguja { animation: esc-billaracad-aguja 6s linear infinite; }
+.esc-billaracad-taco { animation: esc-billaracad-taco 6.5s infinite; }
+.esc-billaracad-blanca { animation: esc-billaracad-blanca 6.5s infinite; }
+.esc-billaracad-rueda { animation: esc-billaracad-rueda 6.5s infinite; }
+.esc-billaracad-cae { animation: esc-billaracad-cae 6.5s infinite; }
+.esc-billaracad-choque { animation: esc-billaracad-choque 6.5s infinite; }
+.esc-billaracad-aro { animation: esc-billaracad-aro 6.5s infinite; }
+.esc-billaracad-lampara { animation: esc-billaracad-lampara 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-billaracad-luz { animation: esc-billaracad-luz 3.25s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-billaracad-foco { animation: esc-billaracad-foco 3.25s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.escena .esc-billaracad-cerveza { animation: esc-billaracad-cerveza 6.5s infinite; transform-origin: 50% 100%; }
+.esc-billaracad-espuma { animation: esc-billaracad-espuma 6.5s infinite; }
+.esc-billaracad-burbuja { animation: esc-billaracad-burbuja 3.25s infinite; }
+.esc-billaracad-aguja { animation: esc-billaracad-aguja 6.5s linear infinite; }
 
-/* ================= ACADEMIA ================= */
+/* ================= ACADEMIA =================
+   0 - 5 %     el libro acaba de pasar la hoja; sello fuera de la página
+   5 - 11 %    el sello de la nota cae sobre la página (impacto al 8 %)
+   10 %        aparece el aviso de la nota
+   8.5 - 19 %  el birrete salta (anticipación, vuelo, asentamiento) y la borla se balancea
+   76 - 84 %   el sello se desvanece
+   90 - 99 %   la hoja siguiente se voltea sobre el lomo  */
 
-/* hoja que se voltea sobre el lomo: de la derecha a la izquierda y se desvanece */
+/* hoja que se voltea: de la derecha a la izquierda; al caer sobre la otra página desaparece */
 @keyframes esc-billaracad-hoja {
-  0% { transform: scaleX(1) scaleY(1); opacity: 0; }
-  4% { transform: scaleX(0.97) scaleY(1.01); opacity: 1; }
-  19% { transform: scaleX(0) scaleY(1.07); opacity: 1; }
-  35% { transform: scaleX(-1) scaleY(1); opacity: 1; }
-  42% { transform: scaleX(-1) scaleY(1); opacity: 1; }
-  52%, 100% { transform: scaleX(-1) scaleY(1); opacity: 0; }
+  0%, 89% { transform: translateY(0) scaleX(1); opacity: 0; }
+  90% { transform: translateY(0) scaleX(0.98); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  94.5% { transform: translateY(-4px) scaleX(0); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  99% { transform: translateY(0) scaleX(-1); opacity: 1; }
+  100% { transform: translateY(0) scaleX(-1); opacity: 0; }
 }
 
-/* el birrete sale disparado girando, llega arriba y cae con un reboterito */
+@keyframes esc-billaracad-sello {
+  0%, 5% { transform: scale(1.9) rotate(-22deg); opacity: 0; animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.5); }
+  8% { transform: scale(0.92) rotate(-9deg); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  10% { transform: scale(1.04) rotate(-8deg); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  12% { transform: scale(1) rotate(-8deg); opacity: 1; }
+  76% { transform: scale(1) rotate(-8deg); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  84%, 100% { transform: scale(1.05) rotate(-8deg); opacity: 0; }
+}
+@keyframes esc-billaracad-aro-sello {
+  0%, 7.6% { transform: scale(0.8); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  8.2% { transform: scale(0.9); opacity: 0.9; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  16%, 100% { transform: scale(1.9); opacity: 0; }
+}
+
+/* birrete: se agacha, salta con un giro mínimo y se asienta con un rebote corto */
 @keyframes esc-billaracad-birrete {
-  0%, 8% { transform: translate(0, 0) rotate(0deg) scale(1, 1); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
-  42% { transform: translate(2px, -60px) rotate(500deg) scale(1, 1); animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6); }
-  72% { transform: translate(0, 0) rotate(720deg) scale(1.04, 0.94); animation-timing-function: ease-out; }
-  77% { transform: translate(0, -6px) rotate(720deg) scale(1, 1); animation-timing-function: ease-in; }
-  83%, 100% { transform: translate(0, 0) rotate(720deg) scale(1, 1); }
+  0%, 8% { transform: translateY(0) rotate(0deg) scale(1, 1); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  9.5% { transform: translateY(1.6px) rotate(0deg) scale(1.03, 0.95); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  13% { transform: translateY(-10px) rotate(-4deg) scale(0.98, 1.03); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  17% { transform: translateY(1px) rotate(0deg) scale(1.03, 0.95); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  20%, 100% { transform: translateY(0) rotate(0deg) scale(1, 1); }
+}
+/* la borla sigue el movimiento con retraso y se amortigua */
+@keyframes esc-billaracad-borla {
+  0%, 9% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  14% { transform: rotate(-16deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  19% { transform: rotate(11deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  25% { transform: rotate(-6deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  31% { transform: rotate(3deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  38%, 100% { transform: rotate(0deg); }
 }
 
-@keyframes esc-billaracad-letra {
-  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
-  14% { transform: translate(calc(var(--dx, 0px) * 0.2), -8px) scale(1); opacity: 1; }
-  100% { transform: translate(var(--dx, 0px), -56px) scale(1.12); opacity: 0; }
+/* idle del libro: flota ≤ 3 px */
+@keyframes esc-billaracad-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2.6px); }
 }
 
-@keyframes esc-billaracad-estrella {
-  0%, 100% { transform: scale(0.25) rotate(0deg); opacity: 0; }
-  40% { transform: scale(1.15) rotate(22deg); opacity: 1; }
-  70% { transform: scale(0.8) rotate(40deg); opacity: 0.8; }
-}
-
-/* el lápiz escribe: avanza hacia la derecha cabeceando y vuelve */
-@keyframes esc-billaracad-lapiz {
-  0% { transform: translate(-22px, 0) rotate(-4deg); animation-timing-function: ease-in-out; }
-  10% { transform: translate(-19px, 0) rotate(4deg); animation-timing-function: ease-in-out; }
-  20% { transform: translate(-16px, 0) rotate(-4deg); animation-timing-function: ease-in-out; }
-  30% { transform: translate(-13px, 0) rotate(4deg); animation-timing-function: ease-in-out; }
-  40% { transform: translate(-10px, 0) rotate(-4deg); animation-timing-function: ease-in-out; }
-  50% { transform: translate(-7px, 0) rotate(4deg); animation-timing-function: ease-in-out; }
-  60% { transform: translate(-3px, 0) rotate(-4deg); animation-timing-function: ease-in-out; }
-  70% { transform: translate(0, 0) rotate(2deg); }
-  85% { transform: translate(0, 0) rotate(0deg); animation-timing-function: ease-in-out; }
-  100% { transform: translate(-22px, 0) rotate(-4deg); }
-}
-@keyframes esc-billaracad-garabato {
-  0% { transform: scaleX(0.02); opacity: 1; }
-  70% { transform: scaleX(1); opacity: 1; }
-  86% { transform: scaleX(1); opacity: 1; }
-  98%, 100% { transform: scaleX(1); opacity: 0; }
-}
-
-.esc-billaracad-hoja { animation: esc-billaracad-hoja 5s ease-in-out infinite; }
-.esc-billaracad-birrete { animation: esc-billaracad-birrete 5.5s linear infinite; }
-.esc-billaracad-letra { animation: esc-billaracad-letra 4.4s ease-out infinite; }
-.esc-billaracad-estrella { animation: esc-billaracad-estrella 3s ease-in-out infinite; }
-.esc-billaracad-lapiz { animation: esc-billaracad-lapiz 3.6s linear infinite; }
-.esc-billaracad-garabato { animation: esc-billaracad-garabato 3.6s linear infinite; }
+.esc-billaracad-hoja { animation: esc-billaracad-hoja 6.5s infinite; }
+.esc-billaracad-sello { animation: esc-billaracad-sello 6.5s infinite; }
+.esc-billaracad-aro-sello { animation: esc-billaracad-aro-sello 6.5s infinite; }
+.esc-billaracad-birrete { animation: esc-billaracad-birrete 6.5s infinite; }
+.escena .esc-billaracad-borla { animation: esc-billaracad-borla 6.5s infinite; transform-origin: 70% 8%; }
+.esc-billaracad-flota { animation: esc-billaracad-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }

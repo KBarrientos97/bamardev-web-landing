@@ -2,121 +2,179 @@
   Keyframes de las escenas de Peluquería y Barbería (EscenasPelo.tsx).
   Sólo transform y opacity. Las pausas fuera de pantalla y "reducir movimiento"
   ya las resuelve index.css para todo lo que vive dentro de `.escena`.
+  Ciclo maestro: 6.5 s (el mismo de `esc-chip`, el aviso), así el aviso aparece
+  justo después de la acción que lo causa. Lo que se repite más rápido lo hace
+  en 3.25 s (la mitad exacta).
   Ojo: la regla global `.escena svg *` fija transform-origin al centro de cada
   caja; por eso las clases con pivote propio se escriben `.escena .esc-pelo-…`
   (más específicas) o llevan el pivote en el style del elemento.
+  Easing: entradas cubic-bezier(.22,1,.36,1), salidas (.64,0,.78,0), vaivenes (.45,0,.55,1).
 */
 
 /* ---------- Peluquería ---------- */
 
-/* Las dos hojas de las tijeras giran sobre el tornillo (152, 78): abren, cierran,
-   abren, cierran y una pausa abiertas. La hoja de arriba sube (-14°), la de abajo baja (+14°). */
+/* Las tijeras entran desde la derecha, esperan abiertas, cortan al 8 % (con retroceso
+   antes y rebote después) y se retiran. El aviso de la cita entra al 10 %. */
+@keyframes esc-pelo-tijera {
+  0%, 33% { transform: translate(0, 0); opacity: 1; }
+  41% { transform: translate(14px, -3px); opacity: 0; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  82% { transform: translate(14px, -3px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  94%, 100% { transform: translate(0, 0); opacity: 1; }
+}
+.escena .esc-pelo-tijera {
+  animation: esc-pelo-tijera 6.5s infinite;
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+
+/* Las dos hojas giran sobre el tornillo (el origen local 0,0): abiertas, anticipan
+   (se abren un poco más), cierran de golpe, rebotan y quedan entreabiertas. */
 @keyframes esc-pelo-corte-a {
-  0%, 40%, 100% { transform: rotate(-14deg); }
-  10%, 30% { transform: rotate(0deg); }
-  20% { transform: rotate(-14deg); }
+  0%, 2% { transform: rotate(14deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  5.5% { transform: rotate(20deg); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  8.5% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  11.5% { transform: rotate(6deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  14% { transform: rotate(2deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  22%, 82% { transform: rotate(12deg); }
+  94%, 100% { transform: rotate(14deg); }
 }
 @keyframes esc-pelo-corte-b {
-  0%, 40%, 100% { transform: rotate(14deg); }
-  10%, 30% { transform: rotate(0deg); }
-  20% { transform: rotate(14deg); }
+  0%, 2% { transform: rotate(-14deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  5.5% { transform: rotate(-20deg); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  8.5% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  11.5% { transform: rotate(-6deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  14% { transform: rotate(-2deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  22%, 82% { transform: rotate(-12deg); }
+  94%, 100% { transform: rotate(-14deg); }
 }
-.escena .esc-pelo-corte-a {
-  animation: esc-pelo-corte-a 3.6s ease-in-out infinite;
-  transform-box: view-box;
-  transform-origin: 152px 78px;
-}
+.escena .esc-pelo-corte-a,
 .escena .esc-pelo-corte-b {
-  animation: esc-pelo-corte-b 3.6s ease-in-out infinite;
+  animation-duration: 6.5s;
+  animation-iteration-count: infinite;
   transform-box: view-box;
-  transform-origin: 152px 78px;
+  transform-origin: 0 0;
 }
+.escena .esc-pelo-corte-a { animation-name: esc-pelo-corte-a; }
+.escena .esc-pelo-corte-b { animation-name: esc-pelo-corte-b; }
 
-/* Mechón que nace en la punta justo al cerrar las tijeras y cae girando con un vaivén. */
-@keyframes esc-pelo-mechon {
-  0%, 9% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-  13% { opacity: 1; }
-  30% { transform: translate(calc(var(--dx, 0px) * -0.5), 22px) rotate(calc(var(--giro, 0deg) * 0.4)); opacity: 1; }
-  55%, 100% { transform: translate(var(--dx, 0px), 58px) rotate(var(--giro, 0deg)); opacity: 0; }
+/* La punta del mechón se desprende al cortar (8.5 %), cae girando y se vuelve a
+   dejar ver cuando entran otra vez las tijeras (el pelo "vuelve a crecer" fuera de cuadro). */
+@keyframes esc-pelo-punta {
+  0%, 8.5% { transform: translate(0, 0) rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  20% { transform: translate(5px, 14px) rotate(22deg); opacity: 1; }
+  34%, 83% { transform: translate(9px, 34px) rotate(58deg); opacity: 0; }
+  84% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  94%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
 }
-.esc-pelo-mechon { animation: esc-pelo-mechon 3.6s ease-in-out infinite; }
+.esc-pelo-punta { animation: esc-pelo-punta 6.5s infinite; }
 
-/* Destello diagonal que recorre el espejo de lado a lado y descansa. */
+/* Dos recortes chicos saltan del corte y caen; fuera de su tramo no se ven. */
+@keyframes esc-pelo-recorte {
+  0%, 8.5% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  9.5% { opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  26%, 100% { transform: translate(var(--dx, 0px), 26px) rotate(var(--giro, 0deg)); opacity: 0; }
+}
+.esc-pelo-recorte { opacity: 0; animation: esc-pelo-recorte 6.5s infinite; }
+
+/* Destello diagonal por el cristal, en la segunda mitad (lejos del corte). */
 @keyframes esc-pelo-destello {
-  0%, 52%, 100% { transform: translateX(-62px); opacity: 0; }
-  58% { opacity: 0.85; }
-  92% { transform: translateX(62px); opacity: 0.85; }
-  96% { transform: translateX(66px); opacity: 0; }
+  0%, 50% { transform: translateX(-60px); opacity: 0; }
+  56% { opacity: 1; }
+  70% { transform: translateX(62px); opacity: 1; }
+  74%, 100% { transform: translateX(66px); opacity: 0; }
 }
-.esc-pelo-destello { animation: esc-pelo-destello 5.2s ease-in-out infinite; }
+.esc-pelo-destello { animation: esc-pelo-destello 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
 
-/* Estrellita ✦ que titila. */
-@keyframes esc-pelo-brillo {
-  0%, 100% { transform: scale(0.15) rotate(0deg); opacity: 0; }
-  50% { transform: scale(1) rotate(90deg); opacity: 1; }
+/* Brillo de la gema del marco. */
+@keyframes esc-pelo-gema {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
 }
-.esc-pelo-brillo { animation: esc-pelo-brillo 2.8s ease-in-out infinite; }
+.esc-pelo-gema { animation: esc-pelo-gema 3.25s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
 
 /* El peinado del reflejo se mece apenas. */
 @keyframes esc-pelo-melena {
-  0%, 100% { transform: rotate(-1.6deg); }
-  50% { transform: rotate(1.6deg); }
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
 }
-.escena .esc-pelo-melena { animation: esc-pelo-melena 3.4s ease-in-out infinite; transform-origin: 50% 20%; }
+.escena .esc-pelo-melena { animation: esc-pelo-melena 3.25s cubic-bezier(0.45, 0, 0.55, 1) infinite; transform-origin: 50% 20%; }
 
-/* Secador: vibra y suelta aire tibio. */
-@keyframes esc-pelo-vibra {
-  0%, 100% { transform: rotate(-0.9deg); }
-  50% { transform: rotate(0.9deg); }
-}
-.escena .esc-pelo-vibra {
-  animation: esc-pelo-vibra 0.5s ease-in-out infinite;
-  transform-box: view-box;
-  transform-origin: 276px 112px;
-}
+/* Aire tibio del secador: tres ondas escalonadas que salen de la boquilla. */
 @keyframes esc-pelo-aire {
   0% { transform: translateX(0) scaleX(0.5); opacity: 0; }
   25% { opacity: 0.85; }
-  100% { transform: translateX(-14px) scaleX(1.2); opacity: 0; }
+  100% { transform: translateX(14px) scaleX(1.15); opacity: 0; }
 }
-.esc-pelo-aire { animation: esc-pelo-aire 1.6s ease-out infinite; }
+.escena .esc-pelo-aire { animation: esc-pelo-aire 3.25s cubic-bezier(0.22, 1, 0.36, 1) infinite; transform-origin: 0% 50%; }
 
 /* ---------- Barbería ---------- */
 
-/* Las franjas del poste suben sin fin: el recorrido (30) es un ciclo completo
-   de 3 colores (rojo, blanco, azul de 10 de alto), así el salto del bucle no se ve. */
+/* Las franjas del poste suben sin fin (giro continuo: linear está permitido): el
+   recorrido (30) es un ciclo completo de 3 colores de 10 de alto, así el salto
+   del bucle no se ve. 3.25 s = la mitad exacta del ciclo maestro. */
 @keyframes esc-pelo-franjas {
   from { transform: translateY(0); }
   to { transform: translateY(-30px); }
 }
-.esc-pelo-franjas { animation: esc-pelo-franjas 2.4s linear infinite; }
+.esc-pelo-franjas { animation: esc-pelo-franjas 3.25s linear infinite; }
 
-/* Navaja y peine cuelgan del riel y se mecen como péndulos (el pivote va en el style). */
-@keyframes esc-pelo-pendulo {
-  from { transform: rotate(-7deg); }
-  to { transform: rotate(7deg); }
-}
-.esc-pelo-pendulo {
-  animation: esc-pelo-pendulo 3.2s ease-in-out infinite alternate;
-  transform-box: view-box;
-}
-
-/* El letrero cuelga de dos cadenas y se balancea. */
+/* El letrero cuelga de su brazo: alguien entra (0 %), lo mueve y se asienta
+   con oscilaciones cada vez más chicas. El aviso del turno entra al 10 %. */
 @keyframes esc-pelo-letrero {
-  from { transform: rotate(-1.8deg); }
-  to { transform: rotate(1.8deg); }
+  0%, 42%, 100% { transform: rotate(0deg); }
+  3% { transform: rotate(-5deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  10% { transform: rotate(3.6deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  17% { transform: rotate(-2.2deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  25% { transform: rotate(1.2deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  33% { transform: rotate(-0.5deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
 }
-.esc-pelo-letrero {
-  animation: esc-pelo-letrero 4.2s ease-in-out infinite alternate;
+.escena .esc-pelo-letrero {
+  animation: esc-pelo-letrero 6.5s infinite;
   transform-box: view-box;
-  transform-origin: 232px 0px;
+  transform-origin: 214px 36px;
 }
 
-/* Burbujas de espuma que suben del tazón, se ensanchan un poco y se van. */
-@keyframes esc-pelo-burbuja {
-  0% { transform: translate(0, 0) scale(0.4); opacity: 0; }
-  15% { opacity: 0.95; }
-  55% { transform: translate(calc(var(--dx, 0px) * 0.4), -30px) scale(0.95); opacity: 0.9; }
-  100% { transform: translate(var(--dx, 0px), -60px) scale(1.15); opacity: 0; }
+/* Halo suave tras el poste: respira con el ciclo de las franjas. */
+@keyframes esc-pelo-halo {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.8; }
 }
-.esc-pelo-burbuja { animation: esc-pelo-burbuja 4.2s ease-in-out infinite; }
+.esc-pelo-halo { animation: esc-pelo-halo 3.25s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+/* La brocha bate la espuma en la segunda mitad del ciclo (de 3.0 s a 5.0 s) y la espuma se
+   hincha un poco con cada vuelta; luego descansa. */
+@keyframes esc-pelo-brocha {
+  0%, 44% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  50% { transform: rotate(-9deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  56% { transform: rotate(8deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  62% { transform: rotate(-8deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  68% { transform: rotate(6deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  74% { transform: rotate(-3deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  80%, 100% { transform: rotate(0deg); }
+}
+.escena .esc-pelo-brocha { animation: esc-pelo-brocha 6.5s infinite; transform-origin: 50% 100%; }
+
+@keyframes esc-pelo-espuma {
+  0%, 44%, 82%, 100% { transform: scale(1, 1); }
+  56% { transform: scale(1.04, 1.1); }
+  68% { transform: scale(1.02, 1.05); }
+  74% { transform: scale(1.04, 1.1); }
+}
+.escena .esc-pelo-espuma { animation: esc-pelo-espuma 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; transform-origin: 50% 100%; }
+
+/* Burbujas de jabón: nacen de la espuma mientras bate (los retrasos negativos las
+   escalonan entre 2.9 s y 3.5 s), suben y se van. El resto del ciclo no se ven. */
+@keyframes esc-pelo-burbuja {
+  0% { transform: translate(0, 0) scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  6% { opacity: 0.9; }
+  36% { transform: translate(var(--dx, 0px), -26px) scale(1); opacity: 0.8; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  42%, 100% { transform: translate(var(--dx, 0px), -32px) scale(1.15); opacity: 0; }
+}
+.esc-pelo-burbuja { opacity: 0; animation: esc-pelo-burbuja 6.5s infinite; }
+
+/* La planta se mece casi imperceptible. */
+@keyframes esc-pelo-planta {
+  0%, 100% { transform: rotate(-1.2deg); }
+  50% { transform: rotate(1.2deg); }
+}
+.escena .esc-pelo-planta { animation: esc-pelo-planta 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; transform-origin: 50% 100%; }

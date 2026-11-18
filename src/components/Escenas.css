@@ -1,24 +1,207 @@
-/* Animaciones propias del pollo rostizado (EscenaPollo). Las demás viven en index.css. */
-@keyframes esc-rodar {
-  0%, 100% { transform: rotate(-3.5deg) scaleY(1); }
-  50% { transform: rotate(3.5deg) scaleY(0.95); }
+/*
+  Animaciones de las escenas Pollería (EscenaPollo) y Farmacia (EscenaFarmacia).
+  Las demás escenas usan los keyframes compartidos de index.css.
+
+  Ciclo maestro de 6.5 s: es el mismo del aviso del sistema (esc-chip), así la
+  "causa" (el pedido listo, la venta) y el aviso quedan sincronizados. Los giros
+  continuos y el fuego usan una fracción exacta (3.25 s, ~1 s) para que el ciclo
+  cierre sin saltos. Sólo transform y opacity.
+
+  Las clases llevan `.escena` delante para ganarle en especificidad a la regla
+  global `.escena svg * { transform-origin: center }` y poder fijar pivotes
+  propios. Con "reducir movimiento" no corre ninguna animación: lo que sale y
+  entra (humo, gotas, cápsulas, destello) nace en opacidad 0, y lo permanente
+  (el LED verde, la presa derecha) queda en su pose final.
+*/
+
+/* ================================================================== */
+/*  POLLERÍA                                                           */
+/* ================================================================== */
+
+/* El rostizador flota apenas sobre su plataforma, y su sombra de contacto respira al revés. */
+@keyframes esc-pollo-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
 }
-@keyframes esc-pata {
-  0%, 100% { transform: rotate(-4deg) translateY(-1px); }
-  50% { transform: rotate(5deg) translateY(2px); }
-}
-@keyframes esc-gota {
-  0% { transform: translateY(0) scale(0.7); opacity: 0; }
-  18% { opacity: 1; }
-  85% { opacity: 1; }
-  100% { transform: translateY(15px) scale(1); opacity: 0; }
+@keyframes esc-pollo-sombra {
+  0%, 100% { transform: scaleX(1); opacity: 0.14; }
+  50% { transform: scaleX(0.965); opacity: 0.1; }
 }
 
-.esc-rodar { animation: esc-rodar 2.4s ease-in-out infinite; }
-.esc-pata { animation: esc-pata 2.4s ease-in-out infinite; transform-origin: 50% 0%; }
-.esc-gota { animation: esc-gota 1.5s ease-in infinite; }
-
-@keyframes esc-vuelta {
+/* La rueda del rostizador da una vuelta cada 3.25 s; cada presa contra-gira lo mismo para seguir derecha. */
+@keyframes esc-pollo-rueda {
   to { transform: rotate(360deg); }
 }
-.esc-vuelta { animation: esc-vuelta 4.6s linear infinite; }
+@keyframes esc-pollo-contra {
+  to { transform: rotate(-360deg); }
+}
+.escena .esc-pollo-rueda {
+  animation: esc-pollo-rueda 3.25s linear infinite;
+  animation-delay: var(--d, 0s);
+}
+.escena .esc-pollo-contra {
+  animation: esc-pollo-contra 3.25s linear infinite;
+  animation-delay: var(--d, 0s);
+}
+
+/* Llama baja y nerviosa: cada una con su ritmo (el fuego es lo único que puede ir rápido). */
+@keyframes esc-pollo-llama {
+  0%, 100% { transform: scale(1, 0.84) skewX(0deg); }
+  30% { transform: scale(0.9, 1.16) skewX(3deg); }
+  62% { transform: scale(1.05, 0.94) skewX(-2.5deg); }
+}
+.escena .esc-pollo-llama {
+  animation: esc-pollo-llama 1.08s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: var(--d, 0s);
+  transform-origin: 50% 100%;
+}
+/* Resplandor de las brasas: sube y baja con la mitad del ciclo. */
+@keyframes esc-pollo-brasa {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+.escena .esc-pollo-brasa { animation: esc-pollo-brasa 3.25s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+/* Gota de jugo: se forma, cae con gravedad (ease-in) y se apaga al tocar las brasas. */
+@keyframes esc-pollo-gota {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  14% { transform: translateY(0) scale(1); opacity: 1; }
+  70% { transform: translateY(16px) scale(1, 1.25); opacity: 1; }
+  80%, 100% { transform: translateY(18px) scale(1.5, 0.3); opacity: 0; }
+}
+.escena .esc-pollo-gota {
+  opacity: 0;
+  animation: esc-pollo-gota 3.25s cubic-bezier(0.5, 0, 0.9, 0.6) infinite;
+  animation-delay: var(--d, 0s);
+}
+
+/* Chispa que sube dentro del horno y se apaga. */
+@keyframes esc-pollo-chispa {
+  0% { transform: translate(0, 0) scale(0.8); opacity: 0; }
+  12% { opacity: 1; }
+  100% { transform: translate(var(--dx, 0px), -26px) scale(0.3); opacity: 0; }
+}
+.escena .esc-pollo-chispa {
+  opacity: 0;
+  animation: esc-pollo-chispa 3.25s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  animation-delay: var(--d, 0s);
+}
+
+/* Humo de la chimenea: tres bocanadas repartidas exactas en el ciclo (6.5 s / 3). */
+@keyframes esc-pollo-humo {
+  0% { transform: translate(0, 0) scale(0.55); opacity: 0; }
+  22% { opacity: 0.8; }
+  100% { transform: translate(7px, -26px) scale(1.8); opacity: 0; }
+}
+.escena .esc-pollo-humo {
+  opacity: 0;
+  animation: esc-pollo-humo 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  animation-delay: var(--d, 0s);
+}
+
+/* El pedido sale: el LED pasa de ámbar a verde (a la vez que entra el aviso) y se mantiene. */
+@keyframes esc-pollo-led {
+  0%, 4% { opacity: 0; transform: scale(0.6); }
+  10% { opacity: 1; transform: scale(1.35); }
+  16%, 62% { opacity: 1; transform: scale(1); }
+  72%, 100% { opacity: 0; transform: scale(0.6); }
+}
+.escena .esc-pollo-led { animation: esc-pollo-led 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+
+/* Un reflejo de luz cruza el vidrio una vez por ciclo. */
+@keyframes esc-pollo-barrido {
+  0%, 2% { transform: translateX(-130px); opacity: 0; }
+  6% { opacity: 1; }
+  24% { opacity: 1; }
+  30%, 100% { transform: translateX(150px); opacity: 0; }
+}
+.escena .esc-pollo-barrido {
+  opacity: 0;
+  animation: esc-pollo-barrido 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* ================================================================== */
+/*  FARMACIA                                                           */
+/* ================================================================== */
+
+@keyframes esc-farm-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* Toldo: se mece medio ciclo de ida y vuelta, apenas. */
+@keyframes esc-farm-toldo {
+  0%, 100% { transform: skewX(-0.9deg); }
+  50% { transform: skewX(0.9deg); }
+}
+.escena .esc-farm-toldo {
+  animation: esc-farm-toldo 3.25s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  transform-origin: 50% 0%;
+}
+
+@keyframes esc-farm-planta {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50% { transform: rotate(1.6deg); }
+}
+.escena .esc-farm-planta {
+  animation: esc-farm-planta 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: var(--d, 0s);
+  transform-origin: 50% 100%;
+}
+
+/* La venta: la cruz da un latido con anticipación y rebote, y emite un aro que se abre. */
+@keyframes esc-farm-latido {
+  0%, 100% { transform: scale(1); }
+  3% { transform: scale(0.94); }
+  9% { transform: scale(1.16); }
+  15% { transform: scale(0.98); }
+  20% { transform: scale(1); }
+}
+.escena .esc-farm-latido { animation: esc-farm-latido 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+
+@keyframes esc-farm-aro {
+  0%, 4% { transform: scale(1); opacity: 0; }
+  7% { opacity: 0.7; }
+  34%, 100% { transform: scale(1.8); opacity: 0; }
+}
+.escena .esc-farm-aro {
+  opacity: 0;
+  animation: esc-farm-aro 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* Luz de la vidriera: se enciende un instante cuando se cobra la venta. */
+@keyframes esc-farm-luz {
+  0%, 100% { opacity: 0.12; }
+  8%, 20% { opacity: 0.5; }
+}
+.escena .esc-farm-luz { animation: esc-farm-luz 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+/* Destello diagonal que cruza el vidrio de la puerta. */
+@keyframes esc-farm-barrido {
+  0%, 3% { transform: translateX(-70px); opacity: 0; }
+  7% { opacity: 1; }
+  22% { opacity: 1; }
+  28%, 100% { transform: translateX(80px); opacity: 0; }
+}
+.escena .esc-farm-barrido {
+  opacity: 0;
+  animation: esc-farm-barrido 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* Cápsulas y cruz que salen de la puerta: arco corto, con asentamiento, y desaparecen. */
+@keyframes esc-farm-sube {
+  0%, 2% { transform: translate(0, 4px) rotate(0deg) scale(0.5); opacity: 0; }
+  9% { opacity: 1; transform: translate(calc(var(--dx, 0px) * 0.25), -10px) rotate(calc(var(--giro, 0deg) * 0.2)) scale(1); }
+  36% { opacity: 1; }
+  52%, 100% { transform: translate(var(--dx, 0px), -62px) rotate(var(--giro, 0deg)) scale(0.9); opacity: 0; }
+}
+.escena .esc-farm-sube {
+  opacity: 0;
+  animation: esc-farm-sube 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  animation-delay: var(--d, 0s);
+}
+
+/* Asignación de las animaciones de conjunto (flotación y sombra de contacto). */
+.esc-pollo-flota { animation: esc-pollo-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-farm-flota { animation: esc-farm-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.escena .esc-pollo-sombra { animation: esc-pollo-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }

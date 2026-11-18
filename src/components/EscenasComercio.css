@@ -4,131 +4,204 @@
   fuera de pantalla y "reducir movimiento" ya vienen de index.css.
   Ojo: `.escena svg *` fija transform-origin al centro (especificidad 0,1,1);
   las clases que necesitan otro pivote se escriben como `.escena .clase`.
+
+  Ciclo maestro de ambas escenas: 6,5 s, igual que el aviso (esc-chip), que asoma
+  al 10 % (0,65 s). Por eso lo que «causa» el aviso (pitido del escáner, último
+  golpe del martillo) ocurre entre el 8 % y el 10 %. Cada keyframe termina con el
+  mismo valor con que empieza: el bucle no da tirón.
 */
+
+/* ------------------------------------------------------------------ */
+/*  COMÚN                                                              */
+/* ------------------------------------------------------------------ */
+
+/* respiración del conjunto (2 px) y de su sombra de contacto */
+@keyframes esc-comercio-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-comercio-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+/* aro que se expande (pitido del escáner, halo del piloto) */
+@keyframes esc-comercio-aro {
+  0%, 8.5% { transform: scale(0.45); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  9.5% { transform: scale(0.55); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  24%, 100% { transform: scale(2); opacity: 0; }
+}
+
+.esc-comercio-flota { animation: esc-comercio-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-comercio-sombra { animation: esc-comercio-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-comercio-aro { animation: esc-comercio-aro 6.5s infinite; }
 
 /* ------------------------------------------------------------------ */
 /*  MINIMARKET                                                         */
 /* ------------------------------------------------------------------ */
 
-/* el carrito va y viene; las ruedas giran justo lo que avanza (14 px / (2·π·5) = 160°) */
-@keyframes esc-comercio-rodar {
-  0%, 100% { transform: translateX(-7px); }
-  50% { transform: translateX(7px); }
+/*
+  El cartón, relativo a su posición final sobre el escáner:
+  0–13 %   quieto sobre el escáner (aterriza al 92–98 % del ciclo anterior, lo lee hasta el 9 %)
+  13–22 %  se cobra: baja y se desvanece por la caja
+  23–32 %  reaparece en el carrito (sube desde adentro)
+  62–67 %  anticipación: se hunde un poco antes de salir
+  67–92 %  arco: sube hasta el 81 % y cae al escáner; rebote corto y asienta
+  Las dos capas (x en una, y en otra) dejan que el recorrido sea una parábola sin tocar `d`.
+*/
+@keyframes esc-comercio-vuelo-x {
+  0%, 22% { transform: translateX(0); }
+  23%, 70% { transform: translateX(-208px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  92%, 100% { transform: translateX(0); }
 }
-@keyframes esc-comercio-rueda {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(160deg); }
+@keyframes esc-comercio-vuelo-y {
+  0%, 13% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  22% { transform: translateY(12px) rotate(0deg) scale(0.86); opacity: 0; }
+  23% { transform: translateY(16px) rotate(0deg) scale(0.86); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  32% { transform: translateY(8px) rotate(0deg) scale(1); opacity: 1; }
+  62% { transform: translateY(8px) rotate(0deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  67% { transform: translateY(11px) rotate(0deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  81% { transform: translateY(-4px) rotate(-8deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  92% { transform: translateY(0) rotate(5deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  95% { transform: translateY(-2.5px) rotate(-2deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  98%, 100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
 }
-/* el producto cae, rebota dos veces, se queda en el carrito y se desvanece */
-@keyframes esc-comercio-caer {
-  0% { transform: translateY(-62px); opacity: 0; animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.55); }
-  8% { opacity: 1; }
-  30% { transform: translateY(0); animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }
-  40% { transform: translateY(-9px); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
-  50% { transform: translateY(0); animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }
-  56% { transform: translateY(-3px); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
-  62% { transform: translateY(0); }
-  90% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(0); opacity: 0; }
+/* luz y haz del lector: dos pasadas mientras el cartón está encima (98 % → 9 %) */
+@keyframes esc-comercio-haz {
+  0% { opacity: 0.7; }
+  9% { opacity: 1; }
+  10%, 97% { opacity: 0; }
+  98% { opacity: 0; }
+  99% { opacity: 1; }
+  100% { opacity: 0.7; }
 }
-/* destello en el borde del carrito justo cuando aterriza el producto (30 % del ciclo) */
-@keyframes esc-comercio-chispa {
-  0%, 28% { transform: scale(0.3); opacity: 0; }
-  32% { transform: scale(1); opacity: 1; }
-  46% { transform: scale(1.6); opacity: 0; }
-  100% { transform: scale(1.6); opacity: 0; }
+/* la línea roja recorre la etiqueta con el código de barras (baja y sube) */
+@keyframes esc-comercio-barrido {
+  0%, 100% { transform: translateY(1.1px); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  4% { transform: translateY(5.4px); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  9% { transform: translateY(0px); opacity: 1; }
+  10%, 98% { transform: translateY(0px); opacity: 0; }
+  99% { transform: translateY(0px); opacity: 1; }
 }
-/* el rayo láser del lector barre el código de barras */
-@keyframes esc-comercio-laser {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(8px); }
+/* tilde de la pantalla de la caja: entra con el pitido y se queda mientras dura el aviso */
+@keyframes esc-comercio-check {
+  0%, 9% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  14% { transform: scale(1); opacity: 1; }
+  52% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  60%, 100% { transform: scale(0.8); opacity: 0; }
 }
-/* cartelito «ABIERTO» colgado de la puerta */
-@keyframes esc-comercio-colgar {
-  0%, 100% { transform: rotate(-9deg); }
-  50% { transform: rotate(9deg); }
+/* el toldo se mece apenas (< 1°) */
+@keyframes esc-comercio-toldo {
+  0%, 100% { transform: skewX(-0.7deg); }
+  50% { transform: skewX(0.7deg); }
+}
+/* destello diagonal que cruza el vidrio una vez por ciclo (--d = recorrido) */
+@keyframes esc-comercio-brillo {
+  0%, 38% { transform: translateX(0); opacity: 0; }
+  42% { opacity: 1; }
+  54% { transform: translateX(var(--d)); opacity: 1; }
+  56%, 100% { transform: translateX(var(--d)); opacity: 0; }
 }
 
-.esc-comercio-rodar { animation: esc-comercio-rodar 5s ease-in-out infinite; }
-.esc-comercio-rueda { animation: esc-comercio-rueda 5s ease-in-out infinite; }
-.esc-comercio-caer { animation: esc-comercio-caer 6s infinite; }
-.esc-comercio-chispa { animation: esc-comercio-chispa 6s infinite; }
-.esc-comercio-laser { animation: esc-comercio-laser 1.5s ease-in-out infinite alternate; }
-.escena .esc-comercio-colgar { animation: esc-comercio-colgar 3.4s ease-in-out infinite; transform-origin: 50% 0%; }
+.esc-comercio-vuelo-x { animation: esc-comercio-vuelo-x 6.5s infinite; }
+.esc-comercio-vuelo-y { animation: esc-comercio-vuelo-y 6.5s infinite; }
+.esc-comercio-haz { animation: esc-comercio-haz 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-comercio-barrido { animation: esc-comercio-barrido 6.5s infinite; }
+.esc-comercio-check { animation: esc-comercio-check 6.5s infinite; }
+.escena .esc-comercio-toldo { animation: esc-comercio-toldo 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; transform-origin: 50% 0%; }
+.esc-comercio-brillo { animation: esc-comercio-brillo 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
 
 /* ------------------------------------------------------------------ */
 /*  FERRETERÍA                                                         */
 /* ------------------------------------------------------------------ */
 
 /*
-  Ciclo de 4,8 s = cuatro martillazos de 1,2 s. El golpe cae en 9,5 %, 34,5 %,
-  59,5 % y 84,5 %. Cada golpe llega un poco más abajo (el clavo se va hundiendo),
-  por eso el ángulo de impacto crece: 0°, -2,3°, -4,5° y -6,8°.
+  Tres golpes con el último justo antes del aviso. Cada golpe: retroceso (sube un
+  poco más), caída que acelera, impacto y rebote corto. El clavo se hunde 4 + 4 + 3
+  unidades; la cara del martillo sigue al clavo (mango de ~54 u: asin(4/54) = 4,25°,
+  asin(8/54) = 8,5°, asin(11/54) = 11,8°). Impactos: 79 %, 94 % y 9 % (= 109 %).
 */
 @keyframes esc-comercio-martillo {
-  0% { transform: rotate(32deg); animation-timing-function: ease-in-out; }
-  1.5% { transform: rotate(36deg); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.7); }
-  9.5% { transform: rotate(0deg); animation-timing-function: ease-out; }
-  11.5% { transform: rotate(5deg); animation-timing-function: ease-in-out; }
-  25% { transform: rotate(32deg); animation-timing-function: ease-in-out; }
-  26.5% { transform: rotate(36deg); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.7); }
-  34.5% { transform: rotate(-2.3deg); animation-timing-function: ease-out; }
-  36.5% { transform: rotate(3deg); animation-timing-function: ease-in-out; }
-  50% { transform: rotate(32deg); animation-timing-function: ease-in-out; }
-  51.5% { transform: rotate(36deg); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.7); }
-  59.5% { transform: rotate(-4.5deg); animation-timing-function: ease-out; }
-  61.5% { transform: rotate(1deg); animation-timing-function: ease-in-out; }
-  75% { transform: rotate(32deg); animation-timing-function: ease-in-out; }
-  76.5% { transform: rotate(36deg); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.7); }
-  84.5% { transform: rotate(-6.8deg); animation-timing-function: ease-out; }
-  86.5% { transform: rotate(-1deg); animation-timing-function: ease-in-out; }
-  100% { transform: rotate(32deg); }
+  0% { transform: rotate(18deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  4.5% { transform: rotate(22deg); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  9% { transform: rotate(-8.5deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  10% { transform: rotate(-11.8deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  12.5% { transform: rotate(8deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  19% { transform: rotate(18deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  40% { transform: rotate(17deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  62% { transform: rotate(18deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  75% { transform: rotate(22deg); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  79% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  80% { transform: rotate(-4.25deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  82.5% { transform: rotate(8deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  89.5% { transform: rotate(22deg); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  94% { transform: rotate(-4.25deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  95% { transform: rotate(-8.5deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  97% { transform: rotate(8deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  100% { transform: rotate(18deg); }
 }
-/* el clavo se hunde en cada golpe y, al final, se desvanece y reaparece nuevo */
+/* el clavo: se hunde en cada golpe, se desvanece al final y llega uno nuevo desde arriba */
 @keyframes esc-comercio-clavo {
-  0%, 9% { transform: translateY(0); opacity: 1; }
-  11%, 34% { transform: translateY(3px); }
-  36%, 59% { transform: translateY(6px); }
-  61%, 84% { transform: translateY(9px); }
-  86%, 95% { transform: translateY(12px); opacity: 1; }
-  97% { transform: translateY(12px); opacity: 0; }
-  98% { transform: translateY(0); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0%, 8.9% { transform: translateY(8px); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  10%, 50% { transform: translateY(11px); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  56% { transform: translateY(11px); opacity: 0; }
+  57% { transform: translateY(-8px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  66%, 78.9% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  80%, 93.9% { transform: translateY(4px); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  95%, 100% { transform: translateY(8px); opacity: 1; }
 }
-/* partículas del impacto: salen a los lados y caen (arco) */
-@keyframes esc-comercio-salto {
-  0%, 37% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-  40% { opacity: 1; }
-  58% { transform: translate(calc(var(--dx) * 0.7), var(--dy)) rotate(calc(var(--giro) * 0.6)); }
-  78% { transform: translate(var(--dx), calc(var(--dy) + 16px)) rotate(var(--giro)); opacity: 0; }
-  100% { transform: translate(var(--dx), calc(var(--dy) + 16px)) rotate(var(--giro)); opacity: 0; }
+/* lo que nace del clavo (destello y chispas) lo acompaña hacia abajo, sin su desvanecido */
+@keyframes esc-comercio-clavo-sig {
+  0%, 8.9% { transform: translateY(8px); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  10%, 56% { transform: translateY(11px); }
+  57%, 78.9% { transform: translateY(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  80%, 93.9% { transform: translateY(4px); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  95%, 100% { transform: translateY(8px); }
 }
+/* destello en cada impacto (79 %, 94 % y 9 %) */
 @keyframes esc-comercio-destello {
-  0%, 37% { transform: scale(0.3); opacity: 0; }
-  41% { transform: scale(1.3); opacity: 0.95; }
-  54%, 100% { transform: scale(1.9); opacity: 0; }
+  0%, 8.6% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  9.6% { transform: scale(1.2); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  14% { transform: scale(1.7); opacity: 0; }
+  78.6% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  79.6% { transform: scale(0.9); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  84% { transform: scale(1.3); opacity: 0; }
+  93.6% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  94.6% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  99% { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(0.3); opacity: 0; }
 }
-/* la bandeja y la llave dan un respingo con cada golpe */
-@keyframes esc-comercio-temblor {
-  0%, 36% { transform: translateY(0); }
-  41% { transform: translateY(1.6px); }
-  49% { transform: translateY(-0.6px); }
-  58%, 100% { transform: translateY(0); }
+/* chispas y astillas del último golpe: salen hacia (dx, dy) y caen en arco */
+@keyframes esc-comercio-salto {
+  0%, 8.6% { transform: translate(0, 0) rotate(0deg); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  10% { opacity: 1; }
+  17% { transform: translate(calc(var(--dx) * 0.8), var(--dy)) rotate(calc(var(--giro) * 0.6)); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  27%, 100% { transform: translate(var(--dx), calc(var(--dy) + 20px)) rotate(var(--giro)); opacity: 0; }
 }
-/* engranajes: media vuelta del grande (simétrico cada 30°) = vuelta entera del chico, en sentido contrario */
+/* piloto verde: se enciende con el último golpe y se apaga antes de que llegue el clavo nuevo */
+@keyframes esc-comercio-luz {
+  0%, 9% { opacity: 0; transform: scale(0.6); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  14%, 52% { opacity: 1; transform: scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  62%, 100% { opacity: 0; transform: scale(0.8); }
+}
+/*
+  Engranajes: arrancan con el último golpe, giran con aceleración suave y se detienen.
+  120° del grande = 4 dientes (12 dientes → simetría cada 30°); el chico gira 240° = 4 dientes
+  (6 dientes → simetría cada 60°) en sentido contrario: el bucle no se nota.
+*/
 @keyframes esc-comercio-gira-h {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(180deg); }
+  0%, 12% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  58%, 100% { transform: rotate(120deg); }
 }
 @keyframes esc-comercio-gira-a {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(-360deg); }
+  0%, 12% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  58%, 100% { transform: rotate(-240deg); }
 }
 
-.esc-comercio-martillo { animation: esc-comercio-martillo 4.8s infinite; }
-.esc-comercio-clavo { animation: esc-comercio-clavo 4.8s linear infinite; }
-.esc-comercio-salto { animation: esc-comercio-salto 1.2s ease-out infinite; }
-.esc-comercio-destello { animation: esc-comercio-destello 1.2s ease-out infinite; }
-.esc-comercio-temblor { animation: esc-comercio-temblor 1.2s ease-out infinite; }
-.esc-comercio-gira-h { animation: esc-comercio-gira-h 3s linear infinite; }
-.esc-comercio-gira-a { animation: esc-comercio-gira-a 3s linear infinite; }
+.esc-comercio-martillo { animation: esc-comercio-martillo 6.5s infinite; }
+.esc-comercio-clavo { animation: esc-comercio-clavo 6.5s infinite; }
+.esc-comercio-clavo-sig { animation: esc-comercio-clavo-sig 6.5s infinite; }
+.esc-comercio-destello { animation: esc-comercio-destello 6.5s infinite; }
+.esc-comercio-salto { animation: esc-comercio-salto 6.5s infinite; }
+.esc-comercio-luz { animation: esc-comercio-luz 6.5s infinite; }
+.esc-comercio-gira-h { animation: esc-comercio-gira-h 6.5s infinite; }
+.esc-comercio-gira-a { animation: esc-comercio-gira-a 6.5s infinite; }

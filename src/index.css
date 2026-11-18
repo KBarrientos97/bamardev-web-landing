@@ -130,9 +130,9 @@ body {
   100% { transform: translateY(24px); opacity: 0; }
 }
 @keyframes esc-chip {
-  0%, 62%, 100% { transform: scale(0.4) translateY(6px); opacity: 0; }
-  10% { transform: scale(1.1) translateY(0); opacity: 1; }
-  16%, 52% { transform: scale(1) translateY(0); opacity: 1; }
+  0%, 66%, 100% { transform: translateY(-8px) scale(0.94); opacity: 0; }
+  10% { transform: translateY(1px) scale(1.02); opacity: 1; }
+  15%, 56% { transform: translateY(0) scale(1); opacity: 1; }
 }
 @keyframes esc-ticket {
   0%, 58%, 100% { transform: translateY(-115%); opacity: 0; }
@@ -168,3 +168,20 @@ body {
     display: none;
   }
 }
+
+/* Luz ambiente y orbes de las escenas (Marco en escenasBase.tsx). Profundidad sin costo: transform/opacity. */
+.esc-luz {
+  background:
+    radial-gradient(120% 80% at 15% 0%, rgba(255, 255, 255, 0.75), transparent 60%),
+    linear-gradient(to top, rgba(15, 23, 42, 0.05), transparent 35%);
+}
+@keyframes esc-deriva {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(26px, 10px); }
+}
+@keyframes esc-deriva-b {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-22px, -12px); }
+}
+.esc-deriva { animation: esc-deriva 14s ease-in-out infinite; }
+.esc-deriva-b { animation: esc-deriva-b 17s ease-in-out infinite; }
