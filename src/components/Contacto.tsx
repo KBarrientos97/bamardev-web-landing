@@ -202,7 +202,7 @@ export function Contacto({ planInteres }: { planInteres?: string }) {
             rows={3}
             maxLength={1000}
             className="mt-1 w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-white placeholder-slate-400 outline-none focus:border-brand-400"
-            placeholder="Tengo una pollería y quiero controlar el stock…"
+            placeholder="Tengo un restaurante y quiero controlar el stock…"
           />
         </label>
       </div>

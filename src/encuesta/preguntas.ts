@@ -23,7 +23,7 @@ export interface Opcion {
 }
 
 export const RUBROS: (Opcion & { valor: Rubro })[] = [
-  { valor: 'RESTAURANTE', texto: 'Restaurante / comida rápida / pollería', emoji: '🍗' },
+  { valor: 'RESTAURANTE', texto: 'Restaurante / comida rápida', emoji: '🍗' },
   { valor: 'FARMACIA', texto: 'Farmacia', emoji: '💊' },
   { valor: 'TIENDA', texto: 'Tienda / minimarket', emoji: '🛒' },
   { valor: 'FERRETERIA', texto: 'Ferretería', emoji: '🔧' },

@@ -1,9 +1,8 @@
 import { AnimatePresence, m, useReducedMotion } from 'motion/react'
-import { Fragment, useState, type PointerEvent } from 'react'
+import { Fragment, useEffect, useState, type PointerEvent } from 'react'
 import { linkWhatsApp } from '../data/planes'
-import { WhatsAppIcon } from './ui'
 import { Escalonado, SUAVE, itemVariantes } from './animacion'
-import { HeroDemo } from './HeroDemo'
+import { HeroDemoB } from './HeroDemoB'
 
 /** El titular entra palabra por palabra, cada una subiendo desde abajo de su "ranura". */
 const palabra = {
@@ -80,10 +79,44 @@ const PLATAFORMAS = [
   },
 ]
 
+/**
+ * Los negocios que ya trabajan con BamarDev, uno por segundo. Antes la palabra seguía a la
+ * demo del celular (cambiaba cada ~8 s) y la gente leía «sólo para pollerías»: así se ven
+ * todos los rubros en lo que tarda en leerse el titular, tras «para». La última cierra con «a medida».
+ */
+const NEGOCIOS = [
+  'restaurantes',
+  'farmacias',
+  'ferreterías',
+  'minimarkets',
+  'billares',
+  'peluquerías',
+  'barberías',
+  'spas',
+  'academias',
+  'negocios a medida',
+]
+const CADA_MS = 1100
+
+/** Clases de cada promesa del titular: se enciende la que la demo está mostrando en ese momento. */
+function claseChip(fase: number | null, i: number): string {
+  const base = 'rounded-md px-1 -mx-1 transition-colors duration-300 '
+  if (fase === null) return base + 'text-brand-300'
+  return base + (fase === i ? 'bg-brand-500/25 text-white ring-1 ring-brand-300/40' : 'text-brand-300/45')
+}
+
 export function Hero() {
   const reducir = useReducedMotion()
-  // El rubro que muestra la demo del celular: el titular lo acompaña.
-  const [rubro, setRubro] = useState('pollería')
+  // Qué promesa del titular muestra la demo ahora (0 venta rápida · 1 stock · 2 caja), o ninguna.
+  const [fase, setFase] = useState<0 | 1 | 2 | null>(null)
+  const [i, setI] = useState(0)
+  // Con «reducir movimiento» el titular queda quieto en una frase general.
+  useEffect(() => {
+    if (reducir) return
+    const t = setInterval(() => setI((n) => (n + 1) % NEGOCIOS.length), CADA_MS)
+    return () => clearInterval(t)
+  }, [reducir])
+  const rubro = reducir ? 'cada negocio' : NEGOCIOS[i]
 
   return (
     <section
@@ -120,45 +153,47 @@ export function Hero() {
             variants={itemVariantes}
             className="inline-flex items-center gap-2 rounded-full border border-brand-400/30 bg-brand-500/10 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-brand-300 sm:text-xs sm:tracking-widest"
           >
-            Restaurantes · Comercios · Farmacias · Belleza
+            Para todo tipo de negocio · Y software a medida
           </m.span>
 
           <m.h1
             variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
-            className="mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl"
+            aria-label="El sistema que maneja todo tu negocio, stock al día, venta rápida y caja sin fugas, para restaurantes, farmacias, ferreterías, minimarkets, billares, peluquerías, barberías, spas y academias."
+            className="mt-6 font-extrabold tracking-tight"
           >
-            <Palabras texto="El sistema que maneja tu" />
-            {/* El rubro cambia con la demo: la palabra vieja sube y sale, la
-                nueva entra desde abajo; el ancho se acomoda solo (layout). */}
-            <m.span
-              layout
-              transition={{ layout: { duration: 0.4, ease: SUAVE } }}
-              className="relative inline-flex overflow-hidden pb-[0.12em] -mb-[0.12em] align-bottom"
-            >
-              <AnimatePresence mode="popLayout" initial={false}>
-                <m.span
-                  key={rubro}
-                  initial={{ y: '100%', opacity: 0 }}
-                  animate={{ y: '0%', opacity: 1 }}
-                  exit={{ y: '-100%', opacity: 0 }}
-                  transition={{ duration: 0.5, ease: SUAVE }}
-                  className="inline-block whitespace-nowrap bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text text-transparent"
-                >
-                  {rubro}
-                </m.span>
-              </AnimatePresence>
-            </m.span>{' '}
-            <Palabras texto="y te dice cuánto ganás." />
+            <span aria-hidden>
+              {/* Los tres dolores que resolvemos, en una sola frase: inventario, venta rápida y cajeros */}
+              <span className="block text-3xl leading-[1.12] sm:text-4xl lg:text-[2.7rem]">
+                <Palabras texto="El sistema que maneja todo tu negocio" />
+              </span>
+              <span className="mt-3 block text-xl font-bold leading-snug text-slate-300 sm:text-2xl">
+                <span className={claseChip(fase, 1)}>stock al día</span>, <span className={claseChip(fase, 0)}>venta rápida</span> y{' '}
+                <span className={claseChip(fase, 2)}>caja sin fugas</span>
+              </span>
+              {/* «para» + la palabra que cambia cada segundo, en su propia línea para que nada se reacomode */}
+              <span className="mt-4 flex items-start gap-3 text-3xl leading-[1.12] sm:text-4xl lg:text-[2.7rem]">
+                <span>para</span>
+                <span className="relative block h-[1.22em] flex-1 overflow-hidden">
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    <m.span
+                      key={rubro}
+                      initial={{ y: '100%', opacity: 0 }}
+                      animate={{ y: '0%', opacity: 1 }}
+                      exit={{ y: '-100%', opacity: 0 }}
+                      transition={{ duration: 0.32, ease: SUAVE }}
+                      className="absolute left-0 top-0 inline-block whitespace-nowrap bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text pb-[0.12em] text-transparent"
+                    >
+                      {rubro}
+                    </m.span>
+                  </AnimatePresence>
+                </span>
+              </span>
+            </span>
           </m.h1>
 
-          <m.p variants={itemVariantes} className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300">
-            Vendé, cobrá con QR, agendá y controlá tu caja desde el celular.
-            Sigue funcionando aunque se corte el internet.
-          </m.p>
-
           {/* Un solo botón principal: la prueba del Emprendedor (el alta vive en su
-              propia página, /empezar, B2). La demo por WhatsApp y los planes quedan
-              como enlaces de apoyo, y el WhatsApp además flota en toda la página. */}
+              propia página, /empezar, B2). Los planes están en el menú y el WhatsApp
+              flota en toda la página: por eso no hay más enlaces acá. */}
           <m.div variants={itemVariantes} className="mt-8">
             <m.a
               href="/empezar"
@@ -170,22 +205,24 @@ export function Hero() {
             </m.a>
           </m.div>
 
-          <m.div variants={itemVariantes} className="mt-4">
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold">
-              <a
-                href={linkWhatsApp('Hola BamarDev, quiero ver el sistema funcionando en mi negocio.')}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-brand-300 underline-offset-2 hover:underline"
-              >
-                <WhatsAppIcon className="h-4 w-4" />
-                Pedir una demo
-              </a>
-              <a href="#planes" className="whitespace-nowrap text-brand-300 underline-offset-2 hover:underline">
-                Ver los planes →
-              </a>
-            </div>
-          </m.div>
+          {/* El sistema se arma por rubro, pero lo que no exista también se construye */}
+          <m.a
+            variants={itemVariantes}
+            href={linkWhatsApp('Hola BamarDev, necesito un software a medida para mi negocio.')}
+            target="_blank"
+            rel="noreferrer"
+            className="group/medida mt-7 flex max-w-xl items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 pr-4 transition duration-300 hover:border-brand-400/50 hover:bg-white/10"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/15 text-brand-300 ring-1 ring-brand-400/25">
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14" />
+              </svg>
+            </span>
+            <span className="text-sm leading-snug text-slate-300">
+              <strong className="font-bold text-white">¿Tu negocio es distinto?</strong> También hacemos software a medida, pensado para cómo trabajás.
+            </span>
+            <span aria-hidden className="ml-auto text-brand-300 transition-transform duration-300 group-hover/medida:translate-x-1">→</span>
+          </m.a>
 
           <m.div variants={itemVariantes} className="mt-10">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Disponible en</p>
@@ -205,7 +242,7 @@ export function Hero() {
           </m.div>
         </Escalonado>
 
-        <HeroDemo onRubro={setRubro} />
+        <HeroDemoB onFase={setFase} />
       </div>
     </section>
   )

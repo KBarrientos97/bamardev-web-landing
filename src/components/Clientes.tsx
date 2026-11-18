@@ -29,13 +29,17 @@ const CLIENTES: Cliente[] = [
 /*
   La cinta avanza UNA tarjeta cada CADA_MS y vuelve a empezar sin que se note: la
   lista se repite varias veces y, al completar una vuelta (N pasos), salta sin
-  animación al inicio, que se ve idéntico. Cinco repeticiones alcanzan para
-  cubrir hasta una pantalla ultra ancha más una vuelta completa.
+  animación al inicio, que se ve idéntico. En escritorio la ventana mide a lo sumo
+  lo que una vuelta de tarjetas (se mide en el DOM): en pantallas grandes se ven
+  los 5 negocios a la vez y nunca el mismo dos veces, sólo uno que sale mientras
+  su copia entra por el otro lado.
 */
 const REPETICIONES = 5
 const FILA = Array.from({ length: REPETICIONES }, () => CLIENTES).flat()
 const CADA_MS = 5000
-const DESLIZ_MS = 900
+/** Escritorio: un negocio por segundo (pedido del dueño: «cada 1 segundo»). */
+const CADA_ESCRITORIO_MS = 1000
+const DESLIZ_MS = 650
 
 function Tarjeta({ c, oculta, movil = false }: { c: Cliente; oculta: boolean; movil?: boolean }) {
   return (
@@ -81,13 +85,15 @@ function Tarjeta({ c, oculta, movil = false }: { c: Cliente; oculta: boolean; mo
   )
 }
 
-/** Escritorio: fila que se desliza una tarjeta cada 5 s. Se frena con el mouse o el foco encima. */
+/** Escritorio: fila que se desliza una tarjeta por segundo. Se frena con el mouse o el foco encima. */
 function CintaEscritorio() {
   const reducir = useReducedMotion()
   const pista = useRef<HTMLUListElement>(null)
   const [paso, setPaso] = useState(0)
   const [animar, setAnimar] = useState(true)
   const [pausa, setPausa] = useState(false)
+  // Ancho máximo de la ventana = lo que mide una vuelta de tarjetas, para no repetir ninguna.
+  const [ancho, setAncho] = useState<number>()
   const n = CLIENTES.length
 
   // Avanza un paso cada CADA_MS. Al pausar o reanudar, la cuenta vuelve a empezar.
@@ -96,7 +102,7 @@ function CintaEscritorio() {
     const t = setTimeout(() => {
       setAnimar(true)
       setPaso((p) => p + 1)
-    }, CADA_MS)
+    }, CADA_ESCRITORIO_MS)
     return () => clearTimeout(t)
   }, [paso, reducir, pausa])
 
@@ -120,10 +126,26 @@ function CintaEscritorio() {
     ul.style.transform = `translateX(${-x}px)`
   }, [paso, animar, reducir])
 
+  useLayoutEffect(() => {
+    const ul = pista.current
+    if (!ul) return
+    const medir = () => {
+      if (ul.children.length <= n) return
+      // Una vuelta con sus separaciones, menos la última (16 px) + el relleno izquierdo (24 px).
+      const vuelta = (ul.children[n] as HTMLElement).offsetLeft - (ul.children[0] as HTMLElement).offsetLeft
+      setAncho(vuelta - 16 + 24)
+    }
+    medir()
+    const ro = new ResizeObserver(medir)
+    ro.observe(ul)
+    return () => ro.disconnect()
+  }, [n])
+
   return (
     // Con "reducir movimiento" no se desliza solo: queda quieta y se mueve a mano.
     <div
-      className="relative mt-10 overflow-hidden py-3 motion-reduce:overflow-x-auto [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)]"
+      style={{ maxWidth: ancho }}
+      className="relative mx-auto mt-10 overflow-hidden py-3 motion-reduce:overflow-x-auto [mask-image:linear-gradient(to_right,transparent,#000_24px,#000_calc(100%-24px),transparent)]"
       onMouseEnter={() => setPausa(true)}
       onMouseLeave={() => setPausa(false)}
       onFocus={() => setPausa(true)}
