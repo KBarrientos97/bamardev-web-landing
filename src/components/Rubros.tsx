@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, m } from 'motion/react'
 import { linkWhatsApp } from '../data/planes'
 import { WhatsAppIcon } from './ui'
+import { ESCENAS, type ClaveEscena } from './Escenas'
 import { Aparecer, Escalonado, SUAVE, itemVariantes } from './animacion'
 
 type Modo = 'ventas' | 'agenda' | 'clases'
@@ -15,6 +16,8 @@ interface Rubro {
   puntos: string[]
   /** Cómo se presenta el interesado en el WhatsApp de la demo. */
   quienEscribe: string
+  /** Ilustración animada del rubro (Escenas.tsx). Sin ella, la tarjeta usa el emoji. */
+  escena?: ClaveEscena
 }
 
 /*
@@ -40,6 +43,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Salón con meseros y delivery con app del repartidor (Profesional)',
       ],
       quienEscribe: 'tengo un restaurante',
+      escena: 'pollo',
     },
     {
       emoji: '🛒',
@@ -70,6 +74,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Encargos, proveedores y catálogo importado desde Excel',
       ],
       quienEscribe: 'tengo una farmacia',
+      escena: 'farmacia',
     },
     {
       emoji: '🎱',
@@ -266,10 +271,22 @@ export function Rubros() {
                 transition={{ type: 'spring', stiffness: 300, damping: 22 }}
                 className="group flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-[border-color,box-shadow] duration-300 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-100"
               >
+                {r.escena &&
+                  (() => {
+                    const Escena = ESCENAS[r.escena]
+                    // La ilustración ocupa el borde de arriba de la tarjeta.
+                    return (
+                      <div className="-mx-6 -mt-6 mb-5 overflow-hidden rounded-t-3xl">
+                        <Escena />
+                      </div>
+                    )
+                  })()}
                 <div className="flex items-center gap-3">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-2xl ring-1 ring-brand-100 transition-transform duration-300 ease-out group-hover:-rotate-6 group-hover:scale-110">
-                    {r.emoji}
-                  </span>
+                  {!r.escena && (
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-2xl ring-1 ring-brand-100 transition-transform duration-300 ease-out group-hover:-rotate-6 group-hover:scale-110">
+                      {r.emoji}
+                    </span>
+                  )}
                   <h3 className="text-lg font-extrabold leading-tight text-slate-900">{r.nombre}</h3>
                 </div>
                 <ul className="mt-4 flex-1 space-y-2 text-sm text-slate-700">
