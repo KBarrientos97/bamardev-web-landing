@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { useReducedMotion } from 'motion/react'
 import { Aparecer } from './animacion'
 
@@ -37,9 +37,9 @@ const FILA = Array.from({ length: REPETICIONES }, () => CLIENTES).flat()
 const CADA_MS = 5000
 const DESLIZ_MS = 900
 
-function Tarjeta({ c, oculta }: { c: Cliente; oculta: boolean }) {
+function Tarjeta({ c, oculta, movil = false }: { c: Cliente; oculta: boolean; movil?: boolean }) {
   return (
-    <li aria-hidden={oculta || undefined} className="group/cliente relative flex shrink-0 items-center gap-4 overflow-hidden rounded-3xl border border-slate-200/80 bg-white py-3.5 pl-3.5 pr-7 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.18)] transition duration-300 ease-out hover:-translate-y-1 hover:border-brand-300 hover:shadow-[0_18px_36px_-14px_rgb(16_185_129/0.45)]">
+    <li aria-hidden={oculta || undefined} className={`${movil ? 'w-[calc(100vw-2rem)] snap-center ' : ''}group/cliente relative flex shrink-0 items-center gap-4 overflow-hidden rounded-3xl border border-slate-200/80 bg-white py-3.5 pl-3.5 pr-7 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.18)] transition duration-300 ease-out hover:-translate-y-1 hover:border-brand-300 hover:shadow-[0_18px_36px_-14px_rgb(16_185_129/0.45)]`}>
       {/* Resplandor de marca en la esquina: se enciende al pasar el mouse */}
       <span
         aria-hidden
@@ -56,7 +56,7 @@ function Tarjeta({ c, oculta }: { c: Cliente; oculta: boolean }) {
           loading="lazy"
           decoding="async"
           className={`h-[4.75rem] rounded-2xl object-cover shadow-md ring-2 ring-white outline outline-1 outline-slate-200 transition duration-300 group-hover/cliente:-rotate-2 group-hover/cliente:scale-105 ${
-            c.ancho ? 'w-32' : 'w-[4.75rem]'
+            c.ancho ? 'w-24 sm:w-32' : 'w-[4.75rem]'
           }`}
         />
         {/* Insignia de cliente activo */}
@@ -71,7 +71,7 @@ function Tarjeta({ c, oculta }: { c: Cliente; oculta: boolean }) {
       </div>
 
       <div className="relative min-w-0">
-        <p className="whitespace-nowrap text-lg font-extrabold leading-tight tracking-tight text-slate-900">{c.nombre}</p>
+        <p className="text-lg font-extrabold leading-tight tracking-tight text-slate-900 sm:whitespace-nowrap">{c.nombre}</p>
         <p className="mt-2 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-brand-50 py-1 pl-2 pr-3 text-xs font-bold text-brand-700 ring-1 ring-brand-200/70">
           <span aria-hidden className="text-sm leading-none">{c.icono}</span>
           {c.rubro}
@@ -81,8 +81,8 @@ function Tarjeta({ c, oculta }: { c: Cliente; oculta: boolean }) {
   )
 }
 
-/** Fila que se desliza una tarjeta cada 5 s. Se frena con el mouse o el foco encima. */
-function Cinta() {
+/** Escritorio: fila que se desliza una tarjeta cada 5 s. Se frena con el mouse o el foco encima. */
+function CintaEscritorio() {
   const reducir = useReducedMotion()
   const pista = useRef<HTMLUListElement>(null)
   const [paso, setPaso] = useState(0)
@@ -136,6 +136,99 @@ function Cinta() {
       </ul>
     </div>
   )
+}
+
+const MEDIA_MOVIL = '(max-width: 639px)'
+
+function useMovil(): boolean {
+  return useSyncExternalStore(
+    (avisar) => {
+      const mq = window.matchMedia(MEDIA_MOVIL)
+      mq.addEventListener('change', avisar)
+      return () => mq.removeEventListener('change', avisar)
+    },
+    () => window.matchMedia(MEDIA_MOVIL).matches,
+    () => false,
+  )
+}
+
+/** Si la persona tocó o deslizó hace menos de esto, el avance automático espera. */
+const ESPERA_TRAS_TOQUE_MS = 8000
+
+/**
+ * Celular: una tarjeta a la vez. Pasa sola cada 5 s y también se puede deslizar a
+ * mano (el scroll nativo con "imán" deja cada tarjeta centrada). Es infinita igual
+ * que la de escritorio: arranca en la segunda repetición y, al detenerse, vuelve
+ * en silencio a la zona del medio, donde se ve idéntico.
+ */
+function CintaMovil() {
+  const reducir = useReducedMotion()
+  const pista = useRef<HTMLUListElement>(null)
+  const ultimoToque = useRef(0)
+  const n = CLIENTES.length
+
+  useEffect(() => {
+    const ul = pista.current
+    if (!ul) return
+    const li = (i: number) => ul.children[i] as HTMLElement
+    const paso = () => li(1).offsetLeft - li(0).offsetLeft
+    // Posición de scroll que deja la tarjeta i centrada.
+    const pos = (i: number) => li(i).offsetLeft - (ul.clientWidth - li(i).offsetWidth) / 2
+
+    ul.style.scrollBehavior = 'auto'
+    ul.scrollLeft = pos(n)
+
+    let t = 0
+    const alDesplazar = () => {
+      clearTimeout(t)
+      t = window.setTimeout(() => {
+        const i = Math.round((ul.scrollLeft - pos(0)) / paso())
+        if (i < n) ul.scrollLeft += n * paso()
+        else if (i >= 3 * n) ul.scrollLeft -= n * paso()
+      }, 140)
+    }
+    ul.addEventListener('scroll', alDesplazar, { passive: true })
+
+    const id = window.setInterval(() => {
+      if (reducir || document.hidden || Date.now() - ultimoToque.current < ESPERA_TRAS_TOQUE_MS) return
+      ul.scrollTo({ left: ul.scrollLeft + paso(), behavior: 'smooth' })
+    }, CADA_MS)
+
+    return () => {
+      clearTimeout(t)
+      clearInterval(id)
+      ul.removeEventListener('scroll', alDesplazar)
+    }
+  }, [n, reducir])
+
+  const tocada = () => {
+    ultimoToque.current = Date.now()
+  }
+
+  return (
+    <div className="relative mt-10">
+      {/* tabIndex: para que también se pueda recorrer con el teclado. */}
+      <ul
+        ref={pista}
+        tabIndex={0}
+        aria-label="Negocios que usan BamarDev"
+        onPointerDown={tocada}
+        onTouchStart={tocada}
+        onWheel={tocada}
+        onKeyDown={tocada}
+        className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {FILA.map((c, i) => (
+          <Tarjeta key={`${c.nombre}-${i}`} c={c} oculta={i >= n} movil />
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+/** En celular, una tarjeta a la vez con scroll; en pantallas grandes, la cinta que avanza sola. */
+function Cinta() {
+  return useMovil() ? <CintaMovil /> : <CintaEscritorio />
 }
 
 export function Clientes() {
