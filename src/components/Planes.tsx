@@ -13,6 +13,7 @@ import { usePrecios } from '../data/precios'
 import { usePaquetes } from '../data/paquetes'
 import { CheckIcon } from './ui'
 import { BotonComparativa } from './Comparativa'
+import { BotonCreditos } from './CreditosPopup'
 import { m } from 'motion/react'
 import { Aparecer, Escalonado, Numero, itemVariantes } from './animacion'
 
@@ -222,12 +223,9 @@ export function Planes() {
                   ))}
                 </ul>
                 {plan.codigo === 'EMPRENDEDOR' && (
-                  <a
-                    href="#creditos"
-                    className="mt-6 text-sm font-bold text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-600"
-                  >
+                  <BotonCreditos className="mt-6 text-left text-sm font-bold text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-600">
                     Cómo funcionan los créditos →
-                  </a>
+                  </BotonCreditos>
                 )}
               </m.article>
             )

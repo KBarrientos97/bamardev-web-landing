@@ -4,6 +4,7 @@ import { fmtBs, linkWhatsApp } from '../data/planes'
 import { usePaquetes } from '../data/paquetes'
 import { usePrecios } from '../data/precios'
 import { CheckIcon, WhatsAppIcon } from './ui'
+import { BotonCreditos } from './CreditosPopup'
 import { Aparecer, Escalonado, Numero, SUAVE, itemVariantes } from './animacion'
 
 type Modo = 'ventas' | 'agenda'
@@ -306,9 +307,9 @@ export function Rubros() {
                   : ''}
                 ¿Te faltó? Seguís con créditos
                 {desde !== null && <> desde Bs&nbsp;{fmtBs(desde)}</>}.{' '}
-                <a href="#creditos" className="font-bold text-brand-300 underline underline-offset-2 hover:text-brand-200">
+                <BotonCreditos className="font-bold text-brand-300 underline underline-offset-2 hover:text-brand-200">
                   Cómo funcionan
-                </a>
+                </BotonCreditos>
               </p>
             </div>
 
