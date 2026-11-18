@@ -54,6 +54,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Fiado por cliente, con sus abonos y lo que te debe',
       ],
       quienEscribe: 'tengo un minimarket o tienda',
+      escena: 'minimarket',
     },
     {
       emoji: '🔩',
@@ -64,6 +65,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Stock y precio por sucursal',
       ],
       quienEscribe: 'tengo una ferretería o casa de repuestos',
+      escena: 'ferreteria',
     },
     {
       emoji: '💊',
@@ -78,13 +80,14 @@ const RUBROS: Record<Modo, Rubro[]> = {
     },
     {
       emoji: '🎱',
-      nombre: 'Billares y bares',
+      nombre: 'Billar y Restobar',
       puntos: [
         'Mesas por tiempo: libre, por horas o por minutos, con pausa y extensión',
-        'La cuenta de cada mesa suma los consumos del bar y se cobra en la misma caja',
+        'La cuenta de cada mesa suma los consumos del restobar y se cobra en la misma caja',
         'Tarifas por mesa, supervisión del turno y reporte del billar',
       ],
-      quienEscribe: 'tengo un billar o bar',
+      quienEscribe: 'tengo un billar o restobar',
+      escena: 'billar',
     },
   ],
   agenda: [
@@ -97,6 +100,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Ficha técnica con fotos de cada trabajo*',
       ],
       quienEscribe: 'tengo una peluquería',
+      escena: 'peluqueria',
     },
     {
       emoji: '💈',
@@ -107,6 +111,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Propinas y comisiones por barbero*',
       ],
       quienEscribe: 'tengo una barbería',
+      escena: 'barberia',
     },
     {
       emoji: '🧖',
@@ -117,6 +122,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Reservas online desde tu enlace*',
       ],
       quienEscribe: 'tengo un spa',
+      escena: 'spa',
     },
     {
       emoji: '💅',
@@ -127,6 +133,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Comisiones por profesional, con adelantos*',
       ],
       quienEscribe: 'tengo un local de uñas o estética',
+      escena: 'unas',
     },
   ],
   clases: [
@@ -139,6 +146,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Asistencia, notas y planilla de pago de tus docentes',
       ],
       quienEscribe: 'tengo una academia o instituto',
+      escena: 'academia',
     },
   ],
 }

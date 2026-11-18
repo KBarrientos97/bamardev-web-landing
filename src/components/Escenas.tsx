@@ -1,5 +1,10 @@
-import { useId, useRef, type CSSProperties, type ReactNode } from 'react'
-import { useInView } from 'motion/react'
+import { useId } from 'react'
+import { Aviso, Marco, svgBase, v } from './escenasBase'
+import './Escenas.css'
+import { EscenaMinimarket, EscenaFerreteria } from './EscenasComercio'
+import { EscenaBillar, EscenaAcademia } from './EscenasBillarYAcademia'
+import { EscenaPeluqueria, EscenaBarberia } from './EscenasPelo'
+import { EscenaSpa, EscenaUnas } from './EscenasBelleza'
 
 /*
   Ilustraciones animadas de los rubros (SVG propio, sin imágenes de stock).
@@ -7,45 +12,6 @@ import { useInView } from 'motion/react'
   keyframes `esc-*` viven en index.css. Cada escena es decorativa: el nombre y
   los puntos de la tarjeta ya dicen lo mismo, así que va con aria-hidden.
 */
-
-/**
- * Marco común: pausa las animaciones cuando la escena no se ve en pantalla (ahorra
- * batería) y, con "reducir movimiento", index.css las apaga y queda la imagen quieta.
- */
-function Marco({ fondo, children }: { fondo: string; children: ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const visto = useInView(ref, { margin: '0px 0px -10% 0px' })
-  return (
-    <div
-      ref={ref}
-      aria-hidden
-      data-vista={visto ? '' : undefined}
-      className={`escena relative h-48 overflow-hidden ${fondo}`}
-    >
-      {children}
-    </div>
-  )
-}
-
-const svgBase =
-  'absolute inset-0 h-full w-full origin-bottom transition-transform duration-500 ease-out group-hover:scale-105'
-
-/** Variables CSS que usan los keyframes (distancia, giro, retraso…). */
-const v = (o: Record<string, string>): CSSProperties => o as CSSProperties
-
-/** Un globo de aviso que aparece, se queda un momento y se va (como la notificación de una venta). */
-function ChipVenta() {
-  return (
-    <div className="esc-chip pointer-events-none absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-white py-1 pl-1.5 pr-3 text-[11px] font-extrabold text-emerald-700 shadow-lg ring-1 ring-emerald-200">
-      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-white">
-        <svg viewBox="0 0 20 20" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4.5 10.5l3.5 3.5 7.5-8" />
-        </svg>
-      </span>
-      Venta Bs 23
-    </div>
-  )
-}
 
 /** La comanda que "sale" de la cocina cuando el pedido está listo. */
 function Comanda() {
@@ -210,7 +176,7 @@ export function EscenaFarmacia() {
         <Mas x={120} y={98} dx={-22} retraso={0.8} />
         <Mas x={162} y={98} dx={22} retraso={2.3} />
       </svg>
-      <ChipVenta />
+      <Aviso texto="Venta Bs 23" />
     </Marco>
   )
 }
@@ -219,21 +185,33 @@ export function EscenaFarmacia() {
 /*  RESTAURANTE / POLLERÍA                                             */
 /* ------------------------------------------------------------------ */
 
-function Pollo({ x, retraso, clip }: { x: number; retraso: number; clip: string }) {
+/**
+ * Una presa de pollo (pierna con su hueso) rostizada, ensartada por el espiedo y DANDO VUELTAS:
+ * gira entera sobre el punto del espiedo (el hueso con sus dos "nudillos" recorre el círculo).
+ * El círculo invisible fija el centro de giro en el espiedo, no en el centro de la presa.
+ */
+function Pierna({ x, retraso, piel }: { x: number; retraso: number; piel: string }) {
   return (
     <g transform={`translate(${x} 104)`}>
-      <ellipse cx="0" cy="0" rx="19" ry="20" fill="#d98a3a" />
-      {/* la piel se "mueve" hacia abajo: el pollo gira en el espiedo */}
-      <g clipPath={`url(#${clip})`}>
-        <rect className="esc-gira" x="-22" y="-5" width="44" height="9" fill="#ffe1a0" opacity=".55" style={{ animationDelay: `${retraso}s` }} />
-        <rect className="esc-gira" x="-22" y="-5" width="44" height="4" fill="#8a4a16" opacity=".35" style={{ animationDelay: `${retraso - 0.6}s` }} />
-        <circle className="esc-gira-punto" cx="-9" cy="0" r="2" fill="#8a4a16" style={{ animationDelay: `${retraso - 0.2}s` }} />
-        <circle className="esc-gira-punto" cx="6" cy="0" r="2.2" fill="#8a4a16" style={{ animationDelay: `${retraso - 0.9}s` }} />
-        <circle className="esc-gira-punto" cx="12" cy="0" r="1.6" fill="#a8641f" style={{ animationDelay: `${retraso - 0.5}s` }} />
-        <circle className="esc-gira-punto" cx="-2" cy="0" r="1.8" fill="#a8641f" style={{ animationDelay: `${retraso - 1.1}s` }} />
+      <g className="esc-vuelta" style={{ animationDelay: `${retraso}s` }}>
+        <circle r="31" fill="none" />
+        {/* hueso con sus dos nudillos */}
+        <rect x="10" y="-2.8" width="17" height="5.6" rx="2.8" fill="#f4e8d0" />
+        <circle cx="28" cy="-3.6" r="3.6" fill="#f4e8d0" />
+        <circle cx="28" cy="3.6" r="3.6" fill="#f4e8d0" />
+        <rect x="10" y="-2.8" width="17" height="2" rx="1" fill="#fff" opacity=".6" />
+        {/* carne dorada */}
+        <path d="M-23 0C-23-13-9-18 1-12C9-9 13-5 15-2.4V2.4C13 5 9 9 1 12C-9 18-23 13-23 0Z" fill={`url(#${piel})`} stroke="#9a5116" strokeWidth="1.2" />
+        {/* piel crocante: manchitas y brillo */}
+        <circle cx="-14" cy="-5" r="1.8" fill="#7a3c10" opacity=".55" />
+        <circle cx="-6" cy="6" r="2.1" fill="#7a3c10" opacity=".5" />
+        <circle cx="3" cy="-6" r="1.5" fill="#96551a" opacity=".6" />
+        <circle cx="-17" cy="5" r="1.4" fill="#96551a" opacity=".6" />
+        <circle cx="6" cy="5" r="1.3" fill="#7a3c10" opacity=".5" />
+        <ellipse cx="-11" cy="-9" rx="8" ry="3.2" fill="#fff" opacity=".45" transform="rotate(-15 -11 -9)" />
+        {/* el espiedo atraviesa la presa */}
+        <circle cx="-4" cy="0" r="2.4" fill="#8f8f8f" />
       </g>
-      <ellipse cx="0" cy="0" rx="19" ry="20" fill="none" stroke="#a8601f" strokeWidth="1.6" />
-      <ellipse cx="-7" cy="-9" rx="5" ry="3" fill="#fff" opacity=".35" />
     </g>
   )
 }
@@ -257,7 +235,7 @@ function Humo({ x, retraso }: { x: number; retraso: number }) {
   )
 }
 
-/** Un pollo a la brasa girando sobre las llamas, con humo y la comanda que sale cuando está listo. */
+/** Dos presas de pollo rostizadas dando vueltas sobre las brasas, con gotitas de jugo, humo y la comanda que sale cuando están listos. */
 export function EscenaPollo() {
   const id = useId().replace(/:/g, '')
   const g = (n: string) => `${id}${n}`
@@ -266,14 +244,17 @@ export function EscenaPollo() {
       <div aria-hidden className="absolute -right-8 -top-10 h-40 w-40 rounded-full bg-orange-200/60 blur-2xl" />
       <svg viewBox="40 14 240 164" preserveAspectRatio="xMidYMax meet" className={svgBase}>
         <defs>
+          {/* el fondo del horno es oscuro arriba y brasa abajo: así los pollos dorados resaltan */}
           <linearGradient id={g('b')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#ffe08a" />
-            <stop offset=".55" stopColor="#ff9a45" />
-            <stop offset="1" stopColor="#e2561f" />
+            <stop offset="0" stopColor="#4a2a1f" />
+            <stop offset=".5" stopColor="#a63f1c" />
+            <stop offset="1" stopColor="#ff9a45" />
           </linearGradient>
-          <clipPath id={g('c')}>
-            <ellipse cx="0" cy="0" rx="19" ry="20" />
-          </clipPath>
+          <linearGradient id={g('p')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#f7c76f" />
+            <stop offset=".55" stopColor="#dd8c35" />
+            <stop offset="1" stopColor="#b2601d" />
+          </linearGradient>
         </defs>
 
         <ellipse cx="160" cy="170" rx="104" ry="7" fill="#5b2a0e" opacity=".14" />
@@ -298,14 +279,25 @@ export function EscenaPollo() {
             A LA BRASA
           </text>
 
-          {/* ventana con el fuego adentro */}
+          {/* ventana con las brasas */}
           <rect x="82" y="72" width="156" height="68" rx="10" fill={`url(#${g('b')})`} />
-          <rect x="82" y="72" width="156" height="68" rx="10" fill="#ffd36b" className="esc-parpadeo" />
-          <line x1="86" y1="104" x2="234" y2="104" stroke="#9a9a9a" strokeWidth="3" strokeLinecap="round" />
+          <rect x="82" y="72" width="156" height="68" rx="10" fill="#ffb15c" className="esc-parpadeo" opacity=".5" />
 
-          <Pollo x={118} retraso={0} clip={g('c')} />
-          <Pollo x={160} retraso={-0.5} clip={g('c')} />
-          <Pollo x={202} retraso={-1} clip={g('c')} />
+          {/* el espiedo y las dos presas dando vueltas */}
+          <line x1="86" y1="104" x2="234" y2="104" stroke="#9a9a9a" strokeWidth="3" strokeLinecap="round" />
+          <Pierna x={124} retraso={0} piel={g('p')} />
+          <Pierna x={196} retraso={-2.3} piel={g('p')} />
+
+          {/* gotas de jugo que caen a las brasas */}
+          <g transform="translate(126 128)">
+            <path className="esc-gota" d="M0 0C-2 3-2 6 0 6C2 6 2 3 0 0Z" fill="#ffd36b" style={{ animationDelay: '0s' }} />
+          </g>
+          <g transform="translate(198 128)">
+            <path className="esc-gota" d="M0 0C-2 3-2 6 0 6C2 6 2 3 0 0Z" fill="#ffd36b" style={{ animationDelay: '-0.7s' }} />
+          </g>
+          <g transform="translate(162 130)">
+            <path className="esc-gota" d="M0 0C-2 3-2 6 0 6C2 6 2 3 0 0Z" fill="#ffc24a" style={{ animationDelay: '-1.3s' }} />
+          </g>
 
           {/* llamas */}
           <Llama x={96} retraso={0} alto={0.9} />
@@ -317,7 +309,7 @@ export function EscenaPollo() {
           <Llama x={228} retraso={-1} alto={0.8} />
 
           {/* reflejo del vidrio */}
-          <path d="M92 74h28l-30 64H82V84a10 10 0 0 1 10-10z" fill="#fff" opacity=".14" />
+          <path d="M92 74h28l-30 64H82V84a10 10 0 0 1 10-10z" fill="#fff" opacity=".12" />
         </g>
 
         {/* chispas que suben */}
@@ -338,8 +330,16 @@ export function EscenaPollo() {
 
 /** Escena de cada rubro que ya tiene su ilustración animada. */
 export const ESCENAS = {
-  farmacia: EscenaFarmacia,
   pollo: EscenaPollo,
+  minimarket: EscenaMinimarket,
+  ferreteria: EscenaFerreteria,
+  farmacia: EscenaFarmacia,
+  billar: EscenaBillar,
+  peluqueria: EscenaPeluqueria,
+  barberia: EscenaBarberia,
+  spa: EscenaSpa,
+  unas: EscenaUnas,
+  academia: EscenaAcademia,
 } as const
 
 export type ClaveEscena = keyof typeof ESCENAS

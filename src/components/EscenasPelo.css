@@ -1,0 +1,122 @@
+/*
+  Keyframes de las escenas de Peluquería y Barbería (EscenasPelo.tsx).
+  Sólo transform y opacity. Las pausas fuera de pantalla y "reducir movimiento"
+  ya las resuelve index.css para todo lo que vive dentro de `.escena`.
+  Ojo: la regla global `.escena svg *` fija transform-origin al centro de cada
+  caja; por eso las clases con pivote propio se escriben `.escena .esc-pelo-…`
+  (más específicas) o llevan el pivote en el style del elemento.
+*/
+
+/* ---------- Peluquería ---------- */
+
+/* Las dos hojas de las tijeras giran sobre el tornillo (152, 78): abren, cierran,
+   abren, cierran y una pausa abiertas. La hoja de arriba sube (-14°), la de abajo baja (+14°). */
+@keyframes esc-pelo-corte-a {
+  0%, 40%, 100% { transform: rotate(-14deg); }
+  10%, 30% { transform: rotate(0deg); }
+  20% { transform: rotate(-14deg); }
+}
+@keyframes esc-pelo-corte-b {
+  0%, 40%, 100% { transform: rotate(14deg); }
+  10%, 30% { transform: rotate(0deg); }
+  20% { transform: rotate(14deg); }
+}
+.escena .esc-pelo-corte-a {
+  animation: esc-pelo-corte-a 3.6s ease-in-out infinite;
+  transform-box: view-box;
+  transform-origin: 152px 78px;
+}
+.escena .esc-pelo-corte-b {
+  animation: esc-pelo-corte-b 3.6s ease-in-out infinite;
+  transform-box: view-box;
+  transform-origin: 152px 78px;
+}
+
+/* Mechón que nace en la punta justo al cerrar las tijeras y cae girando con un vaivén. */
+@keyframes esc-pelo-mechon {
+  0%, 9% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  13% { opacity: 1; }
+  30% { transform: translate(calc(var(--dx, 0px) * -0.5), 22px) rotate(calc(var(--giro, 0deg) * 0.4)); opacity: 1; }
+  55%, 100% { transform: translate(var(--dx, 0px), 58px) rotate(var(--giro, 0deg)); opacity: 0; }
+}
+.esc-pelo-mechon { animation: esc-pelo-mechon 3.6s ease-in-out infinite; }
+
+/* Destello diagonal que recorre el espejo de lado a lado y descansa. */
+@keyframes esc-pelo-destello {
+  0%, 52%, 100% { transform: translateX(-62px); opacity: 0; }
+  58% { opacity: 0.85; }
+  92% { transform: translateX(62px); opacity: 0.85; }
+  96% { transform: translateX(66px); opacity: 0; }
+}
+.esc-pelo-destello { animation: esc-pelo-destello 5.2s ease-in-out infinite; }
+
+/* Estrellita ✦ que titila. */
+@keyframes esc-pelo-brillo {
+  0%, 100% { transform: scale(0.15) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1) rotate(90deg); opacity: 1; }
+}
+.esc-pelo-brillo { animation: esc-pelo-brillo 2.8s ease-in-out infinite; }
+
+/* El peinado del reflejo se mece apenas. */
+@keyframes esc-pelo-melena {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50% { transform: rotate(1.6deg); }
+}
+.escena .esc-pelo-melena { animation: esc-pelo-melena 3.4s ease-in-out infinite; transform-origin: 50% 20%; }
+
+/* Secador: vibra y suelta aire tibio. */
+@keyframes esc-pelo-vibra {
+  0%, 100% { transform: rotate(-0.9deg); }
+  50% { transform: rotate(0.9deg); }
+}
+.escena .esc-pelo-vibra {
+  animation: esc-pelo-vibra 0.5s ease-in-out infinite;
+  transform-box: view-box;
+  transform-origin: 276px 112px;
+}
+@keyframes esc-pelo-aire {
+  0% { transform: translateX(0) scaleX(0.5); opacity: 0; }
+  25% { opacity: 0.85; }
+  100% { transform: translateX(-14px) scaleX(1.2); opacity: 0; }
+}
+.esc-pelo-aire { animation: esc-pelo-aire 1.6s ease-out infinite; }
+
+/* ---------- Barbería ---------- */
+
+/* Las franjas del poste suben sin fin: el recorrido (30) es un ciclo completo
+   de 3 colores (rojo, blanco, azul de 10 de alto), así el salto del bucle no se ve. */
+@keyframes esc-pelo-franjas {
+  from { transform: translateY(0); }
+  to { transform: translateY(-30px); }
+}
+.esc-pelo-franjas { animation: esc-pelo-franjas 2.4s linear infinite; }
+
+/* Navaja y peine cuelgan del riel y se mecen como péndulos (el pivote va en el style). */
+@keyframes esc-pelo-pendulo {
+  from { transform: rotate(-7deg); }
+  to { transform: rotate(7deg); }
+}
+.esc-pelo-pendulo {
+  animation: esc-pelo-pendulo 3.2s ease-in-out infinite alternate;
+  transform-box: view-box;
+}
+
+/* El letrero cuelga de dos cadenas y se balancea. */
+@keyframes esc-pelo-letrero {
+  from { transform: rotate(-1.8deg); }
+  to { transform: rotate(1.8deg); }
+}
+.esc-pelo-letrero {
+  animation: esc-pelo-letrero 4.2s ease-in-out infinite alternate;
+  transform-box: view-box;
+  transform-origin: 232px 0px;
+}
+
+/* Burbujas de espuma que suben del tazón, se ensanchan un poco y se van. */
+@keyframes esc-pelo-burbuja {
+  0% { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  15% { opacity: 0.95; }
+  55% { transform: translate(calc(var(--dx, 0px) * 0.4), -30px) scale(0.95); opacity: 0.9; }
+  100% { transform: translate(var(--dx, 0px), -60px) scale(1.15); opacity: 0; }
+}
+.esc-pelo-burbuja { animation: esc-pelo-burbuja 4.2s ease-in-out infinite; }

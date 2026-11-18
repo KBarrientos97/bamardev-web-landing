@@ -145,12 +145,12 @@ body {
 .esc-flotar-suave { animation: esc-flotar 5.4s ease-in-out infinite; }
 .esc-aro { animation: esc-aro 2.6s ease-out infinite; }
 .esc-latido { animation: esc-latido 2.6s ease-in-out infinite; }
-.esc-toldo { animation: esc-toldo 3.8s ease-in-out infinite; transform-origin: 50% 0%; }
-.esc-planta { animation: esc-planta 3.2s ease-in-out infinite; transform-origin: 50% 100%; }
+.escena .esc-toldo { animation: esc-toldo 3.8s ease-in-out infinite; transform-origin: 50% 0%; }
+.escena .esc-planta { animation: esc-planta 3.2s ease-in-out infinite; transform-origin: 50% 100%; }
 .esc-subir { animation: esc-subir 4.6s ease-out infinite; }
 .esc-parpadeo { animation: esc-parpadeo 3s ease-in-out infinite; }
 .esc-sombra { animation: esc-sombra 4.6s ease-in-out infinite; }
-.esc-llama { animation: esc-llama 0.9s ease-in-out infinite; transform-origin: 50% 100%; }
+.escena .esc-llama { animation: esc-llama 0.9s ease-in-out infinite; transform-origin: 50% 100%; }
 .esc-humo { animation: esc-humo 3.6s ease-out infinite; }
 .esc-gira { animation: esc-gira 1.9s linear infinite; }
 .esc-gira-punto { animation: esc-gira-punto 1.9s linear infinite; }

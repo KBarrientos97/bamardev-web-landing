@@ -1,0 +1,177 @@
+/*
+  Keyframes de las escenas de Billar y Academia (EscenasBillarYAcademia.tsx).
+  Sólo transform y opacity. Los pivotes (lámpara, lomo del libro, punta del
+  lápiz…) se fijan en línea desde el .tsx porque `.escena svg *` (index.css)
+  tiene más especificidad que cualquier clase suelta de este archivo.
+*/
+
+/* ================= BILLAR =================
+   Una sola secuencia de 6 s para todas las piezas (misma duración y sin
+   retraso, así quedan sincronizadas):
+     0-26%  el taco tantea y se echa hacia atrás
+     26-31% golpe y la blanca vuela hacia el triángulo
+     31-46% las bolas se dispersan; la amarilla rueda hacia el buzón
+     47-52% la amarilla cae (se achica y desaparece)
+     88-100% todo se desvanece y las bolas reaparecen en su sitio  */
+
+@keyframes esc-billaracad-taco {
+  0% { transform: translateX(0); opacity: 1; animation-timing-function: ease-in-out; }
+  5% { transform: translateX(-5px); animation-timing-function: ease-in-out; }
+  9% { transform: translateX(-1px); animation-timing-function: ease-in-out; }
+  17% { transform: translateX(-17px); }
+  24% { transform: translateX(-17px); animation-timing-function: cubic-bezier(0.6, 0, 1, 1); }
+  26.5% { transform: translateX(3px); animation-timing-function: ease-out; }
+  30% { transform: translateX(9px); opacity: 1; }
+  36% { transform: translateX(9px); opacity: 1; }
+  41% { transform: translateX(9px); opacity: 0; }
+  92% { transform: translateX(9px); opacity: 0; }
+  94% { transform: translateX(0); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes esc-billaracad-blanca {
+  0%, 26% { transform: translate(0, 0); opacity: 1; animation-timing-function: cubic-bezier(0.5, 0, 1, 1); }
+  31% { transform: translate(67px, 0); animation-timing-function: ease-out; }
+  46% { transform: translate(59px, 4px); opacity: 1; }
+  88% { transform: translate(59px, 4px); opacity: 1; }
+  92% { transform: translate(59px, 4px); opacity: 0; }
+  92.5% { transform: translate(0, 0); opacity: 0; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+
+/* la roja (la de adelante) sigue derecho */
+@keyframes esc-billaracad-bola-a {
+  0%, 31% { transform: translate(0, 0); opacity: 1; animation-timing-function: ease-out; }
+  46% { transform: translate(57px, 2px); opacity: 1; }
+  88% { transform: translate(57px, 2px); opacity: 1; }
+  92% { transform: translate(57px, 2px); opacity: 0; }
+  92.5% { transform: translate(0, 0); opacity: 0; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+
+/* la amarilla va al buzón de arriba a la derecha y cae */
+@keyframes esc-billaracad-bola-b {
+  0%, 31% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: ease-out; }
+  47% { transform: translate(63px, -28px) scale(1); opacity: 1; animation-timing-function: ease-in; }
+  52% { transform: translate(63px, -28px) scale(0.2); opacity: 0; }
+  92% { transform: translate(63px, -28px) scale(0.2); opacity: 0; }
+  92.5% { transform: translate(0, 0) scale(1); opacity: 0; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+
+/* la azul rueda hacia abajo */
+@keyframes esc-billaracad-bola-c {
+  0%, 31% { transform: translate(0, 0); opacity: 1; animation-timing-function: ease-out; }
+  46% { transform: translate(25px, 20px); opacity: 1; }
+  88% { transform: translate(25px, 20px); opacity: 1; }
+  92% { transform: translate(25px, 20px); opacity: 0; }
+  92.5% { transform: translate(0, 0); opacity: 0; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+
+/* destello del choque y aro del buzón */
+@keyframes esc-billaracad-choque {
+  0%, 30% { transform: scale(0.3); opacity: 0; }
+  31.5% { transform: scale(0.7); opacity: 1; }
+  37%, 100% { transform: scale(1.7); opacity: 0; }
+}
+@keyframes esc-billaracad-buzon {
+  0%, 46% { transform: scale(0.4); opacity: 0; }
+  48% { transform: scale(0.7); opacity: 0.9; }
+  55%, 100% { transform: scale(1.9); opacity: 0; }
+}
+
+@keyframes esc-billaracad-lampara {
+  0%, 100% { transform: rotate(-2.6deg); }
+  50% { transform: rotate(2.6deg); }
+}
+@keyframes esc-billaracad-luz {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+@keyframes esc-billaracad-burbuja {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  20% { opacity: 0.9; }
+  100% { transform: translateY(-15px) scale(1); opacity: 0; }
+}
+@keyframes esc-billaracad-espuma {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.06, 1.18); }
+}
+@keyframes esc-billaracad-aguja {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.esc-billaracad-taco { animation: esc-billaracad-taco 6s linear infinite; }
+.esc-billaracad-blanca { animation: esc-billaracad-blanca 6s linear infinite; }
+.esc-billaracad-bola-a { animation: esc-billaracad-bola-a 6s linear infinite; }
+.esc-billaracad-bola-b { animation: esc-billaracad-bola-b 6s linear infinite; }
+.esc-billaracad-bola-c { animation: esc-billaracad-bola-c 6s linear infinite; }
+.esc-billaracad-choque { animation: esc-billaracad-choque 6s linear infinite; }
+.esc-billaracad-buzon { animation: esc-billaracad-buzon 6s linear infinite; }
+.esc-billaracad-lampara { animation: esc-billaracad-lampara 4.6s ease-in-out infinite; }
+.esc-billaracad-luz { animation: esc-billaracad-luz 3.2s ease-in-out infinite; }
+.esc-billaracad-burbuja { animation: esc-billaracad-burbuja 2.6s ease-out infinite; }
+.esc-billaracad-espuma { animation: esc-billaracad-espuma 2.4s ease-in-out infinite; }
+.esc-billaracad-aguja { animation: esc-billaracad-aguja 6s linear infinite; }
+
+/* ================= ACADEMIA ================= */
+
+/* hoja que se voltea sobre el lomo: de la derecha a la izquierda y se desvanece */
+@keyframes esc-billaracad-hoja {
+  0% { transform: scaleX(1) scaleY(1); opacity: 0; }
+  4% { transform: scaleX(0.97) scaleY(1.01); opacity: 1; }
+  19% { transform: scaleX(0) scaleY(1.07); opacity: 1; }
+  35% { transform: scaleX(-1) scaleY(1); opacity: 1; }
+  42% { transform: scaleX(-1) scaleY(1); opacity: 1; }
+  52%, 100% { transform: scaleX(-1) scaleY(1); opacity: 0; }
+}
+
+/* el birrete sale disparado girando, llega arriba y cae con un reboterito */
+@keyframes esc-billaracad-birrete {
+  0%, 8% { transform: translate(0, 0) rotate(0deg) scale(1, 1); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  42% { transform: translate(2px, -60px) rotate(500deg) scale(1, 1); animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6); }
+  72% { transform: translate(0, 0) rotate(720deg) scale(1.04, 0.94); animation-timing-function: ease-out; }
+  77% { transform: translate(0, -6px) rotate(720deg) scale(1, 1); animation-timing-function: ease-in; }
+  83%, 100% { transform: translate(0, 0) rotate(720deg) scale(1, 1); }
+}
+
+@keyframes esc-billaracad-letra {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  14% { transform: translate(calc(var(--dx, 0px) * 0.2), -8px) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx, 0px), -56px) scale(1.12); opacity: 0; }
+}
+
+@keyframes esc-billaracad-estrella {
+  0%, 100% { transform: scale(0.25) rotate(0deg); opacity: 0; }
+  40% { transform: scale(1.15) rotate(22deg); opacity: 1; }
+  70% { transform: scale(0.8) rotate(40deg); opacity: 0.8; }
+}
+
+/* el lápiz escribe: avanza hacia la derecha cabeceando y vuelve */
+@keyframes esc-billaracad-lapiz {
+  0% { transform: translate(-22px, 0) rotate(-4deg); animation-timing-function: ease-in-out; }
+  10% { transform: translate(-19px, 0) rotate(4deg); animation-timing-function: ease-in-out; }
+  20% { transform: translate(-16px, 0) rotate(-4deg); animation-timing-function: ease-in-out; }
+  30% { transform: translate(-13px, 0) rotate(4deg); animation-timing-function: ease-in-out; }
+  40% { transform: translate(-10px, 0) rotate(-4deg); animation-timing-function: ease-in-out; }
+  50% { transform: translate(-7px, 0) rotate(4deg); animation-timing-function: ease-in-out; }
+  60% { transform: translate(-3px, 0) rotate(-4deg); animation-timing-function: ease-in-out; }
+  70% { transform: translate(0, 0) rotate(2deg); }
+  85% { transform: translate(0, 0) rotate(0deg); animation-timing-function: ease-in-out; }
+  100% { transform: translate(-22px, 0) rotate(-4deg); }
+}
+@keyframes esc-billaracad-garabato {
+  0% { transform: scaleX(0.02); opacity: 1; }
+  70% { transform: scaleX(1); opacity: 1; }
+  86% { transform: scaleX(1); opacity: 1; }
+  98%, 100% { transform: scaleX(1); opacity: 0; }
+}
+
+.esc-billaracad-hoja { animation: esc-billaracad-hoja 5s ease-in-out infinite; }
+.esc-billaracad-birrete { animation: esc-billaracad-birrete 5.5s linear infinite; }
+.esc-billaracad-letra { animation: esc-billaracad-letra 4.4s ease-out infinite; }
+.esc-billaracad-estrella { animation: esc-billaracad-estrella 3s ease-in-out infinite; }
+.esc-billaracad-lapiz { animation: esc-billaracad-lapiz 3.6s linear infinite; }
+.esc-billaracad-garabato { animation: esc-billaracad-garabato 3.6s linear infinite; }
