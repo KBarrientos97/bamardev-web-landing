@@ -25,6 +25,10 @@ export function Marco({ fondo, children }: { fondo: string; children: ReactNode 
       data-vista={visto ? '' : undefined}
       className={`escena relative h-48 overflow-hidden ${fondo}`}
     >
+      {/* luz ambiente desde arriba a la izquierda + dos orbes de color que derivan despacio */}
+      <div aria-hidden className="esc-luz pointer-events-none absolute inset-0" />
+      <div aria-hidden className="esc-deriva pointer-events-none absolute -left-10 top-6 h-32 w-32 rounded-full bg-white/50 blur-2xl" />
+      <div aria-hidden className="esc-deriva-b pointer-events-none absolute -right-8 bottom-2 h-28 w-28 rounded-full bg-white/40 blur-2xl" />
       {children}
     </div>
   )
@@ -37,34 +41,51 @@ export const svgBase =
 /** Variables CSS que usan los keyframes (distancia, giro, retraso…). */
 export const v = (o: Record<string, string>): CSSProperties => o as CSSProperties
 
+const TONOS = {
+  verde: 'from-emerald-400 to-emerald-600',
+  azul: 'from-sky-400 to-blue-600',
+  rosa: 'from-pink-400 to-rose-600',
+  ambar: 'from-amber-400 to-orange-500',
+  violeta: 'from-violet-400 to-purple-600',
+} as const
+
 /**
- * Globo de aviso que aparece, se queda un momento y se va (la notificación de una
- * venta, una cita, un turno…). `lado` decide en qué esquina de arriba nace.
+ * Notificación del sistema (la venta, la cita, el turno…): entra, se queda un momento y se va.
+ * Dos líneas, como las de un sistema de verdad: una etiqueta chica arriba (`etiqueta`) y el
+ * dato en negrita (`texto`). `lado` decide en qué esquina de arriba nace; `tono` colorea el
+ * ícono para que combine con la escena.
  */
 export function Aviso({
   texto,
+  etiqueta,
   lado = 'der',
   icono,
+  tono = 'verde',
 }: {
   texto: string
+  etiqueta?: string
   lado?: 'der' | 'izq'
-  /** Por defecto, un tilde verde. */
+  /** Por defecto, un tilde. */
   icono?: ReactNode
+  tono?: keyof typeof TONOS
 }) {
   return (
     <div
-      className={`esc-chip pointer-events-none absolute top-3 flex items-center gap-1.5 rounded-full bg-white py-1 pl-1.5 pr-3 text-[11px] font-extrabold text-slate-700 shadow-lg ring-1 ring-black/5 ${
+      className={`esc-chip pointer-events-none absolute top-3 flex items-center gap-2 rounded-xl bg-white/95 py-1.5 pl-1.5 pr-3 shadow-[0_10px_28px_-10px_rgba(15,23,42,.45)] ring-1 ring-slate-900/5 backdrop-blur ${
         lado === 'der' ? 'right-3 [transform-origin:100%_0%]' : 'left-3 [transform-origin:0%_0%]'
       }`}
     >
-      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] text-white">
+      <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${TONOS[tono]} text-white shadow-sm`}>
         {icono ?? (
-          <svg viewBox="0 0 20 20" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4.5 10.5l3.5 3.5 7.5-8" />
           </svg>
         )}
       </span>
-      {texto}
+      <span className="leading-tight">
+        {etiqueta && <span className="block text-[9px] font-bold uppercase tracking-wider text-slate-400">{etiqueta}</span>}
+        <span className="block text-xs font-extrabold text-slate-800">{texto}</span>
+      </span>
     </div>
   )
 }

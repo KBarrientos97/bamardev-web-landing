@@ -8,33 +8,39 @@ import { EscenaSpa, EscenaUnas } from './EscenasBelleza'
 
 /*
   Ilustraciones animadas de los rubros (SVG propio, sin imágenes de stock).
-  Todo se mueve con CSS (transform y opacity: barato para el celular); los
-  keyframes `esc-*` viven en index.css. Cada escena es decorativa: el nombre y
-  los puntos de la tarjeta ya dicen lo mismo, así que va con aria-hidden.
-*/
+  Todo se mueve con CSS (transform y opacity: barato para el celular). Los
+  keyframes de Pollo y Farmacia viven en Escenas.css; los compartidos `esc-*`,
+  en index.css. Cada escena es decorativa: el nombre y los puntos de la tarjeta
+  ya dicen lo mismo, así que va con aria-hidden.
 
-/** La comanda que "sale" de la cocina cuando el pedido está listo. */
-function Comanda() {
-  return (
-    <div className="esc-ticket pointer-events-none absolute left-3 top-0 w-[78px] border-b-2 border-dashed border-slate-300 bg-white px-2 pb-1.5 pt-1.5 text-[9px] font-bold leading-snug text-slate-600 shadow-lg">
-      <p className="tracking-widest text-slate-400">COMANDA</p>
-      <p className="text-[11px] font-extrabold text-slate-900">Mesa 4</p>
-      <p>1 pollo + papas</p>
-      <p className="mt-0.5 font-extrabold text-emerald-600">✓ Listo</p>
-    </div>
-  )
-}
+  Pollo y Farmacia comparten el ciclo maestro de 6.5 s del aviso del sistema
+  (esc-chip): lo que "causa" el aviso (el pedido que sale, la venta) pasa en los
+  primeros segundos del ciclo, justo antes de que el aviso entre.
+*/
 
 /* ------------------------------------------------------------------ */
 /*  FARMACIA                                                           */
 /* ------------------------------------------------------------------ */
 
+/** Caja de medicamento con volumen mínimo: luz arriba-izquierda y sombra propia abajo. */
+function Caja({ x, y, w, h, c }: { x: number; y: number; w: number; h: number; c: string }) {
+  return (
+    <g>
+      <rect x={x} y={y} width={w} height={h} rx="2" fill={c} />
+      <rect x={x + 0.8} y={y + 0.6} width={w - 1.6} height="1.6" rx="0.8" fill="#fff" opacity=".45" />
+      <rect x={x} y={y + h - 2.4} width={w} height="2.4" rx="1" fill="#0b3b66" opacity=".1" />
+    </g>
+  )
+}
+
+/** Cápsula que sale de la puerta con un arco corto (esc-farm-sube); el retraso la escalona. */
 function Capsula({ x, y, dx, giro, retraso, color }: { x: number; y: number; dx: number; giro: number; retraso: number; color: string }) {
   return (
     <g transform={`translate(${x} ${y})`}>
-      <g className="esc-subir" style={v({ '--dx': `${dx}px`, '--giro': `${giro}deg`, animationDelay: `${retraso}s` })}>
+      <g className="esc-farm-sube" style={v({ '--dx': `${dx}px`, '--giro': `${giro}deg`, '--d': `${retraso}s` })}>
         <path d="M-7 0a3.5 3.5 0 0 1 3.5-3.5H0V3.5h-3.5A3.5 3.5 0 0 1-7 0z" fill={color} />
         <path d="M0-3.5h3.5A3.5 3.5 0 0 1 7 0a3.5 3.5 0 0 1-3.5 3.5H0z" fill="#fff" stroke="#d9c3cf" strokeWidth=".5" />
+        <rect x="-5.6" y="-2.6" width="9" height="1.1" rx=".55" fill="#fff" opacity=".55" />
       </g>
     </g>
   )
@@ -43,7 +49,7 @@ function Capsula({ x, y, dx, giro, retraso, color }: { x: number; y: number; dx:
 function Mas({ x, y, dx, retraso }: { x: number; y: number; dx: number; retraso: number }) {
   return (
     <g transform={`translate(${x} ${y})`}>
-      <g className="esc-subir" style={v({ '--dx': `${dx}px`, '--giro': '90deg', animationDelay: `${retraso}s` })}>
+      <g className="esc-farm-sube" style={v({ '--dx': `${dx}px`, '--giro': '90deg', '--d': `${retraso}s` })}>
         <path d="M-1.6-5h3.2v3.4H5v3.2H1.6V5H-1.6V1.6H-5v-3.2h3.4z" fill="#34d399" />
       </g>
     </g>
@@ -53,70 +59,107 @@ function Mas({ x, y, dx, retraso }: { x: number; y: number; dx: number; retraso:
 function Planta({ x, escala = 1, retraso = 0 }: { x: number; escala?: number; retraso?: number }) {
   return (
     <g transform={`translate(${x} 150) scale(${escala})`}>
-      <ellipse cx="0" cy="2" rx="11" ry="3.5" fill="#b9936a" />
+      <ellipse cx="0" cy="2.4" rx="12" ry="3.6" fill="#0b3b66" opacity=".1" />
       <path d="M-10 0h20l-3 -11h-14z" fill="#d7b186" />
-      <g className="esc-planta" style={{ animationDelay: `${retraso}s` }}>
-        <path d="M0 -10C-2 -26 -10 -36 -20 -44" stroke="#3f9a58" strokeWidth="3.4" strokeLinecap="round" fill="none" />
-        <path d="M0 -10C0 -28 -3 -40 -4 -52" stroke="#2f7f48" strokeWidth="3.4" strokeLinecap="round" fill="none" />
-        <path d="M0 -10C3 -26 9 -36 18 -42" stroke="#3f9a58" strokeWidth="3.4" strokeLinecap="round" fill="none" />
-        <path d="M0 -10C-4 -22 -14 -28 -24 -30" stroke="#2f7f48" strokeWidth="3" strokeLinecap="round" fill="none" />
-        <path d="M0 -10C5 -22 14 -28 24 -29" stroke="#2f7f48" strokeWidth="3" strokeLinecap="round" fill="none" />
+      <path d="M-8.4 -5h16.8l-.9-2h-15z" fill="#000" opacity=".06" />
+      <rect x="-9.4" y="-12.6" width="18.8" height="2.6" rx="1.3" fill="#e4c49b" />
+      <g className="esc-farm-planta" style={v({ '--d': `${retraso}s` })}>
+        <path d="M0 -10C-2 -26 -10 -36 -20 -44" stroke="#4aa062" strokeWidth="3.4" strokeLinecap="round" fill="none" />
+        <path d="M0 -10C0 -28 -3 -40 -4 -52" stroke="#348550" strokeWidth="3.4" strokeLinecap="round" fill="none" />
+        <path d="M0 -10C3 -26 9 -36 18 -42" stroke="#4aa062" strokeWidth="3.4" strokeLinecap="round" fill="none" />
+        <path d="M0 -10C-4 -22 -14 -28 -24 -30" stroke="#348550" strokeWidth="3" strokeLinecap="round" fill="none" />
+        <path d="M0 -10C5 -22 14 -28 24 -29" stroke="#348550" strokeWidth="3" strokeLinecap="round" fill="none" />
       </g>
     </g>
   )
 }
 
-/** Una farmacia que "respira": cartel que late, toldo que se mece, plantas, cápsulas que salen y una venta cobrada. */
+/**
+ * Una farmacia con la venta como micro-historia (ciclo de 6.5 s): se cobra, la cruz del cartel da un
+ * latido y emite un aro, la vidriera se enciende, un destello cruza los vidrios, salen cápsulas y entra
+ * el aviso. El resto del ciclo reposa: toldo y plantas se mecen apenas y el edificio flota 2 px.
+ */
 export function EscenaFarmacia() {
   const id = useId().replace(/:/g, '')
   const g = (n: string) => `${id}${n}`
-  const toldo = Array.from({ length: 6 }, (_, i) => ({ x: 99 + 24 * i, c: i % 2 === 0 ? '#ffffff' : '#e9c8f3' }))
+  const toldo = Array.from({ length: 6 }, (_, i) => ({ x: 99 + 24 * i, par: i % 2 === 0 }))
   return (
     <Marco fondo="bg-gradient-to-b from-sky-100 via-sky-50 to-white">
       <div aria-hidden className="absolute -left-10 -top-12 h-40 w-40 rounded-full bg-white/70 blur-2xl" />
       <svg viewBox="14 10 292 168" preserveAspectRatio="xMidYMax meet" className={svgBase}>
         <defs>
-          <linearGradient id={g('f')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#9bd0f2" />
-            <stop offset="1" stopColor="#74b8e6" />
+          <linearGradient id={g('f')} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#a4d6f4" />
+            <stop offset="1" stopColor="#6fb3e2" />
           </linearGradient>
           <linearGradient id={g('l')} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#4f9fd4" />
+            <stop offset="0" stopColor="#4a98cf" />
             <stop offset="1" stopColor="#62b1e3" />
           </linearGradient>
           <linearGradient id={g('t')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#c7e8fb" />
+            <stop offset="0" stopColor="#d4eefc" />
             <stop offset="1" stopColor="#9fd3f2" />
           </linearGradient>
           <linearGradient id={g('v')} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#eef8fe" />
+            <stop offset="0" stopColor="#f2fafe" />
             <stop offset="1" stopColor="#bfe1f5" />
           </linearGradient>
+          <linearGradient id={g('a')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#ffffff" />
+            <stop offset="1" stopColor="#efe2f6" />
+          </linearGradient>
+          <linearGradient id={g('m')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#efd6f7" />
+            <stop offset="1" stopColor="#d8b2ea" />
+          </linearGradient>
+          <linearGradient id={g('s')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#bfe2f7" />
+            <stop offset="1" stopColor="#74b8e6" />
+          </linearGradient>
+          <linearGradient id={g('r')} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#fff" stopOpacity="0" />
+            <stop offset=".5" stopColor="#fff" stopOpacity=".7" />
+            <stop offset="1" stopColor="#fff" stopOpacity="0" />
+          </linearGradient>
+          <radialGradient id={g('h')}>
+            <stop offset="0" stopColor="#ff6b6b" stopOpacity=".3" />
+            <stop offset="1" stopColor="#ff6b6b" stopOpacity="0" />
+          </radialGradient>
+          {/* los dos vidrios (puerta y vitrina): el destello sólo se ve dentro de ellos */}
+          <clipPath id={g('c')}>
+            <rect x="112" y="100" width="56" height="44" rx="2" />
+            <rect x="180" y="98" width="58" height="46" rx="2" />
+          </clipPath>
         </defs>
 
         {/* losa de la vereda y su sombra */}
-        <ellipse className="esc-sombra" cx="160" cy="168" rx="118" ry="7" fill="#0b4a7a" opacity=".14" />
-        <rect x="26" y="146" width="268" height="16" rx="8" fill="#79b9e3" />
-        <rect x="26" y="140" width="268" height="16" rx="8" fill="#a7d6f4" />
-        <path d="M70 148h180M120 142v12M180 142v12M240 142v12" stroke="#8cc4e8" strokeWidth="1" opacity=".7" />
+        <ellipse cx="160" cy="168" rx="124" ry="9" fill="#0b4a7a" opacity=".07" />
+        <ellipse cx="160" cy="167" rx="108" ry="4.5" fill="#0b4a7a" opacity=".16" />
+        <rect x="26" y="146" width="268" height="16" rx="8" fill="#6aaedb" />
+        <rect x="26" y="140" width="268" height="16" rx="8" fill={`url(#${g('s')})`} />
+        <rect x="34" y="141" width="252" height="2" rx="1" fill="#fff" opacity=".45" />
+        <path d="M70 148h180M120 142v12M180 142v12M240 142v12" stroke="#8cc4e8" strokeWidth="1" opacity=".6" />
 
         <Planta x={52} retraso={0} />
-        <Planta x={286} escala={0.9} retraso={-1.4} />
+        <Planta x={286} escala={0.9} retraso={-3.2} />
 
         {/* el edificio flota apenas */}
-        <g className="esc-flotar">
+        <g className="esc-farm-flota">
           <path d="M74 58L98 50V148L74 152Z" fill={`url(#${g('l')})`} />
           <rect x="98" y="50" width="148" height="98" rx="5" fill={`url(#${g('f')})`} />
           <path d="M76 44L90 39V56L76 61Z" fill="#7fc0ea" />
           <rect x="90" y="34" width="164" height="22" rx="6" fill={`url(#${g('t')})`} />
-          <rect x="95" y="38" width="154" height="4.5" rx="2.2" fill="#fff" opacity=".5" />
+          <rect x="95" y="38" width="154" height="3" rx="1.5" fill="#fff" opacity=".6" />
+          <rect x="94" y="51" width="156" height="4" rx="2" fill="#4a98cf" opacity=".16" />
 
-          {/* cartel con la cruz: late y emite un aro */}
-          <circle className="esc-aro" cx="172" cy="36" r="19" fill="none" stroke="#ff6b6b" strokeWidth="2.5" />
+          {/* cartel con la cruz: late y emite un aro cuando se cobra la venta */}
+          <circle cx="172" cy="36" r="27" fill={`url(#${g('h')})`} />
+          <circle className="esc-farm-aro" cx="172" cy="36" r="19" fill="none" stroke="#ff6b6b" strokeWidth="2.5" />
           <circle cx="172" cy="36" r="19" fill="#bfe3f9" stroke="#8cc9ee" strokeWidth="4" />
           <circle cx="172" cy="36" r="14" fill="#fff" />
+          <path d="M160 33a14 14 0 0 1 18-8" fill="none" stroke="#bfe3f9" strokeWidth="1.4" strokeLinecap="round" opacity=".8" />
           <path
-            className="esc-latido"
+            className="esc-farm-latido"
             d="M168 26h8v6h6v8h-6v6h-8v-6h-6v-8h6z"
             fill="#fff"
             stroke="#e5484d"
@@ -125,58 +168,69 @@ export function EscenaFarmacia() {
           />
 
           {/* puerta vidriada con estantes */}
-          <rect x="108" y="96" width="64" height="52" rx="3" fill="#4a96cd" />
+          <rect x="108" y="96" width="64" height="52" rx="3" fill="#3f8cc4" />
           <rect x="112" y="100" width="56" height="44" rx="2" fill={`url(#${g('v')})`} />
-          <rect x="112" y="100" width="56" height="44" rx="2" fill="#fff" className="esc-parpadeo" />
-          <rect x="139" y="100" width="2" height="44" fill="#4a96cd" />
+          <rect x="112" y="100" width="56" height="44" rx="2" fill="#fff" className="esc-farm-luz" />
+          <rect x="139" y="100" width="2" height="44" fill="#3f8cc4" />
           <rect x="112" y="114" width="56" height="2.5" fill="#a6cde6" />
           <rect x="112" y="129" width="56" height="2.5" fill="#a6cde6" />
-          <rect x="116" y="103" width="9" height="11" rx="2" fill="#f0a63a" />
-          <rect x="127" y="104" width="9" height="10" rx="2" fill="#f4b95a" />
-          <rect x="145" y="102" width="10" height="12" rx="2" fill="#f0a63a" />
-          <rect x="157" y="105" width="8" height="9" rx="2" fill="#fff" />
-          <rect x="116" y="119" width="12" height="10" rx="2" fill="#fff" />
-          <rect x="131" y="120" width="7" height="9" rx="2" fill="#c9c6ef" />
-          <rect x="145" y="119" width="14" height="10" rx="2" fill="#f2cf5a" />
-          <rect x="116" y="134" width="8" height="10" rx="2" fill="#c9c6ef" />
-          <rect x="127" y="135" width="8" height="9" rx="2" fill="#fff" />
-          <rect x="147" y="134" width="14" height="10" rx="2" fill="#f0a63a" />
+          <Caja x={116} y={103} w={9} h={11} c="#f0a63a" />
+          <Caja x={127} y={104} w={9} h={10} c="#f4b95a" />
+          <Caja x={145} y={102} w={10} h={12} c="#f0a63a" />
+          <Caja x={157} y={105} w={8} h={9} c="#fff" />
+          <Caja x={116} y={119} w={12} h={10} c="#fff" />
+          <Caja x={131} y={120} w={7} h={9} c="#c9c6ef" />
+          <Caja x={145} y={119} w={14} h={10} c="#f2cf5a" />
+          <Caja x={116} y={134} w={8} h={10} c="#c9c6ef" />
+          <Caja x={127} y={135} w={8} h={9} c="#fff" />
+          <Caja x={147} y={134} w={14} h={10} c="#f0a63a" />
 
           {/* vitrina de la derecha */}
+          <rect x="178" y="96" width="62" height="50" rx="3.5" fill="none" stroke="#4a98cf" strokeWidth="3" />
           <rect x="180" y="112" width="58" height="2.5" rx="1" fill="#5ea9dc" />
           <rect x="180" y="127" width="58" height="2.5" rx="1" fill="#5ea9dc" />
           <rect x="180" y="142" width="58" height="2.5" rx="1" fill="#5ea9dc" />
-          <rect x="184" y="98" width="12" height="14" rx="2" fill="#b9bff0" />
-          <rect x="199" y="99" width="12" height="13" rx="2" fill="#fff" />
+          <Caja x={184} y={98} w={12} h={14} c="#b9bff0" />
+          <Caja x={199} y={99} w={12} h={13} c="#fff" />
           <path d="M203.5 102h3v2.4h2.4v3h-2.4v2.4h-3v-2.4h-2.4v-3h2.4z" fill="#e5484d" />
-          <rect x="214" y="99" width="10" height="13" rx="2" fill="#8aa4e8" />
-          <rect x="226" y="102" width="10" height="10" rx="2" fill="#c9c6ef" />
-          <rect x="184" y="115" width="13" height="12" rx="2" fill="#f2cf5a" />
-          <rect x="201" y="116" width="9" height="11" rx="2" fill="#fff" />
-          <rect x="214" y="115" width="12" height="12" rx="2" fill="#c9c6ef" />
-          <rect x="229" y="118" width="7" height="9" rx="2" fill="#8aa4e8" />
-          <rect x="184" y="131" width="14" height="11" rx="2" fill="#5aaee0" />
-          <rect x="202" y="132" width="10" height="10" rx="2" fill="#fff" />
-          <rect x="216" y="130" width="14" height="12" rx="2" fill="#b9bff0" />
+          <Caja x={214} y={99} w={10} h={13} c="#8aa4e8" />
+          <Caja x={226} y={102} w={10} h={10} c="#c9c6ef" />
+          <Caja x={184} y={115} w={13} h={12} c="#f2cf5a" />
+          <Caja x={201} y={116} w={9} h={11} c="#fff" />
+          <Caja x={214} y={115} w={12} h={12} c="#c9c6ef" />
+          <Caja x={229} y={118} w={7} h={9} c="#8aa4e8" />
+          <Caja x={184} y={131} w={14} h={11} c="#5aaee0" />
+          <Caja x={202} y={132} w={10} h={10} c="#fff" />
+          <Caja x={216} y={130} w={14} h={12} c="#b9bff0" />
 
-          {/* toldo rayado que se mece */}
-          <g className="esc-toldo">
-            <rect x="96" y="60" width="152" height="9" rx="3" fill="#d8b4e8" />
+          {/* reflejo diagonal fijo en los vidrios + destello que los cruza una vez por ciclo */}
+          <g clipPath={`url(#${g('c')})`}>
+            <path d="M120 100h14l-22 44h-14z" fill="#fff" opacity=".16" />
+            <path d="M186 98h14l-22 46h-14z" fill="#fff" opacity=".14" />
+            <path className="esc-farm-barrido" d="M150 98h12l-20 48h-12z" fill={`url(#${g('r')})`} />
+          </g>
+
+          {/* toldo rayado que se mece, con su sombra sobre la pared */}
+          <g className="esc-farm-toldo">
             {toldo.map((t, i) => (
-              <path key={i} d={`M${t.x} 68H${t.x + 24}V82a12 12 0 0 1-24 0Z`} fill={t.c} />
+              <path key={`s${i}`} d={`M${t.x} 72H${t.x + 24}V87a12 12 0 0 1-24 0Z`} fill="#0b3b66" opacity=".1" />
             ))}
-            <rect x="96" y="60" width="152" height="3.5" rx="1.7" fill="#fff" opacity=".55" />
+            <rect x="96" y="60" width="152" height="9" rx="3" fill="#cfa6e2" />
+            {toldo.map((t, i) => (
+              <path key={i} d={`M${t.x} 68H${t.x + 24}V82a12 12 0 0 1-24 0Z`} fill={`url(#${t.par ? g('a') : g('m')})`} />
+            ))}
+            <rect x="96" y="60" width="152" height="3" rx="1.5" fill="#fff" opacity=".6" />
           </g>
         </g>
 
-        {/* lo que sale de la farmacia: cápsulas y cruces que suben */}
-        <Capsula x={128} y={96} dx={-14} giro={220} retraso={0} color="#ff7aa5" />
-        <Capsula x={152} y={96} dx={16} giro={-200} retraso={1.5} color="#60a5fa" />
-        <Capsula x={140} y={96} dx={4} giro={260} retraso={3} color="#fbbf24" />
-        <Mas x={120} y={98} dx={-22} retraso={0.8} />
-        <Mas x={162} y={98} dx={22} retraso={2.3} />
+        {/* lo que sale de la farmacia con la venta: cápsulas y cruces que suben en arco */}
+        <Capsula x={128} y={96} dx={-14} giro={220} retraso={0.15} color="#ff7aa5" />
+        <Capsula x={152} y={96} dx={16} giro={-200} retraso={0.5} color="#60a5fa" />
+        <Capsula x={140} y={96} dx={4} giro={260} retraso={0.85} color="#fbbf24" />
+        <Mas x={120} y={98} dx={-22} retraso={0.3} />
+        <Mas x={162} y={98} dx={22} retraso={0.7} />
       </svg>
-      <Aviso texto="Venta Bs 23" />
+      <Aviso etiqueta="Venta" texto="Bs 23" />
     </Marco>
   )
 }
@@ -186,144 +240,289 @@ export function EscenaFarmacia() {
 /* ------------------------------------------------------------------ */
 
 /**
- * Una presa de pollo (pierna con su hueso) rostizada, ensartada por el espiedo y DANDO VUELTAS:
- * gira entera sobre el punto del espiedo (el hueso con sus dos "nudillos" recorre el círculo).
- * El círculo invisible fija el centro de giro en el espiedo, no en el centro de la presa.
+ * Una presa de pollo (muslo con su hueso) dibujada siempre derecha: la luz viene de arriba-izquierda y,
+ * como contra-gira lo mismo que la rueda, esa luz no se mueve aunque la presa dé vueltas. El círculo
+ * invisible fija el pivote en el centro de la presa (el `fill-box` toma el centro de lo dibujado).
  */
-function Pierna({ x, retraso, piel }: { x: number; retraso: number; piel: string }) {
+function Presa({ piel, cuerpo, retraso }: { piel: string; cuerpo: string; retraso: string }) {
   return (
-    <g transform={`translate(${x} 104)`}>
-      <g className="esc-vuelta" style={{ animationDelay: `${retraso}s` }}>
-        <circle r="31" fill="none" />
-        {/* hueso con sus dos nudillos */}
-        <rect x="10" y="-2.8" width="17" height="5.6" rx="2.8" fill="#f4e8d0" />
-        <circle cx="28" cy="-3.6" r="3.6" fill="#f4e8d0" />
-        <circle cx="28" cy="3.6" r="3.6" fill="#f4e8d0" />
-        <rect x="10" y="-2.8" width="17" height="2" rx="1" fill="#fff" opacity=".6" />
-        {/* carne dorada */}
-        <path d="M-23 0C-23-13-9-18 1-12C9-9 13-5 15-2.4V2.4C13 5 9 9 1 12C-9 18-23 13-23 0Z" fill={`url(#${piel})`} stroke="#9a5116" strokeWidth="1.2" />
-        {/* piel crocante: manchitas y brillo */}
-        <circle cx="-14" cy="-5" r="1.8" fill="#7a3c10" opacity=".55" />
-        <circle cx="-6" cy="6" r="2.1" fill="#7a3c10" opacity=".5" />
-        <circle cx="3" cy="-6" r="1.5" fill="#96551a" opacity=".6" />
-        <circle cx="-17" cy="5" r="1.4" fill="#96551a" opacity=".6" />
-        <circle cx="6" cy="5" r="1.3" fill="#7a3c10" opacity=".5" />
-        <ellipse cx="-11" cy="-9" rx="8" ry="3.2" fill="#fff" opacity=".45" transform="rotate(-15 -11 -9)" />
-        {/* el espiedo atraviesa la presa */}
-        <circle cx="-4" cy="0" r="2.4" fill="#8f8f8f" />
+    <g className="esc-pollo-contra" style={v({ '--d': retraso })}>
+      <circle r="12" fill="none" />
+      {/* hueso: sombra, caña y dos nudillos */}
+      <path d="M3.2 -2.4L8.4 -7.4" stroke="#b8a583" strokeWidth="3.4" strokeLinecap="round" opacity=".55" />
+      <path d="M3 -3L8.2 -8" stroke="#f6ebd4" strokeWidth="3.2" strokeLinecap="round" />
+      <circle cx="7.4" cy="-9.4" r="1.9" fill="#f8efdb" />
+      <circle cx="9.9" cy="-7" r="1.9" fill="#efe2c8" />
+      {/* carne: degradé dorado → caramelo */}
+      <path d="M-10.5 3C-11.5 -4 -5 -9 1 -7.2C4.5 -6 5.5 -2.5 4.4 0C3 3.6 1 5.8 -1.6 8C-5.4 11 -9.5 9.4 -10.5 3Z" fill={`url(#${piel})`} />
+      <g clipPath={`url(#${cuerpo})`}>
+        {/* sombra propia abajo-derecha */}
+        <ellipse cx="3" cy="8" rx="10" ry="6.5" fill="#6b2d0c" opacity=".3" />
+        {/* marcas de parrilla */}
+        <path d="M-9 -2L-5 2.4M-6 -5.4L-1 -0.6M-2 -7L2.6 -2.6" stroke="#6b2d0c" strokeWidth="1" strokeLinecap="round" opacity=".3" />
+        {/* brillo graso del glaseado */}
+        <ellipse cx="-5.6" cy="-3.2" rx="4.8" ry="1.7" fill="#fff" opacity=".42" transform="rotate(-28)" />
       </g>
     </g>
   )
 }
 
+/** Llama baja de las brasas (nace en la base y se estira): cada una con su ritmo para que no latan juntas. */
 function Llama({ x, retraso, alto = 1 }: { x: number; retraso: number; alto?: number }) {
   return (
-    <g transform={`translate(${x} 138) scale(${alto})`}>
-      <g className="esc-llama" style={{ animationDelay: `${retraso}s` }}>
-        <path d="M0 0C-8-6-4-14 0-22C4-14 8-6 0 0Z" fill="#ff8a3d" />
-        <path d="M0 0C-4-3-2-8 0-12C2-8 4-3 0 0Z" fill="#ffd36b" />
+    // la altura va metida en el trazo (no en un scale): el transform-origin global de .escena movería la base
+    <g transform={`translate(${x} 141)`}>
+      <g className="esc-pollo-llama" style={v({ '--d': `${retraso}s` })}>
+        <path d={`M0 0C-5.5-4-3.4-${9.5 * alto} 0-${15 * alto}C3.4-${9.5 * alto} 5.5-4 0 0Z`} fill="#ff6a2a" />
+        <path d={`M0 0C-2.8-2-1.8-${5.5 * alto} 0-${8.5 * alto}C1.8-${5.5 * alto} 2.8-2 0 0Z`} fill="#ffd36b" />
       </g>
     </g>
   )
 }
 
-function Humo({ x, retraso }: { x: number; retraso: number }) {
+/** Bocanada de humo de la chimenea. El retraso reparte las tres de forma exacta en el ciclo (6.5 s / 3). */
+function Humo({ retraso, fill }: { retraso: number; fill: string }) {
   return (
-    <g transform={`translate(${x} 30)`}>
-      <circle className="esc-humo" r="6" fill="#e9e2dc" style={{ animationDelay: `${retraso}s` }} />
+    <g transform="translate(99 30)">
+      <circle className="esc-pollo-humo" r="6" fill={fill} style={v({ '--d': `${retraso}s` })} />
     </g>
   )
 }
 
-/** Dos presas de pollo rostizadas dando vueltas sobre las brasas, con gotitas de jugo, humo y la comanda que sale cuando están listos. */
+/** Gota de jugo que se desprende de las presas y cae a las brasas. */
+function Gota({ x, retraso }: { x: number; retraso: number }) {
+  return (
+    <g transform={`translate(${x} 127)`}>
+      <path className="esc-pollo-gota" d="M0 0C-1.8 2.6-1.8 5 0 5C1.8 5 1.8 2.6 0 0Z" fill="#ffd36b" style={v({ '--d': `${retraso}s` })} />
+    </g>
+  )
+}
+
+/** Chispa que sube dentro del horno. */
+function Chispa({ x, dx, retraso }: { x: number; dx: number; retraso: number }) {
+  return (
+    <g transform={`translate(${x} 134)`}>
+      <circle className="esc-pollo-chispa" r="1.2" fill="#ffc860" style={v({ '--dx': `${dx}px`, '--d': `${retraso}s` })} />
+    </g>
+  )
+}
+
+/**
+ * Un rostizador de acero y cristal con presas doradas girando sobre las brasas (ciclo de 6.5 s). Las
+ * presas van en dos ruedas que dan una vuelta cada 3.25 s; el jugo gotea al fuego y, cuando el pedido
+ * sale, el LED pasa a verde, un reflejo cruza el vidrio y entra el aviso «Mesa 4 · Listo».
+ */
 export function EscenaPollo() {
   const id = useId().replace(/:/g, '')
   const g = (n: string) => `${id}${n}`
+  const flamas = [
+    { x: 98, d: 0, a: 0.8 },
+    { x: 112, d: -0.4, a: 1 },
+    { x: 127, d: -0.8, a: 0.85 },
+    { x: 142, d: -0.2, a: 1.05 },
+    { x: 157, d: -0.6, a: 0.8 },
+    { x: 172, d: -0.9, a: 1 },
+    { x: 187, d: -0.3, a: 0.85 },
+    { x: 202, d: -0.7, a: 1.05 },
+    { x: 217, d: -0.1, a: 0.85 },
+  ]
+  const carbones = [96, 110, 124, 139, 153, 167, 181, 196, 210, 224]
   return (
     <Marco fondo="bg-gradient-to-b from-amber-100 via-orange-50 to-white">
       <div aria-hidden className="absolute -right-8 -top-10 h-40 w-40 rounded-full bg-orange-200/60 blur-2xl" />
-      <svg viewBox="40 14 240 164" preserveAspectRatio="xMidYMax meet" className={svgBase}>
+      <svg viewBox="20 10 280 168" preserveAspectRatio="xMidYMax meet" className={svgBase}>
         <defs>
-          {/* el fondo del horno es oscuro arriba y brasa abajo: así los pollos dorados resaltan */}
+          {/* acero: luz arriba-izquierda, sombra abajo-derecha */}
+          <linearGradient id={g('a')} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#f3f5f8" />
+            <stop offset=".5" stopColor="#d0d6dd" />
+            <stop offset="1" stopColor="#a3acb7" />
+          </linearGradient>
+          <linearGradient id={g('z')} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#939eaa" />
+            <stop offset="1" stopColor="#59636f" />
+          </linearGradient>
+          {/* interior del horno: oscuro arriba (resaltan las presas) y brasa abajo */}
+          <linearGradient id={g('i')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#2a1812" />
+            <stop offset=".55" stopColor="#5a2512" />
+            <stop offset="1" stopColor="#a8451a" />
+          </linearGradient>
           <linearGradient id={g('b')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#4a2a1f" />
-            <stop offset=".5" stopColor="#a63f1c" />
-            <stop offset="1" stopColor="#ff9a45" />
+            <stop offset="0" stopColor="#ff8f2e" stopOpacity="0" />
+            <stop offset="1" stopColor="#ffb54d" stopOpacity=".75" />
           </linearGradient>
-          <linearGradient id={g('p')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#f7c76f" />
-            <stop offset=".55" stopColor="#dd8c35" />
-            <stop offset="1" stopColor="#b2601d" />
+          <linearGradient id={g('o')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#000" stopOpacity=".28" />
+            <stop offset="1" stopColor="#000" stopOpacity="0" />
           </linearGradient>
+          <linearGradient id={g('p')} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#fad27a" />
+            <stop offset=".45" stopColor="#e09535" />
+            <stop offset="1" stopColor="#b2601f" />
+          </linearGradient>
+          <linearGradient id={g('r')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#dd4a2f" />
+            <stop offset="1" stopColor="#b02a18" />
+          </linearGradient>
+          <linearGradient id={g('s')} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#fff" stopOpacity="0" />
+            <stop offset=".5" stopColor="#fff" stopOpacity=".38" />
+            <stop offset="1" stopColor="#fff" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id={g('f')} x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stopColor="#ffd36b" />
+            <stop offset="1" stopColor="#ff6a2a" />
+          </linearGradient>
+          <linearGradient id={g('t')} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#fdf0dc" />
+            <stop offset="1" stopColor="#f2d6ae" />
+          </linearGradient>
+          <radialGradient id={g('h')}>
+            <stop offset="0" stopColor="#f6f0ea" stopOpacity=".95" />
+            <stop offset="1" stopColor="#d9cfc7" stopOpacity="0" />
+          </radialGradient>
+          <clipPath id={g('v')}>
+            <rect x="85" y="85" width="150" height="58" rx="6" />
+          </clipPath>
+          <clipPath id={g('c')}>
+            <path d="M-10.5 3C-11.5 -4 -5 -9 1 -7.2C4.5 -6 5.5 -2.5 4.4 0C3 3.6 1 5.8 -1.6 8C-5.4 11 -9.5 9.4 -10.5 3Z" />
+          </clipPath>
         </defs>
 
-        <ellipse cx="160" cy="170" rx="104" ry="7" fill="#5b2a0e" opacity=".14" />
+        {/* plataforma: canto, cara superior y sombras de contacto */}
+        <ellipse cx="160" cy="168" rx="128" ry="9" fill="#e0b88a" />
+        <ellipse cx="160" cy="164" rx="128" ry="9" fill={`url(#${g('t')})`} />
+        <ellipse cx="160" cy="165" rx="122" ry="8" fill="#5b2a0e" opacity=".06" />
+        <ellipse className="esc-pollo-sombra" cx="160" cy="164" rx="100" ry="4.5" fill="#5b2a0e" opacity=".14" />
 
-        {/* humo de la chimenea */}
-        <Humo x={222} retraso={0} />
-        <Humo x={226} retraso={1.1} />
-        <Humo x={219} retraso={2.2} />
+        {/* objeto secundario izquierdo: cartón de papas, en tonos más apagados */}
+        <g opacity=".9">
+          <ellipse cx="49" cy="163" rx="14" ry="2.6" fill="#5b2a0e" opacity=".13" />
+          {/* las papas: giran sobre su propio centro (el origen del giro ya es el de cada una) */}
+          <g fill="#ecd9a2">
+            <rect x="40" y="134" width="3.4" height="16" rx="1.7" transform="rotate(-8)" />
+            <rect x="44.6" y="130" width="3.4" height="20" rx="1.7" transform="rotate(-2)" />
+            <rect x="49.4" y="133" width="3.4" height="17" rx="1.7" transform="rotate(4)" />
+            <rect x="54" y="136" width="3.4" height="14" rx="1.7" transform="rotate(9)" />
+          </g>
+          <path d="M37.5 146H60.5L57.6 163H40.4Z" fill="#cf7d6d" />
+          <path d="M37.5 146H44L42.6 163H40.4Z" fill="#e6a597" opacity=".55" />
+          <path d="M39 152H59L58.2 157H39.8Z" fill="#f7efe2" opacity=".9" />
+          <path d="M37.5 146H60.5" stroke="#f0b8aa" strokeWidth="1.2" strokeLinecap="round" />
+        </g>
 
-        <g className="esc-flotar-suave">
-          {/* patas, cuerpo del horno y chimenea */}
-          <rect x="88" y="150" width="14" height="16" rx="3" fill="#2b1d19" />
-          <rect x="218" y="150" width="14" height="16" rx="3" fill="#2b1d19" />
-          <rect x="214" y="32" width="16" height="18" rx="3" fill="#2b1d19" />
-          <rect x="70" y="56" width="180" height="96" rx="14" fill="#4a3128" />
-          <rect x="70" y="56" width="180" height="10" rx="5" fill="#fff" opacity=".07" />
+        {/* objeto secundario derecho: frasco de ají */}
+        <g opacity=".9">
+          <ellipse cx="272" cy="163" rx="12" ry="2.4" fill="#5b2a0e" opacity=".13" />
+          <path d="M270 124L273 124L274.2 132H268.8Z" fill="#e8dcc5" />
+          <rect x="268.4" y="130" width="5.6" height="9" rx="1.6" fill="#8fb88d" />
+          <rect x="263" y="137" width="16.5" height="25.5" rx="6.5" fill="#86b384" />
+          <rect x="263" y="137" width="5" height="25.5" rx="2.5" fill="#bfdcbb" opacity=".55" />
+          <rect x="265.6" y="147" width="11.2" height="9" rx="1.6" fill="#f7f0e4" />
+          <rect x="267.6" y="150.4" width="7.2" height="1.4" rx=".7" fill="#c46a55" opacity=".8" />
+        </g>
+
+        {/* humo de la chimenea (detrás del horno) */}
+        <Humo retraso={0} fill={`url(#${g('h')})`} />
+        <Humo retraso={-2.17} fill={`url(#${g('h')})`} />
+        <Humo retraso={-4.33} fill={`url(#${g('h')})`} />
+
+        <g className="esc-pollo-flota">
+          {/* patas y chimenea */}
+          <rect x="84" y="154" width="14" height="9" rx="3" fill="#59636f" />
+          <rect x="222" y="154" width="14" height="9" rx="3" fill="#59636f" />
+          <rect x="92" y="34" width="14" height="22" rx="2" fill={`url(#${g('a')})`} />
+          <rect x="90" y="31.5" width="18" height="4.5" rx="2" fill="#8f99a5" />
+          <rect x="92" y="32.4" width="14" height="1.2" rx=".6" fill="#fff" opacity=".6" />
+
+          {/* cuerpo de acero */}
+          <rect x="70" y="52" width="180" height="105" rx="12" fill={`url(#${g('a')})`} />
 
           {/* cartel */}
-          <rect x="62" y="42" width="196" height="20" rx="10" fill="#d1432c" />
-          <rect x="66" y="45" width="188" height="4" rx="2" fill="#fff" opacity=".28" />
-          <text x="160" y="56.5" textAnchor="middle" fontSize="10.5" fontWeight="800" letterSpacing="2.2" fill="#fff">
+          <path d="M70 74V64a12 12 0 0 1 12-12H238a12 12 0 0 1 12 12V74Z" fill={`url(#${g('r')})`} />
+          <path d="M70 72.4H250V74H70Z" fill="#7d1a0e" opacity=".45" />
+          <rect x="76" y="54" width="168" height="2.2" rx="1.1" fill="#fff" opacity=".3" />
+          <text x="160" y="67" textAnchor="middle" fontSize="10.5" fontWeight="800" letterSpacing="2.6" fill="#fff6e6">
             A LA BRASA
           </text>
-
-          {/* ventana con las brasas */}
-          <rect x="82" y="72" width="156" height="68" rx="10" fill={`url(#${g('b')})`} />
-          <rect x="82" y="72" width="156" height="68" rx="10" fill="#ffb15c" className="esc-parpadeo" opacity=".5" />
-
-          {/* el espiedo y las dos presas dando vueltas */}
-          <line x1="86" y1="104" x2="234" y2="104" stroke="#9a9a9a" strokeWidth="3" strokeLinecap="round" />
-          <Pierna x={124} retraso={0} piel={g('p')} />
-          <Pierna x={196} retraso={-2.3} piel={g('p')} />
-
-          {/* gotas de jugo que caen a las brasas */}
-          <g transform="translate(126 128)">
-            <path className="esc-gota" d="M0 0C-2 3-2 6 0 6C2 6 2 3 0 0Z" fill="#ffd36b" style={{ animationDelay: '0s' }} />
+          <g transform="translate(96 63)" fill="#ffd36b">
+            <path d="M0 5.5C-3.6 3-2.6-1.4 0-5.5C2.6-1.4 3.6 3 0 5.5Z" />
           </g>
-          <g transform="translate(198 128)">
-            <path className="esc-gota" d="M0 0C-2 3-2 6 0 6C2 6 2 3 0 0Z" fill="#ffd36b" style={{ animationDelay: '-0.7s' }} />
-          </g>
-          <g transform="translate(162 130)">
-            <path className="esc-gota" d="M0 0C-2 3-2 6 0 6C2 6 2 3 0 0Z" fill="#ffc24a" style={{ animationDelay: '-1.3s' }} />
+          <g transform="translate(224 63)" fill="#ffd36b">
+            <path d="M0 5.5C-3.6 3-2.6-1.4 0-5.5C2.6-1.4 3.6 3 0 5.5Z" />
           </g>
 
-          {/* llamas */}
-          <Llama x={96} retraso={0} alto={0.9} />
-          <Llama x={120} retraso={-0.4} />
-          <Llama x={142} retraso={-0.9} alto={0.85} />
-          <Llama x={164} retraso={-0.2} alto={1.05} />
-          <Llama x={186} retraso={-0.7} alto={0.9} />
-          <Llama x={208} retraso={-0.3} />
-          <Llama x={228} retraso={-1} alto={0.8} />
+          {/* marco del vidrio y cámara de cocción */}
+          <rect x="80" y="80" width="160" height="68" rx="9" fill={`url(#${g('z')})`} />
+          <rect x="85" y="85" width="150" height="58" rx="6" fill={`url(#${g('i')})`} />
 
-          {/* reflejo del vidrio */}
-          <path d="M92 74h28l-30 64H82V84a10 10 0 0 1 10-10z" fill="#fff" opacity=".12" />
-        </g>
+          <g clipPath={`url(#${g('v')})`}>
+            {/* resplandor de las brasas, llamas y carbones */}
+            <rect className="esc-pollo-brasa" x="85" y="112" width="150" height="31" fill={`url(#${g('b')})`} />
+            {flamas.map((f) => (
+              <Llama key={f.x} x={f.x} retraso={f.d} alto={f.a} />
+            ))}
+            {carbones.map((x, i) => (
+              <g key={x}>
+                <ellipse cx={x} cy={141.5} rx="8" ry="3.4" fill="#24150f" />
+                <rect x={x - 3 + (i % 2) * 2} y="140.6" width="5" height="1" rx=".5" fill="#ff8a2a" opacity=".75" />
+              </g>
+            ))}
 
-        {/* chispas que suben */}
-        <g transform="translate(128 134)">
-          <circle className="esc-subir" r="1.8" fill="#ffd36b" style={v({ '--dx': '6px', '--giro': '0deg', animationDelay: '0.2s' })} />
-        </g>
-        <g transform="translate(176 134)">
-          <circle className="esc-subir" r="1.6" fill="#ffb347" style={v({ '--dx': '-8px', '--giro': '0deg', animationDelay: '1.7s' })} />
-        </g>
-        <g transform="translate(208 134)">
-          <circle className="esc-subir" r="1.7" fill="#ffd36b" style={v({ '--dx': '5px', '--giro': '0deg', animationDelay: '3s' })} />
+            {/* ruedas del rostizador: giran en 3.25 s y cada presa contra-gira para seguir derecha */}
+            {[
+              { cx: 125, d: '0s' },
+              { cx: 195, d: '-1.1s' },
+            ].map((r) => (
+              <g key={r.cx} transform={`translate(${r.cx} 113)`}>
+                <g className="esc-pollo-rueda" style={v({ '--d': r.d })}>
+                  <circle r="25" fill="none" />
+                  <circle r="12.5" fill="none" stroke="#c9ced4" strokeWidth=".8" opacity=".45" />
+                  <path d="M-12.5 0H12.5" stroke="#b4bcc5" strokeWidth="1.4" strokeLinecap="round" />
+                  <g transform="translate(12.5 0)">
+                    <Presa piel={g('p')} cuerpo={g('c')} retraso={r.d} />
+                  </g>
+                  <g transform="translate(-12.5 0)">
+                    <Presa piel={g('p')} cuerpo={g('c')} retraso={r.d} />
+                  </g>
+                  <circle r="3.2" fill="#aeb6bf" />
+                  <circle r="1.4" fill="#eef1f4" />
+                </g>
+              </g>
+            ))}
+
+            {/* jugo que gotea y chispas que suben */}
+            <Gota x={118} retraso={0} />
+            <Gota x={188} retraso={-1.1} />
+            <Gota x={154} retraso={-2.1} />
+            <Chispa x={108} dx={5} retraso={-0.4} />
+            <Chispa x={160} dx={-6} retraso={-1.4} />
+            <Chispa x={214} dx={5} retraso={-2.5} />
+
+            {/* sombra del marco arriba, reflejos fijos del vidrio y el destello que lo cruza */}
+            <rect x="85" y="85" width="150" height="9" fill={`url(#${g('o')})`} />
+            <path d="M92 85h34l-22 58H88a3 3 0 0 1-3-3V92a7 7 0 0 1 7-7z" fill="#fff" opacity=".08" />
+            <path d="M132 85h9l-22 58h-9z" fill="#fff" opacity=".06" />
+            <path className="esc-pollo-barrido" d="M150 85h16l-24 58h-16z" fill={`url(#${g('s')})`} />
+          </g>
+          <path d="M87 93V92a6 6 0 0 1 6-6H150" fill="none" stroke="#fff" strokeWidth="1" strokeLinecap="round" opacity=".5" />
+
+          {/* tablero: LED de pedido (ámbar → verde al salir) y perillas */}
+          <circle cx="96" cy="153" r="2.2" fill="#f0a63a" />
+          <g className="esc-pollo-led">
+            <circle cx="96" cy="153" r="4.4" fill="#34d399" opacity=".3" />
+            <circle cx="96" cy="153" r="2.2" fill="#34d399" />
+          </g>
+          <circle cx="214" cy="153" r="3" fill="#8f99a5" />
+          <circle cx="214" cy="152.4" r="2.4" fill="#e3e7ec" />
+          <path d="M214 150.8v1.6" stroke="#59636f" strokeWidth=".9" strokeLinecap="round" />
+          <circle cx="228" cy="153" r="3" fill="#8f99a5" />
+          <circle cx="228" cy="152.4" r="2.4" fill="#e3e7ec" />
+          <path d="M228.8 151.2l-.8 1.2" stroke="#59636f" strokeWidth=".9" strokeLinecap="round" />
         </g>
       </svg>
-      <Comanda />
+      <Aviso etiqueta="Pedido" texto="Mesa 4 · Listo" tono="ambar" />
     </Marco>
   )
 }
