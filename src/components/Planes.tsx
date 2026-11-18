@@ -12,6 +12,7 @@ import {
 import { usePrecios } from '../data/precios'
 import { usePaquetes } from '../data/paquetes'
 import { CheckIcon } from './ui'
+import { BotonComparativa } from './Comparativa'
 import { m } from 'motion/react'
 import { Aparecer, Escalonado, Numero, itemVariantes } from './animacion'
 
@@ -232,6 +233,9 @@ export function Planes() {
             )
           })}
         </Escalonado>
+
+        {/* La tabla de 21 filas ya no es una sección: abre en una ventana. */}
+        <BotonComparativa />
 
         {/* Los planes son los mismos para todos los rubros; lo que cambia es
             qué features recibe el alta según el vertical (FeatureVertical).

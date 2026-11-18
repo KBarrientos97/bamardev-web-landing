@@ -70,6 +70,16 @@ const RUBROS: Record<Modo, Rubro[]> = {
       ],
       quienEscribe: 'tengo una farmacia',
     },
+    {
+      emoji: '🎱',
+      nombre: 'Billares y bares',
+      puntos: [
+        'Mesas por tiempo: libre, por horas o por minutos, con pausa y extensión',
+        'La cuenta de cada mesa suma los consumos del bar y se cobra en la misma caja',
+        'Tarifas por mesa, supervisión del turno y reporte del billar',
+      ],
+      quienEscribe: 'tengo un billar o bar',
+    },
   ],
   agenda: [
     {
@@ -157,6 +167,8 @@ export function Rubros() {
   }, [])
 
   const esAgenda = modo === 'agenda'
+  // Con una cantidad impar de rubros, la tarjeta de "¿no ves tu rubro?" llena el hueco en vez de ir abajo sola.
+  const impar = RUBROS[modo].length % 2 === 1
 
   return (
     <section id="rubros" className="relative scroll-mt-16 bg-white py-14 sm:py-20 lg:py-28">
@@ -347,8 +359,10 @@ export function Rubros() {
             {/* El gancho para los rubros que todavía no están */}
             <m.article
               variants={itemVariantes}
-              className="relative overflow-hidden rounded-3xl border-2 border-dashed border-brand-300 bg-gradient-to-br from-brand-50 via-white to-amber-50 p-6 sm:col-span-2 sm:p-7">
-              <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              className={`relative overflow-hidden rounded-3xl border-2 border-dashed border-brand-300 bg-gradient-to-br from-brand-50 via-white to-amber-50 p-6 sm:p-7 ${
+                impar ? '' : 'sm:col-span-2'
+              }`}>
+              <div className={`flex flex-col gap-5 ${impar ? '' : 'sm:flex-row sm:items-center sm:justify-between'}`}>
                 <div>
                   <p className="text-xs font-extrabold uppercase tracking-widest text-brand-700">
                     ¿No ves tu rubro?

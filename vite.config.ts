@@ -1,7 +1,48 @@
 import { resolve } from 'node:path'
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+
+const SITIO = 'https://bamardev.com'
+
+/**
+ * robots.txt y sitemap.xml se generan en el build porque QA y PROD comparten la
+ * carpeta public/ y no deben decir lo mismo: PROD se indexa (menos el
+ * cuestionario y la encuesta, que no son para buscadores) y QA se bloquea
+ * entero para que no compita con bamardev.com.
+ */
+function robotsYSitemap(mode: string): Plugin {
+  const produccion = mode === 'production'
+  return {
+    name: 'robots-y-sitemap',
+    apply: 'build',
+    generateBundle() {
+      const robots = produccion
+        ? [
+            'User-agent: *',
+            'Allow: /',
+            'Disallow: /necesidades',
+            'Disallow: /encuesta',
+            '',
+            `Sitemap: ${SITIO}/sitemap.xml`,
+            '',
+          ].join('\n')
+        : ['User-agent: *', 'Disallow: /', ''].join('\n')
+      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: robots })
+      if (!produccion) return
+      const hoy = new Date().toISOString().slice(0, 10)
+      const urls = ['/', '/descargas'].map((u) => `  <url><loc>${SITIO}${u}</loc><lastmod>${hoy}</lastmod></url>`)
+      const sitemap = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        ...urls,
+        '</urlset>',
+        '',
+      ].join('\n')
+      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemap })
+    },
+  }
+}
 
 export default defineConfig(({ mode }) => {
   // A dónde manda el proxy de desarrollo. Por defecto el backend de QA; con
@@ -11,7 +52,7 @@ export default defineConfig(({ mode }) => {
   const destino = env.API_PROXY || 'https://api-qa.bamardev.com'
 
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), robotsYSitemap(mode)],
     build: {
       rollupOptions: {
         // Una página por ruta: la landing, la encuesta y el alta de prueba
