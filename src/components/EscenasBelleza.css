@@ -1,0 +1,121 @@
+/*
+  Keyframes y clases de las escenas de belleza (EscenasBelleza.tsx): Spa y Uñas.
+  Sólo transform y opacity. Las clases llevan `.escena` delante para ganarle en
+  especificidad a la regla global `.escena svg * { transform-origin: center }`
+  y poder fijar pivotes propios (base del pétalo, borde de la uña…). Los pivotes
+  en coordenadas del viewBox van en `style` desde el componente.
+  Con "reducir movimiento" no hay animación: cada clase deja su pose final
+  (flor abierta, uña pintada, pincel oculto).
+*/
+
+/* ---------------- SPA ---------------- */
+
+/* El pétalo gira sobre su base entre casi cerrado (30% del ángulo) y abierto. */
+@keyframes esc-belleza-abrir {
+  0%, 100% { transform: rotate(calc(var(--a) * 0.3)) scale(0.9); }
+  38%, 62% { transform: rotate(var(--a)) scale(1); }
+}
+/* El corazón dorado de la flor se enciende al abrirse. */
+@keyframes esc-belleza-centro {
+  0%, 100% { transform: scale(0.55); opacity: 0.1; }
+  38%, 62% { transform: scale(1); opacity: 1; }
+}
+/* Ondas de agua que nacen bajo la flor y se expanden. */
+@keyframes esc-belleza-onda {
+  0% { transform: scale(0.35); opacity: 0; }
+  14% { opacity: 0.85; }
+  100% { transform: scale(3.3); opacity: 0; }
+}
+/* Pila de piedras zen que se mece apenas. */
+@keyframes esc-belleza-mecer {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50% { transform: rotate(1.6deg); }
+}
+@keyframes esc-belleza-llama {
+  0%, 100% { transform: scale(1, 0.9) rotate(-2deg); }
+  30% { transform: scale(0.9, 1.14) rotate(2.5deg); }
+  65% { transform: scale(1.06, 0.97) rotate(-1deg); }
+}
+@keyframes esc-belleza-halo {
+  0%, 100% { transform: scale(0.86); opacity: 0.5; }
+  50% { transform: scale(1.14); opacity: 0.95; }
+}
+@keyframes esc-belleza-nenufar {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(1.3px) rotate(2deg); }
+}
+@keyframes esc-belleza-reflejo {
+  0%, 100% { transform: translateX(-7px); opacity: 0.2; }
+  50% { transform: translateX(7px); opacity: 0.6; }
+}
+@keyframes esc-belleza-fronda {
+  0%, 100% { transform: rotate(-2.6deg); }
+  50% { transform: rotate(2.6deg); }
+}
+
+.escena .esc-belleza-petalo {
+  animation: esc-belleza-abrir 6s ease-in-out infinite;
+  transform: rotate(var(--a));
+}
+.escena .esc-belleza-centro { animation: esc-belleza-centro 6s ease-in-out infinite; }
+.escena .esc-belleza-onda { animation: esc-belleza-onda 4.4s ease-out infinite; }
+.escena .esc-belleza-piedras {
+  animation: esc-belleza-mecer 5s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+.escena .esc-belleza-llama {
+  animation: esc-belleza-llama 1.4s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+.escena .esc-belleza-halo { animation: esc-belleza-halo 2.4s ease-in-out infinite; }
+.escena .esc-belleza-nenufar { animation: esc-belleza-nenufar 4.2s ease-in-out infinite; }
+.escena .esc-belleza-reflejo { animation: esc-belleza-reflejo 5s ease-in-out infinite; }
+.escena .esc-belleza-fronda {
+  animation: esc-belleza-fronda 4.4s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+
+/* ---------------- UÑAS ---------------- */
+
+/*
+  Un ciclo de 7 s. El esmalte (scaleY desde el borde inferior) y el pincel
+  (translateY) comparten los mismos porcentajes de subida (6% a 58%) y la misma
+  curva, así la punta del pincel siempre queda en el borde del esmalte. Alto de
+  la uña pintable: 55 unidades del viewBox.
+*/
+@keyframes esc-belleza-esmalte {
+  0%, 6% { transform: scaleY(0); opacity: 1; }
+  58%, 90% { transform: scaleY(1); opacity: 1; }
+  97% { transform: scaleY(1); opacity: 0; }
+  100% { transform: scaleY(0); opacity: 0; }
+}
+@keyframes esc-belleza-pincel {
+  0% { transform: translate(34px, 30px); opacity: 0; }
+  6% { transform: translate(0, 0); opacity: 1; }
+  58% { transform: translate(0, -55px); opacity: 1; }
+  70% { transform: translate(36px, -34px); opacity: 0; }
+  100% { transform: translate(34px, 30px); opacity: 0; }
+}
+/* Destello blanco que cruza la uña ya pintada. */
+@keyframes esc-belleza-destello {
+  0%, 57% { transform: translateX(-34px); opacity: 0; }
+  61% { transform: translateX(-26px); opacity: 0.9; }
+  73% { transform: translateX(34px); opacity: 0.9; }
+  76%, 100% { transform: translateX(38px); opacity: 0; }
+}
+/* Estrellitas que titilan. */
+@keyframes esc-belleza-estrella {
+  0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1) rotate(45deg); opacity: 1; }
+}
+
+.escena .esc-belleza-esmalte { animation: esc-belleza-esmalte 7s ease-in-out infinite; }
+.escena .esc-belleza-pincel {
+  animation: esc-belleza-pincel 7s ease-in-out infinite;
+  opacity: 0;
+}
+.escena .esc-belleza-destello {
+  animation: esc-belleza-destello 7s ease-in-out infinite;
+  opacity: 0;
+}
+.escena .esc-belleza-estrella { animation: esc-belleza-estrella 2.8s ease-in-out infinite; }

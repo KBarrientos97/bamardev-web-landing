@@ -61,3 +61,110 @@ body {
   0% { box-shadow: 0 10px 30px -8px rgb(37 211 102 / 0.7), 0 0 0 0 rgb(37 211 102 / 0.45); }
   70%, 100% { box-shadow: 0 10px 30px -8px rgb(37 211 102 / 0.7), 0 0 0 16px rgb(37 211 102 / 0); }
 }
+
+/*
+  Ilustraciones animadas de los rubros (Escenas.tsx). Sólo transform y opacity.
+  Las partes SVG giran sobre su propia caja (fill-box). Fuera de pantalla se
+  pausan (data-vista lo pone el componente) y con "reducir movimiento" se apagan.
+*/
+.escena svg * {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.escena:not([data-vista]) *,
+.escena:not([data-vista]) *::before {
+  animation-play-state: paused !important;
+}
+
+@keyframes esc-flotar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3.5px); }
+}
+@keyframes esc-aro {
+  0% { transform: scale(1); opacity: 0.75; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+@keyframes esc-latido {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+@keyframes esc-toldo {
+  0%, 100% { transform: skewX(-1.4deg); }
+  50% { transform: skewX(1.4deg); }
+}
+@keyframes esc-planta {
+  0%, 100% { transform: rotate(-3.5deg); }
+  50% { transform: rotate(3.5deg); }
+}
+@keyframes esc-subir {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  14% { opacity: 1; }
+  100% { transform: translate(var(--dx, 0), -78px) rotate(var(--giro, 0deg)); opacity: 0; }
+}
+@keyframes esc-parpadeo {
+  0%, 100% { opacity: 0.18; }
+  50% { opacity: 0.5; }
+}
+@keyframes esc-sombra {
+  0%, 100% { transform: scaleX(1); opacity: 0.14; }
+  50% { transform: scaleX(0.94); opacity: 0.1; }
+}
+@keyframes esc-llama {
+  0%, 100% { transform: scale(1, 0.82); }
+  35% { transform: scale(0.88, 1.22); }
+  70% { transform: scale(1.06, 0.95); }
+}
+@keyframes esc-humo {
+  0% { transform: translate(0, 0) scale(0.7); opacity: 0; }
+  25% { opacity: 0.7; }
+  100% { transform: translate(-10px, -34px) scale(1.7); opacity: 0; }
+}
+@keyframes esc-gira {
+  0% { transform: translateY(-26px); }
+  100% { transform: translateY(26px); }
+}
+@keyframes esc-gira-punto {
+  0% { transform: translateY(-24px); opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translateY(24px); opacity: 0; }
+}
+@keyframes esc-chip {
+  0%, 62%, 100% { transform: scale(0.4) translateY(6px); opacity: 0; }
+  10% { transform: scale(1.1) translateY(0); opacity: 1; }
+  16%, 52% { transform: scale(1) translateY(0); opacity: 1; }
+}
+@keyframes esc-ticket {
+  0%, 58%, 100% { transform: translateY(-115%); opacity: 0; }
+  10% { transform: translateY(0); opacity: 1; }
+  16%, 46% { transform: translateY(3px); opacity: 1; }
+  54% { transform: translateY(-6%); opacity: 0; }
+}
+
+.esc-flotar { animation: esc-flotar 4.6s ease-in-out infinite; }
+.esc-flotar-suave { animation: esc-flotar 5.4s ease-in-out infinite; }
+.esc-aro { animation: esc-aro 2.6s ease-out infinite; }
+.esc-latido { animation: esc-latido 2.6s ease-in-out infinite; }
+.escena .esc-toldo { animation: esc-toldo 3.8s ease-in-out infinite; transform-origin: 50% 0%; }
+.escena .esc-planta { animation: esc-planta 3.2s ease-in-out infinite; transform-origin: 50% 100%; }
+.esc-subir { animation: esc-subir 4.6s ease-out infinite; }
+.esc-parpadeo { animation: esc-parpadeo 3s ease-in-out infinite; }
+.esc-sombra { animation: esc-sombra 4.6s ease-in-out infinite; }
+.escena .esc-llama { animation: esc-llama 0.9s ease-in-out infinite; transform-origin: 50% 100%; }
+.esc-humo { animation: esc-humo 3.6s ease-out infinite; }
+.esc-gira { animation: esc-gira 1.9s linear infinite; }
+.esc-gira-punto { animation: esc-gira-punto 1.9s linear infinite; }
+.esc-chip { animation: esc-chip 6.5s ease-in-out infinite; transform-origin: 100% 0%; }
+.esc-ticket { animation: esc-ticket 7s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .escena *,
+  .escena *::before {
+    animation: none !important;
+  }
+  /* sin animación, los avisos quedan fuera: sólo importa la ilustración */
+  .esc-chip,
+  .esc-ticket {
+    display: none;
+  }
+}

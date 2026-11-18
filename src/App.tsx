@@ -5,7 +5,6 @@ import { Clientes } from './components/Clientes'
 import { Rubros } from './components/Rubros'
 import { Funciones } from './components/Funciones'
 import { Planes } from './components/Planes'
-import { PaquetesCreditos } from './components/PaquetesCreditos'
 import { WhatsAppFlotante } from './components/WhatsAppFlotante'
 import { Cierre, Footer } from './components/Cierre'
 
@@ -38,7 +37,6 @@ function App() {
           <Rubros />
           <Funciones />
           <Planes />
-          <PaquetesCreditos />
           <Cierre />
         </main>
         <Footer />

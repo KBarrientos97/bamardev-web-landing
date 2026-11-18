@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, m } from 'motion/react'
-import { fmtBs, linkWhatsApp } from '../data/planes'
-import { usePaquetes } from '../data/paquetes'
-import { usePrecios } from '../data/precios'
-import { CheckIcon, WhatsAppIcon } from './ui'
-import { Aparecer, Escalonado, Numero, SUAVE, itemVariantes } from './animacion'
+import { linkWhatsApp } from '../data/planes'
+import { WhatsAppIcon } from './ui'
+import { ESCENAS, type ClaveEscena } from './Escenas'
+import { Aparecer, Escalonado, SUAVE, itemVariantes } from './animacion'
 
-type Modo = 'ventas' | 'agenda'
+type Modo = 'ventas' | 'agenda' | 'clases'
+
+/** Orden de las pestañas: la animación del panel sale hacia el lado contrario al que entra. */
+const MODOS: Modo[] = ['ventas', 'agenda', 'clases']
 
 interface Rubro {
   emoji: string
@@ -14,6 +16,8 @@ interface Rubro {
   puntos: string[]
   /** Cómo se presenta el interesado en el WhatsApp de la demo. */
   quienEscribe: string
+  /** Ilustración animada del rubro (Escenas.tsx). Sin ella, la tarjeta usa el emoji. */
+  escena?: ClaveEscena
 }
 
 /*
@@ -39,6 +43,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Salón con meseros y delivery con app del repartidor (Profesional)',
       ],
       quienEscribe: 'tengo un restaurante',
+      escena: 'pollo',
     },
     {
       emoji: '🛒',
@@ -49,6 +54,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Fiado por cliente, con sus abonos y lo que te debe',
       ],
       quienEscribe: 'tengo un minimarket o tienda',
+      escena: 'minimarket',
     },
     {
       emoji: '🔩',
@@ -59,6 +65,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Stock y precio por sucursal',
       ],
       quienEscribe: 'tengo una ferretería o casa de repuestos',
+      escena: 'ferreteria',
     },
     {
       emoji: '💊',
@@ -69,16 +76,18 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Encargos, proveedores y catálogo importado desde Excel',
       ],
       quienEscribe: 'tengo una farmacia',
+      escena: 'farmacia',
     },
     {
       emoji: '🎱',
-      nombre: 'Billares y bares',
+      nombre: 'Billar y Restobar',
       puntos: [
         'Mesas por tiempo: libre, por horas o por minutos, con pausa y extensión',
-        'La cuenta de cada mesa suma los consumos del bar y se cobra en la misma caja',
+        'La cuenta de cada mesa suma los consumos del restobar y se cobra en la misma caja',
         'Tarifas por mesa, supervisión del turno y reporte del billar',
       ],
-      quienEscribe: 'tengo un billar o bar',
+      quienEscribe: 'tengo un billar o restobar',
+      escena: 'billar',
     },
   ],
   agenda: [
@@ -91,6 +100,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Ficha técnica con fotos de cada trabajo*',
       ],
       quienEscribe: 'tengo una peluquería',
+      escena: 'peluqueria',
     },
     {
       emoji: '💈',
@@ -101,6 +111,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Propinas y comisiones por barbero*',
       ],
       quienEscribe: 'tengo una barbería',
+      escena: 'barberia',
     },
     {
       emoji: '🧖',
@@ -111,6 +122,7 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Reservas online desde tu enlace*',
       ],
       quienEscribe: 'tengo un spa',
+      escena: 'spa',
     },
     {
       emoji: '💅',
@@ -121,41 +133,32 @@ const RUBROS: Record<Modo, Rubro[]> = {
         'Comisiones por profesional, con adelantos*',
       ],
       quienEscribe: 'tengo un local de uñas o estética',
+      escena: 'unas',
+    },
+  ],
+  clases: [
+    {
+      emoji: '🎓',
+      nombre: 'Academias e institutos',
+      puntos: [
+        'Calendario de cursos y grupos, con inscripciones también online',
+        'Cobranza de cuotas con QR por WhatsApp y estado de cuenta de cada estudiante',
+        'Asistencia, notas y planilla de pago de tus docentes',
+      ],
+      quienEscribe: 'tengo una academia o instituto',
+      escena: 'academia',
     },
   ],
 }
 
-/** Lo que comparten todos los rubros de cada modo (columna oscura). */
-const INCLUYE: Record<Modo, string[]> = {
-  ventas: [
-    'Cobro en efectivo, QR, mixto y fiado',
-    'Caja con arqueo y anulaciones con PIN',
-    'Inventario, gastos y ganancia estimada',
-    'Sigue vendiendo sin internet',
-  ],
-  agenda: [
-    'Agenda por profesional, sin turnos repetidos',
-    'Ficha de cada cliente',
-    'La cita se cobra en el mismo punto de venta',
-    'Venta de productos, caja e inventario',
-  ],
-}
-
-/** Rubros que nos piden y todavía no tienen su versión: ejemplos del "pedilo". */
-const OTROS = ['Panaderías', 'Veterinarias', 'Talleres', 'Ropa y calzado', 'Celulares', 'Distribuidoras']
-
 /** `#agenda` y `#ventas` abren la pestaña: los anuncios de belleza enlazan directo. */
 function modoDelHash(): Modo | null {
   const h = window.location.hash.replace('#', '')
-  return h === 'agenda' || h === 'ventas' ? h : null
+  return h === 'agenda' || h === 'ventas' ? h : h === 'academia' ? 'clases' : null
 }
 
 export function Rubros() {
   const [modo, setModo] = useState<Modo>(() => modoDelHash() ?? 'ventas')
-  const { cupo } = usePrecios()
-  const { paquetes } = usePaquetes()
-  // El paquete más barato, para el "desde": sale del panel, no es un número fijo.
-  const desde = paquetes.length ? Math.min(...paquetes.map((p) => p.precio)) : null
 
   useEffect(() => {
     const alCambiar = () => {
@@ -167,8 +170,13 @@ export function Rubros() {
   }, [])
 
   const esAgenda = modo === 'agenda'
-  // Con una cantidad impar de rubros, la tarjeta de "¿no ves tu rubro?" llena el hueco en vez de ir abajo sola.
-  const impar = RUBROS[modo].length % 2 === 1
+  const lugar = MODOS.indexOf(modo)
+  // La tarjeta de "¿no ves tu rubro?" rellena los huecos de la grilla (2 columnas en
+  // tablet, 3 en pantalla grande) en vez de quedar sola abajo.
+  const cuantos = RUBROS[modo].length
+  const anchoSm = cuantos % 2 === 0 ? 'sm:col-span-2 sm:flex-row sm:items-center sm:justify-between' : ''
+  const anchoLg = cuantos % 3 === 0 ? 'lg:col-span-3' : cuantos % 3 === 1 ? 'lg:col-span-2' : 'lg:col-span-1'
+  const direccionLg = cuantos % 3 === 2 ? 'lg:flex-col lg:items-start lg:justify-center' : 'lg:flex-row lg:items-center lg:justify-between'
 
   return (
     <section id="rubros" className="relative scroll-mt-16 bg-white py-14 sm:py-20 lg:py-28">
@@ -194,12 +202,13 @@ export function Rubros() {
         <div
           role="tablist"
           aria-label="Tipo de negocio"
-          className="mx-auto mt-10 grid max-w-xl grid-cols-2 gap-2 rounded-3xl border border-slate-200 bg-slate-50 p-1.5"
+          className="mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-1.5 rounded-3xl border border-slate-200 bg-slate-50 p-1.5 sm:gap-2"
         >
           {(
             [
               { m: 'ventas', icono: '🛒', titulo: 'Ventas', sub: 'Vendo productos' },
               { m: 'agenda', icono: '📅', titulo: 'Agenda', sub: 'Trabajo con citas' },
+              { m: 'clases', icono: '🎓', titulo: 'Clases', sub: 'Enseño o capacito' },
             ] as const
           ).map((t) => {
             const activa = modo === t.m
@@ -212,7 +221,7 @@ export function Rubros() {
                 aria-selected={activa}
                 aria-controls={`panel-${t.m}`}
                 onClick={() => setModo(t.m)}
-                className={`relative flex items-center justify-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors sm:px-5 ${
+                className={`relative flex flex-col items-center justify-start gap-1.5 rounded-2xl px-1.5 py-3 text-center transition-colors sm:flex-row sm:justify-center sm:gap-3 sm:px-4 sm:text-left ${
                   activa ? '' : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
@@ -255,73 +264,13 @@ export function Rubros() {
           aria-labelledby={`tab-${modo}`}
           // Al cambiar de pestaña el panel sale hacia el lado contrario y el
           // nuevo entra desde el lado de su pestaña.
-          initial={{ opacity: 0, x: esAgenda ? 24 : -24 }}
+          initial={{ opacity: 0, x: lugar === 0 ? -24 : 24 }}
           animate={{ opacity: 1, x: 0, transition: { duration: 0.25, ease: SUAVE } }}
-          exit={{ opacity: 0, x: esAgenda ? -24 : 24, transition: { duration: 0.12 } }}
-          className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]"
+          exit={{ opacity: 0, x: lugar === 0 ? 24 : -24, transition: { duration: 0.12 } }}
+          className="mt-10"
         >
-          {/* Columna oscura: lo común del modo y el cupo del Emprendedor. En el
-              celular va después de los rubros, que es lo que se vino a ver. */}
-          <aside className="relative order-last flex flex-col overflow-hidden lg:order-none rounded-3xl bg-slate-950 p-7 text-white sm:p-8">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand-500/25 blur-3xl"
-            />
-            <p className="relative text-xs font-extrabold uppercase tracking-widest text-brand-300">
-              {esAgenda ? 'Para negocios con citas' : 'Para negocios que venden'}
-            </p>
-            <h3 className="relative mt-2 text-2xl font-extrabold leading-tight">
-              {esAgenda ? 'Tu agenda y tu caja, en un solo lugar' : 'Vendé rápido y sabé cuánto ganás'}
-            </h3>
-
-            <ul className="relative mt-6 space-y-3 text-sm text-slate-200">
-              {INCLUYE[modo].map((p) => (
-                <li key={p} className="flex gap-2.5">
-                  <CheckIcon className="text-brand-400" />
-                  <span>{p}</span>
-                </li>
-              ))}
-            </ul>
-
-            {/* Cupo del Emprendedor: lo mismo que la pieza de campaña */}
-            <div className="relative mt-8 mb-6 rounded-2xl border border-white/10 bg-white/5 p-5">
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                Plan Emprendedor · Bs 75/mes
-              </p>
-              <div className={`mt-3 grid gap-3 ${esAgenda ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                <div>
-                  <p className="text-4xl font-extrabold tracking-tight text-white"><Numero valor={cupo.ventasDia} /></p>
-                  <p className="text-sm font-semibold text-brand-300">ventas por día</p>
-                </div>
-                {esAgenda && (
-                  <div className="border-l border-white/10 pl-3">
-                    <p className="text-4xl font-extrabold tracking-tight text-white"><Numero valor={cupo.citasDia} /></p>
-                    <p className="text-sm font-semibold text-brand-300">citas por día</p>
-                  </div>
-                )}
-              </div>
-              <p className="mt-3 text-xs leading-relaxed text-slate-400">
-                {esAgenda
-                  ? 'Se usan por separado: vender no te gasta citas. '
-                  : ''}
-                ¿Te faltó? Seguís con créditos
-                {desde !== null && <> desde Bs&nbsp;{fmtBs(desde)}</>}.{' '}
-                <a href="#creditos" className="font-bold text-brand-300 underline underline-offset-2 hover:text-brand-200">
-                  Cómo funcionan
-                </a>
-              </p>
-            </div>
-
-            <a
-              href="#planes"
-              className="relative mt-6 inline-flex w-full items-center lg:mt-auto justify-center rounded-full bg-brand-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-brand-500/30 transition hover:bg-brand-400"
-            >
-              Ver planes
-            </a>
-          </aside>
-
           {/* Rubros del modo + "¿no está el tuyo?" */}
-          <Escalonado paso={0.04} className="grid gap-5 sm:grid-cols-2">
+          <Escalonado paso={0.04} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {RUBROS[modo].map((r) => (
               <m.article
                 key={r.nombre}
@@ -330,10 +279,22 @@ export function Rubros() {
                 transition={{ type: 'spring', stiffness: 300, damping: 22 }}
                 className="group flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-[border-color,box-shadow] duration-300 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-100"
               >
+                {r.escena &&
+                  (() => {
+                    const Escena = ESCENAS[r.escena]
+                    // La ilustración ocupa el borde de arriba de la tarjeta.
+                    return (
+                      <div className="-mx-6 -mt-6 mb-5 overflow-hidden rounded-t-3xl">
+                        <Escena />
+                      </div>
+                    )
+                  })()}
                 <div className="flex items-center gap-3">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-2xl ring-1 ring-brand-100 transition-transform duration-300 ease-out group-hover:-rotate-6 group-hover:scale-110">
-                    {r.emoji}
-                  </span>
+                  {!r.escena && (
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-2xl ring-1 ring-brand-100 transition-transform duration-300 ease-out group-hover:-rotate-6 group-hover:scale-110">
+                      {r.emoji}
+                    </span>
+                  )}
                   <h3 className="text-lg font-extrabold leading-tight text-slate-900">{r.nombre}</h3>
                 </div>
                 <ul className="mt-4 flex-1 space-y-2 text-sm text-slate-700">
@@ -356,54 +317,34 @@ export function Rubros() {
               </m.article>
             ))}
 
-            {/* El gancho para los rubros que todavía no están */}
+            {/* Para los rubros que todavía no están: una línea y un solo botón. */}
             <m.article
               variants={itemVariantes}
-              className={`relative overflow-hidden rounded-3xl border-2 border-dashed border-brand-300 bg-gradient-to-br from-brand-50 via-white to-amber-50 p-6 sm:p-7 ${
-                impar ? '' : 'sm:col-span-2'
-              }`}>
-              <div className={`flex flex-col gap-5 ${impar ? '' : 'sm:flex-row sm:items-center sm:justify-between'}`}>
-                <div>
-                  <p className="text-xs font-extrabold uppercase tracking-widest text-brand-700">
-                    ¿No ves tu rubro?
-                  </p>
-                  <h3 className="mt-1.5 text-xl font-extrabold text-slate-900 sm:text-2xl">
-                    Pedilo y lo adaptamos a tu negocio{' '}
-                    <m.span
-                      aria-hidden
-                      className="inline-block"
-                      animate={{ rotate: [0, 18, -10, 0], scale: [1, 1.25, 1] }}
-                      transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
-                    >
-                      ✨
-                    </m.span>
-                  </h3>
-                  <p className="mt-2 max-w-md text-sm text-slate-600">
-                    Contanos cómo trabajás y armamos tu versión con lo que tu
-                    rubro necesita, como hicimos con farmacias y belleza.
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {OTROS.map((o) => (
-                      <span
-                        key={o}
-                        className="rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-xs font-semibold text-slate-600"
-                      >
-                        {o}
-                      </span>
-                    ))}
-                    <span className="rounded-full px-1 py-0.5 text-xs font-semibold text-slate-400">y más…</span>
-                  </div>
-                </div>
-                <a
-                  href={linkWhatsApp('Hola BamarDev, mi rubro no está en la página y quiero que lo adapten para mi negocio. Mi negocio es: ')}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-800 active:scale-[0.97]"
-                >
-                  <WhatsAppIcon className="h-4 w-4" />
-                  Solicitar mi rubro
-                </a>
+              className={`flex flex-col items-start justify-center gap-4 rounded-3xl border-2 border-dashed border-brand-300 bg-gradient-to-br from-brand-50 via-white to-amber-50 p-6 ${anchoSm} ${anchoLg} ${direccionLg}`}
+            >
+              <div>
+                <h3 className="text-xl font-extrabold text-slate-900">
+                  ¿No ves tu rubro?{' '}
+                  <m.span
+                    aria-hidden
+                    className="inline-block"
+                    animate={{ rotate: [0, 18, -10, 0], scale: [1, 1.25, 1] }}
+                    transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
+                  >
+                    ✨
+                  </m.span>
+                </h3>
+                <p className="mt-1 text-sm text-slate-600">Escribinos y lo adaptamos a tu negocio.</p>
               </div>
+              <a
+                href={linkWhatsApp('Hola BamarDev, mi rubro no está en la página y quiero que lo adapten para mi negocio. Mi negocio es: ')}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full bg-brand-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-brand-500/30 transition hover:-translate-y-0.5 hover:bg-brand-400 active:scale-[0.97] sm:w-auto"
+              >
+                <WhatsAppIcon className="h-4 w-4" />
+                Escribinos por WhatsApp
+              </a>
             </m.article>
           </Escalonado>
         </m.div>

@@ -13,6 +13,7 @@ import { usePrecios } from '../data/precios'
 import { usePaquetes } from '../data/paquetes'
 import { CheckIcon } from './ui'
 import { BotonComparativa } from './Comparativa'
+import { BotonCreditos } from './CreditosPopup'
 import { m } from 'motion/react'
 import { Aparecer, Escalonado, Numero, itemVariantes } from './animacion'
 
@@ -222,12 +223,9 @@ export function Planes() {
                   ))}
                 </ul>
                 {plan.codigo === 'EMPRENDEDOR' && (
-                  <a
-                    href="#creditos"
-                    className="mt-6 text-sm font-bold text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-600"
-                  >
+                  <BotonCreditos className="mt-6 text-left text-sm font-bold text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-600">
                     Cómo funcionan los créditos →
-                  </a>
+                  </BotonCreditos>
                 )}
               </m.article>
             )
@@ -236,30 +234,6 @@ export function Planes() {
 
         {/* La tabla de 21 filas ya no es una sección: abre en una ventana. */}
         <BotonComparativa />
-
-        {/* Los planes son los mismos para todos los rubros; lo que cambia es
-            qué features recibe el alta según el vertical (FeatureVertical).
-            Las tarjetas detallan las de restaurante: esta nota cuenta las
-            diferencias de los demás rubros disponibles. */}
-        <p className="mx-auto mt-12 max-w-2xl rounded-2xl bg-slate-50 px-6 py-4 text-center text-sm text-slate-600">
-          ¿Tenés una <strong>farmacia</strong>, un <strong>minimarket</strong>,
-          una <strong>ferretería</strong> o una <strong>casa de repuestos</strong>?
-          Los planes son los mismos: tu sistema deja afuera lo de restaurante
-          (comanda Mesa / Llevar, salón, insumos) y suma encargos; en farmacias
-          con Profesional, también lotes y vencimientos. ¿Trabajás con{' '}
-          <strong>agenda</strong> (peluquería, barbería, spa, uñas)? La agenda y la
-          ficha de clientes vienen en todos los planes, y en Emprendedor tus{' '}
-          {cupo.citasDia} citas por día van aparte de tus ventas.{' '}
-          <a
-            href={linkWhatsApp('Hola BamarDev, quiero saber cómo funciona el sistema para mi rubro.')}
-            target="_blank"
-            rel="noreferrer"
-            className="font-bold text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-600"
-          >
-            Escribinos y te lo mostramos
-          </a>
-          .
-        </p>
       </div>
     </section>
   )

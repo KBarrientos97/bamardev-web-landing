@@ -40,6 +40,46 @@ function iluminar(e: PointerEvent<HTMLElement>) {
 const GRILLA =
   'bg-[linear-gradient(to_right,rgb(255_255_255/0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255/0.05)_1px,transparent_1px)] bg-[size:56px_56px]'
 
+const ICONO = 'h-[18px] w-[18px]'
+
+/** Dónde se usa BamarDev, con un ícono simple para reconocerlo de un vistazo. */
+const PLATAFORMAS = [
+  {
+    nombre: 'Android',
+    icono: (
+      <svg viewBox="0 0 24 24" className={ICONO} fill="currentColor" aria-hidden>
+        <path d="M6 18c0 .55.45 1 1 1h1v3.5a1.5 1.5 0 0 0 3 0V19h2v3.5a1.5 1.5 0 0 0 3 0V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8A1.5 1.5 0 0 0 2 9.5v7a1.5 1.5 0 0 0 3 0v-7A1.5 1.5 0 0 0 3.5 8zm17 0A1.5 1.5 0 0 0 19 9.5v7a1.5 1.5 0 0 0 3 0v-7A1.5 1.5 0 0 0 20.5 8zm-4.97-5.84l1.3-1.3a.5.5 0 0 0-.7-.71l-1.48 1.48A5.97 5.97 0 0 0 12 1c-.96 0-1.86.23-2.66.63L7.85.15a.5.5 0 0 0-.7.71l1.31 1.31A5.98 5.98 0 0 0 6 7h12a5.98 5.98 0 0 0-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
+      </svg>
+    ),
+  },
+  {
+    nombre: 'iPhone',
+    icono: (
+      <svg viewBox="0 0 24 24" className={ICONO} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+        <rect x="6.5" y="2" width="11" height="20" rx="3" />
+        <path d="M10.5 18.5h3" />
+      </svg>
+    ),
+  },
+  {
+    nombre: 'Web',
+    icono: (
+      <svg viewBox="0 0 24 24" className={ICONO} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.4 12 3z" />
+      </svg>
+    ),
+  },
+  {
+    nombre: 'Windows',
+    icono: (
+      <svg viewBox="0 0 24 24" className={ICONO} fill="currentColor" aria-hidden>
+        <path d="M3 5.6l7.4-1v7H3v-6zm8.4-1.2L21 3v8.6h-9.6v-7.2zM3 12.5h7.4v7L3 18.4v-5.9zm8.4 0H21V21l-9.6-1.3v-7.2z" />
+      </svg>
+    ),
+  },
+]
+
 export function Hero() {
   const reducir = useReducedMotion()
   // El rubro que muestra la demo del celular: el titular lo acompaña.
@@ -131,8 +171,7 @@ export function Hero() {
           </m.div>
 
           <m.div variants={itemVariantes} className="mt-4">
-            <p className="text-sm text-slate-400">Plan Emprendedor, sin pagar nada por adelantado.</p>
-            <div className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold">
               <a
                 href={linkWhatsApp('Hola BamarDev, quiero ver el sistema funcionando en mi negocio.')}
                 target="_blank"
@@ -148,17 +187,22 @@ export function Hero() {
             </div>
           </m.div>
 
-          <m.ul
-            variants={itemVariantes}
-            className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-slate-400"
-          >
-            {['Funciona sin internet', 'Android, iPhone y web', 'Desde Bs 75 al mes'].map((t) => (
-              <li key={t} className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
-                {t}
-              </li>
-            ))}
-          </m.ul>
+          <m.div variants={itemVariantes} className="mt-10">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Disponible en</p>
+            <ul className="mt-3 flex flex-wrap gap-2.5">
+              {PLATAFORMAS.map((p) => (
+                <li
+                  key={p.nombre}
+                  className="group inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 py-1.5 pl-1.5 pr-4 text-sm font-semibold text-slate-200 transition duration-300 hover:-translate-y-0.5 hover:border-brand-400/50 hover:bg-white/10"
+                >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500/15 text-brand-300 ring-1 ring-brand-400/25 transition-colors duration-300 group-hover:bg-brand-500/30">
+                    {p.icono}
+                  </span>
+                  {p.nombre}
+                </li>
+              ))}
+            </ul>
+          </m.div>
         </Escalonado>
 
         <HeroDemo onRubro={setRubro} />
