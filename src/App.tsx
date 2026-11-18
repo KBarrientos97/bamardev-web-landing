@@ -6,7 +6,7 @@ import { Rubros } from './components/Rubros'
 import { Funciones } from './components/Funciones'
 import { Planes } from './components/Planes'
 import { PaquetesCreditos } from './components/PaquetesCreditos'
-import { Comparativa } from './components/Comparativa'
+import { WhatsAppFlotante } from './components/WhatsAppFlotante'
 import { Cierre, Footer } from './components/Cierre'
 
 /** Barrita verde arriba que muestra cuánto de la página se recorrió. */
@@ -39,10 +39,10 @@ function App() {
           <Funciones />
           <Planes />
           <PaquetesCreditos />
-          <Comparativa />
           <Cierre />
         </main>
         <Footer />
+        <WhatsAppFlotante />
       </MotionConfig>
     </LazyMotion>
   )

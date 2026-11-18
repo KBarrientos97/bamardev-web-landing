@@ -116,37 +116,37 @@ export function Hero() {
             Sigue funcionando aunque se corte el internet.
           </m.p>
 
-          {/* La prueba del Emprendedor es lo principal; "Ver planes" queda
-              como enlace abajo, para quien quiere comparar antes. El alta
-              vive en su propia página (/empezar, B2). */}
-          <m.div variants={itemVariantes} className="mt-8 flex flex-wrap items-center gap-4">
+          {/* Un solo botón principal: la prueba del Emprendedor (el alta vive en su
+              propia página, /empezar, B2). La demo por WhatsApp y los planes quedan
+              como enlaces de apoyo, y el WhatsApp además flota en toda la página. */}
+          <m.div variants={itemVariantes} className="mt-8">
             <m.a
               href="/empezar"
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
-              className="rounded-full bg-brand-500 px-7 py-3.5 text-base font-bold text-white shadow-xl shadow-brand-500/30 transition-colors hover:bg-brand-400"
+              className="inline-block rounded-full bg-brand-500 px-8 py-4 text-lg font-bold text-white shadow-xl shadow-brand-500/30 transition-colors hover:bg-brand-400"
             >
               Probar 7 días gratis
             </m.a>
-            <m.a
-              href={linkWhatsApp('Hola BamarDev, quiero ver el sistema funcionando en mi negocio.')}
-              target="_blank"
-              rel="noreferrer"
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-7 py-3.5 text-base font-bold text-white transition-colors hover:border-brand-400/60 hover:text-brand-300"
-            >
-              <WhatsAppIcon className="h-5 w-5" />
-              Pedir una demo
-            </m.a>
           </m.div>
 
-          <m.p variants={itemVariantes} className="mt-4 text-sm text-slate-400">
-            Plan Emprendedor, sin pagar nada por adelantado.{' '}
-            <a href="#planes" className="font-semibold text-brand-300 underline-offset-2 hover:underline">
-              Ver todos los planes →
-            </a>
-          </m.p>
+          <m.div variants={itemVariantes} className="mt-4">
+            <p className="text-sm text-slate-400">Plan Emprendedor, sin pagar nada por adelantado.</p>
+            <div className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold">
+              <a
+                href={linkWhatsApp('Hola BamarDev, quiero ver el sistema funcionando en mi negocio.')}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-brand-300 underline-offset-2 hover:underline"
+              >
+                <WhatsAppIcon className="h-4 w-4" />
+                Pedir una demo
+              </a>
+              <a href="#planes" className="whitespace-nowrap text-brand-300 underline-offset-2 hover:underline">
+                Ver los planes →
+              </a>
+            </div>
+          </m.div>
 
           <m.ul
             variants={itemVariantes}
