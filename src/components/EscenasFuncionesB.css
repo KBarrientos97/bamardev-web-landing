@@ -1,0 +1,230 @@
+/*
+  Keyframes de las ilustraciones de «Funciones», archivo B (EscenasFuncionesB.tsx):
+  reportes, fiado y roles con PIN. Sólo transform y opacity. Todo vive dentro de
+  `.escena`, así que la pausa fuera de pantalla y "reducir movimiento" ya vienen de
+  index.css. Ojo: `.escena svg *` fija transform-origin al centro (especificidad
+  0,1,1); las clases que necesitan otro pivote se escriben como `.escena .clase`.
+
+  Ciclo maestro: 6,5 s, el mismo del <Aviso> (esc-chip), que asoma al 10 % (0,65 s).
+  Los keyframes están en «tiempo local» (la historia empieza en 0 %) y cada elemento
+  se adelanta 1,3 s (20 %) con `animation-delay: calc(var(--d, 0s) - 1.3s)`: lo que
+  causa el aviso termina en el 29-30 % local = 9-10 % global. `--d` escalona
+  elementos de una misma familia (barras, teclas, filas) sin que ninguno arranque
+  en el mismo cuadro; todos los retrasos quedan negativos, así que no hay primera
+  vuelta distinta. Cada keyframe termina con el valor con que empieza (sin tirón) y
+  todo lo que se reinicia lo hace con el elemento ya invisible (entre el 86 % y el 96 %).
+*/
+
+/* ------------------------------------------------------------------ */
+/*  COMÚN                                                              */
+/* ------------------------------------------------------------------ */
+
+/* respiración del dispositivo (2 px) */
+@keyframes esc-fb-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+.esc-fb-flota { animation: esc-fb-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  REPORTES                                                           */
+/* ------------------------------------------------------------------ */
+
+/* el tablero entero: se queda hasta que se va el aviso (76 %), se desvanece y vuelve a armarse */
+@keyframes esc-fb-rep-capa {
+  0%, 76% { opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  84%, 99.9% { opacity: 0; }
+  100% { opacity: 1; }
+}
+/* barras: crecen desde la base (con un rebote corto); --d las escalona 0,1 s */
+@keyframes esc-fb-rep-barra {
+  0%, 3% { transform: scaleY(0); animation-timing-function: cubic-bezier(0.34, 1.4, 0.64, 1); }
+  14%, 90% { transform: scaleY(1); }
+  91%, 100% { transform: scaleY(0); }
+}
+/* ventana que descubre la tendencia de izquierda a derecha (la línea no cambia, se destapa) */
+@keyframes esc-fb-rep-descubre {
+  0%, 12% { transform: scaleX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  27%, 90% { transform: scaleX(1); }
+  91%, 100% { transform: scaleX(0); }
+}
+/* el punto al final de la línea asoma cuando ésta llega */
+@keyframes esc-fb-rep-punta {
+  0%, 26% { transform: scale(0); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  31%, 90% { transform: scale(1); opacity: 1; }
+  91%, 100% { transform: scale(0); opacity: 0; }
+}
+/* tramos de la dona: giran hasta su lugar, uno tras otro (--d = 0,2 s) */
+@keyframes esc-fb-rep-tramo {
+  0%, 10% { transform: rotate(-80deg); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  20%, 90% { transform: rotate(0deg); opacity: 1; }
+  91%, 100% { transform: rotate(-80deg); opacity: 0; }
+}
+/* la cifra «sube»: tira de cuatro números que se desplaza de a un renglón (16 u) */
+@keyframes esc-fb-rep-tira {
+  0%, 8% { transform: translateY(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  14% { transform: translateY(-16px); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  20% { transform: translateY(-32px); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  27%, 90% { transform: translateY(-48px); }
+  91%, 100% { transform: translateY(0); }
+}
+/* chip de variación: entra al asentar la cifra */
+@keyframes esc-fb-rep-chip {
+  0%, 26% { transform: scale(0); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  31%, 90% { transform: scale(1); opacity: 1; }
+  91%, 100% { transform: scale(0); opacity: 0; }
+}
+
+.esc-fb-rep-capa { animation: esc-fb-rep-capa 6.5s infinite; animation-delay: -1.3s; }
+.escena .esc-fb-barra { animation: esc-fb-rep-barra 6.5s infinite; animation-delay: calc(var(--d, 0s) - 1.3s); transform-origin: 50% 100%; }
+.escena .esc-fb-descubre { animation: esc-fb-rep-descubre 6.5s infinite; animation-delay: -1.3s; transform-origin: 0% 50%; }
+.esc-fb-rep-punta { animation: esc-fb-rep-punta 6.5s infinite; animation-delay: -1.3s; }
+.esc-fb-rep-tramo { animation: esc-fb-rep-tramo 6.5s infinite; animation-delay: calc(var(--d, 0s) - 1.3s); }
+.esc-fb-rep-tira { animation: esc-fb-rep-tira 6.5s infinite; animation-delay: -1.3s; }
+.esc-fb-rep-chip { animation: esc-fb-rep-chip 6.5s infinite; animation-delay: -1.3s; }
+
+/* ------------------------------------------------------------------ */
+/*  FIADO                                                              */
+/* ------------------------------------------------------------------ */
+
+/* el interior de la tarjeta: se va después del aviso (78-86 %) y vuelve al estado previo al abono (96-100 %) */
+@keyframes esc-fb-fia-capa {
+  0%, 78% { opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  86%, 96% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  100% { opacity: 1; }
+}
+/*
+  Billete: espera, se despega con una pequeña anticipación (sube 3 u), cruza hacia la
+  tarjeta y queda tapado por ella (va por detrás) al 15-17 %. Reaparece quieto en su sitio.
+*/
+@keyframes esc-fb-fia-billete {
+  0%, 4% { transform: translate(0, 0) rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  6% { transform: translate(1px, -3px) rotate(-2deg); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  10% { transform: translate(-20px, -14px) rotate(-7deg); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  15% { transform: translate(-50px, -6px) rotate(-3deg); opacity: 1; }
+  17%, 92% { transform: translate(-56px, -6px) rotate(-3deg); opacity: 0; }
+  92.1% { transform: translate(0, 0) rotate(0deg); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  98%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+}
+/* la fila del abono entra deslizando por la derecha */
+@keyframes esc-fb-fia-entra {
+  0%, 13% { transform: translateX(26px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  20%, 90% { transform: translateX(0); opacity: 1; }
+  91%, 100% { transform: translateX(26px); opacity: 0; }
+}
+/* las filas viejas bajan un renglón (10 u); la última sale por el borde de la ventana */
+@keyframes esc-fb-fia-baja {
+  0%, 14% { transform: translateY(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  21%, 90% { transform: translateY(10px); }
+  91%, 100% { transform: translateY(0); }
+}
+/* el tilde se asienta con rebote tras entrar la fila */
+@keyframes esc-fb-fia-tilde {
+  0%, 20% { transform: scale(0); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  26%, 90% { transform: scale(1); }
+  91%, 100% { transform: scale(0); }
+}
+/* el fondo verde de la fila resalta un momento y se apaga */
+@keyframes esc-fb-fia-fondo {
+  0%, 19% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  24% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  50%, 100% { opacity: 0; }
+}
+/* saldo: 180 → 150 → 130 (renglón de 20 u) */
+@keyframes esc-fb-fia-tira {
+  0%, 21% { transform: translateY(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  25% { transform: translateY(-20px); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  29%, 90% { transform: translateY(-40px); }
+  91%, 100% { transform: translateY(0); }
+}
+/* barra de deuda: de 180/250 a 130/250 del largo total */
+@keyframes esc-fb-fia-deuda {
+  0%, 22% { transform: scaleX(0.72); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  30%, 90% { transform: scaleX(0.52); }
+  91%, 100% { transform: scaleX(0.72); }
+}
+
+.esc-fb-fia-capa { animation: esc-fb-fia-capa 6.5s infinite; animation-delay: -1.3s; }
+.esc-fb-fia-billete { animation: esc-fb-fia-billete 6.5s infinite; animation-delay: -1.3s; }
+.esc-fb-fia-entra { animation: esc-fb-fia-entra 6.5s infinite; animation-delay: -1.3s; }
+.esc-fb-fia-baja { animation: esc-fb-fia-baja 6.5s infinite; animation-delay: calc(var(--d, 0s) - 1.3s); }
+.esc-fb-fia-tilde { animation: esc-fb-fia-tilde 6.5s infinite; animation-delay: -1.3s; }
+.esc-fb-fia-fondo { animation: esc-fb-fia-fondo 6.5s infinite; animation-delay: -1.3s; }
+.esc-fb-fia-tira { animation: esc-fb-fia-tira 6.5s infinite; animation-delay: -1.3s; }
+.escena .esc-fb-fia-deuda { animation: esc-fb-fia-deuda 6.5s infinite; animation-delay: -1.3s; transform-origin: 0% 50%; }
+
+/* ------------------------------------------------------------------ */
+/*  ROLES Y PIN                                                        */
+/* ------------------------------------------------------------------ */
+
+/* tecla: se hunde y se suelta (el --d de cada una la corre 0,325 s: 1-2-3-4) */
+@keyframes esc-fb-rol-tecla {
+  0%, 4% { opacity: 0; transform: scale(0.9); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  6% { opacity: 1; transform: scale(0.96); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  11%, 100% { opacity: 0; transform: scale(1); }
+}
+/* punto del PIN: se llena con un pequeño rebote y se vacía cuando el candado se vuelve a cerrar */
+@keyframes esc-fb-rol-punto {
+  0%, 5% { transform: scale(0); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  9%, 78% { transform: scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  82%, 100% { transform: scale(0); }
+}
+/* el arco del candado: se abre sobre su pie derecho con rebote y, al final, se cierra de golpe */
+@keyframes esc-fb-rol-arco {
+  0%, 21% { transform: rotate(0deg) translateY(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  24% { transform: rotate(40deg) translateY(-2px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  27% { transform: rotate(26deg) translateY(-1.5px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  30%, 78% { transform: rotate(31deg) translateY(-1.5px); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  83% { transform: rotate(-4deg) translateY(0.5px); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  86%, 100% { transform: rotate(0deg) translateY(0); }
+}
+/* el cuerpo del candado pasa de rojo a verde mientras está abierto */
+@keyframes esc-fb-rol-abre {
+  0%, 22% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  27%, 78% { opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  84%, 100% { opacity: 0; }
+}
+/* chip ADMIN: se enciende con un pequeño rebote */
+@keyframes esc-fb-rol-encendido {
+  0%, 25% { opacity: 0; transform: scale(0.9); animation-timing-function: cubic-bezier(0.34, 1.4, 0.64, 1); }
+  30% { opacity: 1; transform: scale(1.04); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  33%, 78% { opacity: 1; transform: scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  84%, 100% { opacity: 0; transform: scale(0.96); }
+}
+/* el escudo del chip asoma un instante después */
+@keyframes esc-fb-rol-escudo {
+  0%, 27% { transform: scale(0); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  33%, 78% { transform: scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  82%, 100% { transform: scale(0); }
+}
+/* aro que se abre desde el chip al encenderse (una vez por ciclo) */
+@keyframes esc-fb-rol-aro {
+  0%, 27% { transform: scale(0.94); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  29% { transform: scale(0.98); opacity: 0.7; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  42%, 100% { transform: scale(1.18); opacity: 0; }
+}
+/* sello de «anulada»: golpea el ticket (entra grande y asienta) */
+@keyframes esc-fb-rol-sello {
+  0%, 28% { transform: rotate(-12deg) scale(1.7); opacity: 0; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  32% { transform: rotate(-12deg) scale(0.94); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  35%, 78% { transform: rotate(-12deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  84%, 99.9% { transform: rotate(-12deg) scale(1); opacity: 0; }
+  100% { transform: rotate(-12deg) scale(1.7); opacity: 0; }
+}
+/* tachado del total: se traza de izquierda a derecha */
+@keyframes esc-fb-rol-tacha {
+  0%, 26% { transform: scaleX(0); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  32%, 78% { transform: scaleX(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  84%, 99.9% { transform: scaleX(1); opacity: 0; }
+  100% { transform: scaleX(0); opacity: 1; }
+}
+
+.esc-fb-rol-tecla { animation: esc-fb-rol-tecla 6.5s infinite; animation-delay: calc(var(--d, 0s) - 1.3s); }
+.esc-fb-rol-punto { animation: esc-fb-rol-punto 6.5s infinite; animation-delay: calc(var(--d, 0s) - 1.3s); }
+.esc-fb-rol-arco { animation: esc-fb-rol-arco 6.5s infinite; animation-delay: -1.3s; }
+.esc-fb-rol-abre { animation: esc-fb-rol-abre 6.5s infinite; animation-delay: -1.3s; }
+.esc-fb-rol-encendido { animation: esc-fb-rol-encendido 6.5s infinite; animation-delay: -1.3s; }
+.esc-fb-rol-escudo { animation: esc-fb-rol-escudo 6.5s infinite; animation-delay: -1.3s; }
+.esc-fb-rol-aro { animation: esc-fb-rol-aro 6.5s infinite; animation-delay: -1.3s; }
+.esc-fb-rol-sello { animation: esc-fb-rol-sello 6.5s infinite; animation-delay: -1.3s; }
+.escena .esc-fb-rol-tacha { animation: esc-fb-rol-tacha 6.5s infinite; animation-delay: -1.3s; transform-origin: 0% 50%; }
