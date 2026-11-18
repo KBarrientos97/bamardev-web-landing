@@ -150,7 +150,7 @@ export function Hero() {
 
           <m.h1
             variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
-            aria-label="El sistema que maneja todo tu negocio, sin faltantes, venta rápida y sin fugas de caja, para restaurantes, farmacias, ferreterías, minimarkets, billares, peluquerías, barberías, spas y academias."
+            aria-label="El sistema que maneja todo tu negocio, stock al día, venta rápida y caja sin fugas, para restaurantes, farmacias, ferreterías, minimarkets, billares, peluquerías, barberías, spas y academias."
             className="mt-6 font-extrabold tracking-tight"
           >
             <span aria-hidden>
@@ -159,8 +159,8 @@ export function Hero() {
                 <Palabras texto="El sistema que maneja todo tu negocio" />
               </span>
               <span className="mt-3 block text-xl font-bold leading-snug text-slate-300 sm:text-2xl">
-                <span className="text-brand-300">sin faltantes</span>, <span className="text-brand-300">venta rápida</span> y{' '}
-                <span className="text-brand-300">sin fugas de caja</span>
+                <span className="text-brand-300">stock al día</span>, <span className="text-brand-300">venta rápida</span> y{' '}
+                <span className="text-brand-300">caja sin fugas</span>
               </span>
               {/* «para» + la palabra que cambia cada segundo, en su propia línea para que nada se reacomode */}
               <span className="mt-4 flex items-start gap-3 text-3xl leading-[1.12] sm:text-4xl lg:text-[2.7rem]">
