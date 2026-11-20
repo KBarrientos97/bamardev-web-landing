@@ -1,0 +1,438 @@
+/*
+  Keyframes propios de las escenas de funciones de la academia (EscenasFnAcademia.tsx):
+  inscripción online, cuotas, grupos y asistencia. Sólo transform y opacity. Todo vive
+  dentro de `.escena`, así que la pausa fuera de pantalla y «reducir movimiento» vienen
+  de index.css.
+
+  Ciclo maestro: 6,5 s, igual que el aviso (esc-chip), que asoma al 10 % del ciclo.
+  Inscripción, cuotas y asistencia escriben sus keyframes en «tiempo local» y corren con
+  un desfase de -2,47 s (38 %): el aviso empieza a asomar al 38 % local, está entero al 48 %
+  y ya se fue al 4 %; la historia se arma entre el 6 y el 45 %. Grupos no tiene aviso y corre sin desfase.
+
+  Ojo: `.escena svg *` fija transform-origin al centro (especificidad 0,1,1); las clases
+  que necesitan otro pivote se escriben como `.escena .clase` (0,2,0).
+
+  El estilo base de cada clase (fuera del @keyframes) es la imagen que queda quieta cuando
+  el visitante pide «reducir movimiento»: el final de la historia (inscripta, pagada…).
+
+  Curvas: salida  cubic-bezier(0.22, 1, 0.36, 1) · entrada cubic-bezier(0.64, 0, 0.78, 0)
+          suave   cubic-bezier(0.45, 0, 0.55, 1) · rebote  cubic-bezier(0.34, 1.56, 0.64, 1)
+*/
+
+/* respiración del conjunto (2 px), común a las cuatro */
+@keyframes esc-ac-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+.escena .esc-ac-flota { animation: esc-ac-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+/* cursor de texto (seis parpadeos por ciclo) */
+@keyframes esc-ac-parpadeo {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.escena .esc-ac-parpadeo { animation: esc-ac-parpadeo 1.0833s steps(1, end) infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  1 · INSCRIPCIÓN ONLINE                                             */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (% local; el aviso asoma entre el 38 y el 48):
+   7,5     toque en «Inglés B1» (se marca)
+   15      toque en «19:00»
+   21,5    toque en el nombre: se va el texto de ayuda y se escribe «Lucía Mamani» (22–30)
+   32,5    toque en «Inscribirme»: se hunde y queda verde «Enviada»
+   35–42   el sobre vuela en arco a la laptop
+   42–46   las filas bajan, entra la nueva, el contador pasa de 3 a 4
+   92–100  todo vuelve al principio
+*/
+@keyframes esc-ac-iw-dedo {
+  0%, 3% { transform: translate(7px, 9px) scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  6% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  7.5% { transform: translate(0, 0) scale(0.72); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  9.5%, 11% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  14% { transform: translate(11.25px, 32.5px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  15% { transform: translate(11.25px, 32.5px) scale(0.72); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  17%, 18% { transform: translate(11.25px, 32.5px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  20.5% { transform: translate(0, 47px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  21.5% { transform: translate(0, 47px) scale(0.72); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  23% { transform: translate(0, 47px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  25% { transform: translate(14px, 52px) scale(1); opacity: 0.5; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  29% { transform: translate(14px, 52px) scale(1); opacity: 0.5; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  31.5% { transform: translate(0, 62px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  32.5% { transform: translate(0, 62px) scale(0.72); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  34.5% { transform: translate(0, 62px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  37%, 99.9% { transform: translate(4px, 66px) scale(1.1); opacity: 0; }
+  100% { transform: translate(7px, 9px) scale(1); opacity: 0; }
+}
+@keyframes esc-ac-iw-sel1 {
+  0%, 7.5% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  9%, 92% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { opacity: 0; }
+}
+@keyframes esc-ac-iw-sel2 {
+  0%, 15% { transform: scale(0.85); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  17%, 92% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { transform: scale(1); opacity: 0; }
+}
+@keyframes esc-ac-iw-ph {
+  0%, 21.5% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  22.5%, 95% { opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  98.5%, 100% { opacity: 1; }
+}
+/* la ventana del nombre crece a saltos: una letra por paso */
+@keyframes esc-ac-iw-tipeo {
+  0%, 22.5% { transform: scaleX(0); animation-timing-function: steps(12, end); }
+  30%, 97.9% { transform: scaleX(1); }
+  98%, 100% { transform: scaleX(0); }
+}
+@keyframes esc-ac-iw-nombre {
+  0%, 93% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 98.5% { opacity: 0; }
+  99%, 100% { opacity: 1; }
+}
+@keyframes esc-ac-iw-cursor {
+  0%, 21.5% { transform: translateX(0); opacity: 0; }
+  22% { transform: translateX(0); opacity: 1; animation-timing-function: steps(12, end); }
+  30% { transform: translateX(33.6px); opacity: 1; }
+  31.5%, 99.9% { transform: translateX(33.6px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 0; }
+}
+@keyframes esc-ac-iw-boton {
+  0%, 31.5% { transform: scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  32.5% { transform: scale(0.92); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  34.5%, 100% { transform: scale(1); }
+}
+@keyframes esc-ac-iw-listo {
+  0%, 33% { transform: scale(0.92); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  35%, 92% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { transform: scale(1); opacity: 0; }
+}
+/* el sobre: sale del botón, sube en arco (--pk) y cae en la bandeja (--dx/--dy) */
+@keyframes esc-ac-iw-sobre {
+  0%, 33.5% { transform: translate(0, 6px) scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  35.5% { transform: translate(0, -4px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  38.8% { transform: translate(calc(var(--dx) * 0.5), var(--pk)) scale(1.08); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 0.78, 0.45); }
+  42% { transform: translate(var(--dx), var(--dy)) scale(0.7); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  43%, 100% { transform: translate(var(--dx), var(--dy)) scale(0.4); opacity: 0; }
+}
+@keyframes esc-ac-iw-filas {
+  0%, 41.5% { transform: translateY(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  44.5%, 94% { transform: translateY(15px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  98.5%, 100% { transform: translateY(0); }
+}
+@keyframes esc-ac-iw-nueva {
+  0%, 42.5% { transform: scale(0.9); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  45% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  91.5% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  94.5%, 100% { transform: scale(1); opacity: 0; }
+}
+@keyframes esc-ac-iw-brillo {
+  0%, 43.5% { transform: scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  45% { transform: scale(1); opacity: 0.9; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  58%, 100% { transform: scale(1.06); opacity: 0; }
+}
+@keyframes esc-ac-iw-c3 {
+  0%, 42.5% { opacity: 1; }
+  43.5%, 95% { opacity: 0; }
+  97%, 100% { opacity: 1; }
+}
+@keyframes esc-ac-iw-c4 {
+  0%, 42.5% { transform: scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  45%, 94% { transform: scale(1); opacity: 1; }
+  96%, 100% { transform: scale(1); opacity: 0; }
+}
+
+.escena .esc-ac-iw-dedo { opacity: 0; animation: esc-ac-iw-dedo 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-sel1 { animation: esc-ac-iw-sel1 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-sel2 { animation: esc-ac-iw-sel2 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-ph { opacity: 0; animation: esc-ac-iw-ph 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-tipeo { transform-origin: 0% 50%; animation: esc-ac-iw-tipeo 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-nombre { animation: esc-ac-iw-nombre 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-cursor { opacity: 0; animation: esc-ac-iw-cursor 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-boton { animation: esc-ac-iw-boton 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-listo { animation: esc-ac-iw-listo 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-sobre { opacity: 0; animation: esc-ac-iw-sobre 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-filas { transform: translateY(15px); animation: esc-ac-iw-filas 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-nueva { animation: esc-ac-iw-nueva 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-brillo { opacity: 0; animation: esc-ac-iw-brillo 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-c3 { opacity: 0; animation: esc-ac-iw-c3 6.5s -2.47s infinite; }
+.escena .esc-ac-iw-c4 { animation: esc-ac-iw-c4 6.5s -2.47s infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  2 · CUOTAS                                                         */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (% local; el aviso asoma entre el 38 y el 48):
+   5–8     llega el recordatorio con el QR
+   15,5    toque en el QR; 17–25 la línea lo escanea; 26 queda el tilde verde
+   29      el alumno responde «Pagado»
+   31–38,5 la moneda vuela a noviembre; 38,5–41 la pastilla gira de «Vence» a «Pagada»
+   40–43,5 la segunda moneda entra a la caja; 43,5–45 la cifra sube a Bs 4.500
+   92–100  todo vuelve al principio
+*/
+@keyframes esc-ac-cu-entra {
+  0%, 5% { transform: translateY(4px) scale(0.85); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  8.5%, 92% { transform: translateY(0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { transform: translateY(0) scale(1); opacity: 0; }
+}
+@keyframes esc-ac-cu-dedo {
+  0%, 11% { transform: translate(8px, 10px) scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  14.5% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  15.5% { transform: translate(0, 0) scale(0.72); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  17.5% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  20%, 100% { transform: translate(8px, 10px) scale(1); opacity: 0; }
+}
+@keyframes esc-ac-cu-scan {
+  0%, 16.5% { transform: translateY(0); opacity: 0; }
+  17.5% { transform: translateY(0); opacity: 0.85; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  21% { transform: translateY(21.8px); opacity: 0.85; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  24.5% { transform: translateY(0); opacity: 0.85; }
+  25.5%, 100% { transform: translateY(0); opacity: 0; }
+}
+@keyframes esc-ac-cu-qrok {
+  0%, 25% { transform: scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  27.5%, 92% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { transform: scale(1); opacity: 0; }
+}
+@keyframes esc-ac-cu-sale {
+  0%, 28.5% { transform: translateY(4px) scale(0.85); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  31%, 92% { transform: translateY(0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { transform: translateY(0) scale(1); opacity: 0; }
+}
+@keyframes esc-ac-cu-moneda1 {
+  0%, 30.5% { transform: translate(0, 0) scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  32% { transform: translate(0, -3px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  35.3% { transform: translate(calc(var(--dx) * 0.5), var(--pk)) scale(1.08); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 0.78, 0.45); }
+  38.5% { transform: translate(var(--dx), var(--dy)) scale(0.8); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  39.5%, 100% { transform: translate(var(--dx), var(--dy)) scale(0.4); opacity: 0; }
+}
+@keyframes esc-ac-cu-moneda2 {
+  0%, 40% { transform: translate(0, 0) scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  41% { transform: translate(0, -2px) scale(0.85); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  42.3% { transform: translate(calc(var(--dx) * 0.5), var(--pk)) scale(0.95); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 0.78, 0.45); }
+  43.6% { transform: translate(var(--dx), var(--dy)) scale(0.6); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  44.4%, 100% { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+}
+/* la pastilla «Vence» se aplasta (media vuelta) y del otro lado sale «Pagada» */
+@keyframes esc-ac-cu-vence {
+  0%, 38.5% { transform: scaleY(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  39.5%, 95.9% { transform: scaleY(0); opacity: 1; }
+  96% { transform: scaleY(1); opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  98.5%, 100% { transform: scaleY(1); opacity: 1; }
+}
+@keyframes esc-ac-cu-pagada {
+  0%, 39.5% { transform: scaleY(0); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  41%, 93% { transform: scaleY(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  95.9% { transform: scaleY(1); opacity: 0; }
+  96%, 100% { transform: scaleY(0); opacity: 0; }
+}
+@keyframes esc-ac-cu-brillo {
+  0%, 39% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  40.5%, 92% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { opacity: 0; }
+}
+/* la cifra de la caja: la tira sube un renglón; al reiniciar se apaga, baja y vuelve */
+@keyframes esc-ac-cu-tira {
+  0%, 43.4% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  45.5%, 93% { transform: translateY(-12px); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  95.4% { transform: translateY(-12px); opacity: 0; }
+  95.5% { transform: translateY(0); opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  98%, 100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes esc-ac-cu-aro {
+  0%, 43.4% { transform: scale(0.97); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  44.4% { transform: scale(0.98); opacity: 0.9; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  58%, 100% { transform: scale(1.14); opacity: 0; }
+}
+@keyframes esc-ac-cu-suma {
+  0%, 43.5% { transform: translateY(5px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  46% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  60% { transform: translateY(-2px); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  66%, 100% { transform: translateY(-5px); opacity: 0; }
+}
+
+.escena .esc-ac-cu-entra { transform-origin: 0% 0%; animation: esc-ac-cu-entra 6.5s -2.47s infinite; }
+.escena .esc-ac-cu-dedo { opacity: 0; animation: esc-ac-cu-dedo 6.5s -2.47s infinite; }
+.escena .esc-ac-cu-scan { opacity: 0; animation: esc-ac-cu-scan 6.5s -2.47s infinite; }
+.escena .esc-ac-cu-qrok { animation: esc-ac-cu-qrok 6.5s -2.47s infinite; }
+.escena .esc-ac-cu-sale { transform-origin: 100% 100%; animation: esc-ac-cu-sale 6.5s -2.47s infinite; }
+.escena .esc-ac-cu-moneda1 { opacity: 0; animation: esc-ac-cu-moneda1 6.5s -2.47s infinite; }
+.escena .esc-ac-cu-moneda2 { opacity: 0; animation: esc-ac-cu-moneda2 6.5s -2.47s infinite; }
+.escena .esc-ac-cu-vence { transform: scaleY(0); animation: esc-ac-cu-vence 6.5s -2.47s infinite; }
+.escena .esc-ac-cu-pagada { animation: esc-ac-cu-pagada 6.5s -2.47s infinite; }
+.escena .esc-ac-cu-brillo { animation: esc-ac-cu-brillo 6.5s -2.47s infinite; }
+.escena .esc-ac-cu-tira { transform: translateY(-12px); animation: esc-ac-cu-tira 6.5s -2.47s infinite; }
+.escena .esc-ac-cu-aro { opacity: 0; animation: esc-ac-cu-aro 6.5s -2.47s infinite; }
+.escena .esc-ac-cu-suma { opacity: 0; animation: esc-ac-cu-suma 6.5s -2.47s infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  3 · GRUPOS Y HORARIOS (sin aviso, sin desfase)                     */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (% del ciclo):
+   2–20    los grupos existentes se arman uno tras otro (2 % entre cada uno)
+   21–25,5 el dedo llega al hueco «Libre» y lo toca
+   26–30   ahí se abre «Robótica» (con un aro verde) y entra la ficha del grupo
+   36–69   los 12 asientos se ocupan uno por uno y el contador sube de 0/20 a 12/20
+   92–100  todo se desvanece y vuelve a armarse
+  Bloques y asientos comparten keyframes y se corren con --d (delay negativo).
+*/
+@keyframes esc-ac-gr-bloque {
+  0%, 2% { transform: scale(0.6); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  5.5%, 92% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  95.5%, 100% { transform: scale(1); opacity: 0; }
+}
+@keyframes esc-ac-gr-dedo {
+  0%, 20% { transform: translate(14px, 16px) scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  24% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  25.5% { transform: translate(0, 0) scale(0.72); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  27.5% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  31%, 100% { transform: translate(10px, 14px) scale(1); opacity: 0; }
+}
+@keyframes esc-ac-gr-libre {
+  0%, 26% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  27.5%, 95% { opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  98.5%, 100% { opacity: 1; }
+}
+@keyframes esc-ac-gr-nuevo {
+  0%, 26% { transform: scale(0.5); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  29.5%, 92% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  95.5%, 100% { transform: scale(1); opacity: 0; }
+}
+@keyframes esc-ac-gr-aro {
+  0%, 27% { transform: scale(0.96); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  28.5% { transform: scale(0.98); opacity: 0.9; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  42%, 100% { transform: scale(1.22); opacity: 0; }
+}
+@keyframes esc-ac-gr-ficha {
+  0%, 28% { transform: translateX(-12px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  33%, 92% { transform: translateX(0); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { transform: translateX(0); opacity: 0; }
+}
+@keyframes esc-ac-gr-vacia {
+  0%, 27% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  30%, 95% { opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  99%, 100% { opacity: 1; }
+}
+/* un asiento: aparece con rebote al 38 % de su tiempo (cada uno se corre 2,6 %) */
+@keyframes esc-ac-gr-asiento {
+  0%, 36.5% { transform: scale(0.2); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  38.5% { transform: scale(1); opacity: 1; }
+  99.9% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.2); opacity: 0; }
+}
+/* contador: 12 saltos de un renglón, al compás de los asientos */
+@keyframes esc-ac-gr-tira {
+  0%, 36.5% { transform: translateY(0); animation-timing-function: steps(12, start); }
+  67.7%, 99.9% { transform: translateY(-120px); }
+  100% { transform: translateY(0); }
+}
+@keyframes esc-ac-gr-barra {
+  0%, 36.5% { transform: scaleX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  69%, 99.9% { transform: scaleX(1); }
+  100% { transform: scaleX(0); }
+}
+
+.escena .esc-ac-gr-bloque { animation: esc-ac-gr-bloque 6.5s infinite; animation-delay: var(--d, 0s); }
+.escena .esc-ac-gr-dedo { opacity: 0; animation: esc-ac-gr-dedo 6.5s infinite; }
+.escena .esc-ac-gr-libre { opacity: 0; animation: esc-ac-gr-libre 6.5s infinite; }
+.escena .esc-ac-gr-nuevo { animation: esc-ac-gr-nuevo 6.5s infinite; }
+.escena .esc-ac-gr-aro { opacity: 0; animation: esc-ac-gr-aro 6.5s infinite; }
+.escena .esc-ac-gr-vacia { opacity: 0; animation: esc-ac-gr-vacia 6.5s infinite; }
+.escena .esc-ac-gr-ficha { animation: esc-ac-gr-ficha 6.5s infinite; }
+.escena .esc-ac-gr-asiento { animation: esc-ac-gr-asiento 6.5s infinite; animation-delay: var(--d, 0s); }
+.escena .esc-ac-gr-tira { transform: translateY(-120px); animation: esc-ac-gr-tira 6.5s infinite; }
+.escena .esc-ac-gr-barra { transform-origin: 0% 50%; animation: esc-ac-gr-barra 6.5s infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  4 · ASISTENCIA                                                     */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (% local; el aviso asoma entre el 38 y el 48):
+   8,5 / 13,5 / 18,5 / 23,5 / 28,5   se marca cada alumno (✓ ✓ ✗ ✓ ✓)
+   9 / 14 / 24 / 29   cada presente enciende su tramo y el porcentaje sube (20 → 80 %)
+   19      el ausente pinta su tramo de rojo claro
+   34,5    toque en «Guardar lista»: queda verde «Guardada»; 40 el aro del porcentaje pulsa
+   92–100  todo vuelve al principio
+*/
+@keyframes esc-ac-as-dedo {
+  0%, 4% { transform: translate(8px, 10px) scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  7% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  8% { transform: translate(0, 0) scale(0.72); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  9.5% { transform: translate(0, 0) scale(1); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  12% { transform: translate(0, 12.5px) scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  13% { transform: translate(0, 12.5px) scale(0.72); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  14.5% { transform: translate(0, 12.5px) scale(1); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  17% { transform: translate(12px, 25px) scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  18% { transform: translate(12px, 25px) scale(0.72); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  19.5% { transform: translate(12px, 25px) scale(1); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  22% { transform: translate(0, 37.5px) scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  23% { transform: translate(0, 37.5px) scale(0.72); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  24.5% { transform: translate(0, 37.5px) scale(1); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  27% { transform: translate(0, 50px) scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  28% { transform: translate(0, 50px) scale(0.72); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  29.5% { transform: translate(0, 50px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  33% { transform: translate(-8px, 63.5px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  34% { transform: translate(-8px, 63.5px) scale(0.72); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  36% { transform: translate(-8px, 63.5px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  39%, 99.9% { transform: translate(-4px, 68px) scale(1.1); opacity: 0; }
+  100% { transform: translate(8px, 10px) scale(1); opacity: 0; }
+}
+@keyframes esc-ac-as-m0 { 0%, 8% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); } 10%, 92% { transform: scale(1); opacity: 1; } 96%, 100% { transform: scale(1); opacity: 0; } }
+@keyframes esc-ac-as-m1 { 0%, 13% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); } 15%, 92% { transform: scale(1); opacity: 1; } 96%, 100% { transform: scale(1); opacity: 0; } }
+@keyframes esc-ac-as-m2 { 0%, 18% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); } 20%, 92% { transform: scale(1); opacity: 1; } 96%, 100% { transform: scale(1); opacity: 0; } }
+@keyframes esc-ac-as-m3 { 0%, 23% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); } 25%, 92% { transform: scale(1); opacity: 1; } 96%, 100% { transform: scale(1); opacity: 0; } }
+@keyframes esc-ac-as-m4 { 0%, 28% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); } 30%, 92% { transform: scale(1); opacity: 1; } 96%, 100% { transform: scale(1); opacity: 0; } }
+/* tramos del aro: t0, t1, t2, t3 = los presentes; t4 = el ausente (rojo claro) */
+@keyframes esc-ac-as-t0 { 0%, 8.5% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); } 10.5%, 92% { opacity: 1; } 96%, 100% { opacity: 0; } }
+@keyframes esc-ac-as-t1 { 0%, 13.5% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); } 15.5%, 92% { opacity: 1; } 96%, 100% { opacity: 0; } }
+@keyframes esc-ac-as-t4 { 0%, 18.5% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); } 20.5%, 92% { opacity: 1; } 96%, 100% { opacity: 0; } }
+@keyframes esc-ac-as-t2 { 0%, 23.5% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); } 25.5%, 92% { opacity: 1; } 96%, 100% { opacity: 0; } }
+@keyframes esc-ac-as-t3 { 0%, 28.5% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); } 30.5%, 92% { opacity: 1; } 96%, 100% { opacity: 0; } }
+/* el porcentaje: la tira sube un renglón por cada presente */
+@keyframes esc-ac-as-tira {
+  0%, 8.5% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  10%, 13.5% { transform: translateY(-13px); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  15%, 23.5% { transform: translateY(-26px); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  25%, 28.5% { transform: translateY(-39px); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  30%, 93% { transform: translateY(-52px); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  95.4% { transform: translateY(-52px); opacity: 0; }
+  95.5% { transform: translateY(0); opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  98%, 100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes esc-ac-as-boton {
+  0%, 33% { transform: scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  34% { transform: scale(0.92); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  36%, 100% { transform: scale(1); }
+}
+@keyframes esc-ac-as-listo {
+  0%, 34.5% { transform: scale(0.92); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  36.5%, 92% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { transform: scale(1); opacity: 0; }
+}
+@keyframes esc-ac-as-aro {
+  0%, 38% { transform: scale(0.95); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  39.5% { transform: scale(0.97); opacity: 0.9; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  54%, 100% { transform: scale(1.22); opacity: 0; }
+}
+
+.escena .esc-ac-as-dedo { opacity: 0; animation: esc-ac-as-dedo 6.5s -2.47s infinite; }
+.escena .esc-ac-as-m0 { animation: esc-ac-as-m0 6.5s -2.47s infinite; }
+.escena .esc-ac-as-m1 { animation: esc-ac-as-m1 6.5s -2.47s infinite; }
+.escena .esc-ac-as-m2 { animation: esc-ac-as-m2 6.5s -2.47s infinite; }
+.escena .esc-ac-as-m3 { animation: esc-ac-as-m3 6.5s -2.47s infinite; }
+.escena .esc-ac-as-m4 { animation: esc-ac-as-m4 6.5s -2.47s infinite; }
+.escena .esc-ac-as-t0 { animation: esc-ac-as-t0 6.5s -2.47s infinite; }
+.escena .esc-ac-as-t1 { animation: esc-ac-as-t1 6.5s -2.47s infinite; }
+.escena .esc-ac-as-t2 { animation: esc-ac-as-t2 6.5s -2.47s infinite; }
+.escena .esc-ac-as-t3 { animation: esc-ac-as-t3 6.5s -2.47s infinite; }
+.escena .esc-ac-as-t4 { animation: esc-ac-as-t4 6.5s -2.47s infinite; }
+.escena .esc-ac-as-tira { transform: translateY(-52px); animation: esc-ac-as-tira 6.5s -2.47s infinite; }
+.escena .esc-ac-as-boton { animation: esc-ac-as-boton 6.5s -2.47s infinite; }
+.escena .esc-ac-as-listo { animation: esc-ac-as-listo 6.5s -2.47s infinite; }
+.escena .esc-ac-as-aro { opacity: 0; animation: esc-ac-as-aro 6.5s -2.47s infinite; }

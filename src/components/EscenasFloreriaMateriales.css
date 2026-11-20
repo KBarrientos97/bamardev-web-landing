@@ -1,0 +1,479 @@
+/*
+  Keyframes propios de las escenas de la florería y de la barraca de
+  materiales (EscenasFloreriaMateriales.tsx). Sólo transform y opacity. Todo
+  vive dentro de `.escena`, así que las pausas fuera de pantalla y "reducir
+  movimiento" ya vienen de index.css.
+  Ojo: `.escena svg *` fija transform-origin al centro (especificidad 0,1,1);
+  las clases que necesitan otro pivote se escriben como `.escena .clase`.
+
+  Ciclo maestro de las dos: 6,5 s, igual que el aviso (esc-chip), que asoma al
+  10 %. El remate de cada historia cae justo antes (97–100 %) y el festejo de
+  la venta entre el 0 % y el 10 %: el aviso llega con él. Cada keyframe
+  termina con el mismo valor con que empieza: el bucle no da tirón.
+*/
+
+/* ===================== Florería ===================== */
+
+@keyframes esc-flor-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-flor-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+
+/*
+  La moto (en dos capas: detrás y delante del ramo, con el mismo keyframe):
+  0–11 %    estacionada con el ramo, el pin y el aviso
+  11–20 %   arranca hacia la derecha y se va (se desvanece)
+  20,5–32 % vuelve vacía a la puerta
+*/
+@keyframes esc-flor-moto {
+  0%, 11% { transform: translateX(0); opacity: 1; animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  20% { transform: translateX(60px); opacity: 0; }
+  20.5% { transform: translateX(36px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  32%, 100% { transform: translateX(0); opacity: 1; }
+}
+/* las ruedas giran lo que avanza la moto (r 6,6: 60 px ≈ 520°, 36 px ≈ 312°) */
+@keyframes esc-flor-rueda {
+  0%, 11% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  20% { transform: rotate(520deg); }
+  20.5% { transform: rotate(312deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  32%, 100% { transform: rotate(0deg); }
+}
+/* la moto se hunde un pelo cuando le cae el ramo */
+@keyframes esc-flor-amortigua {
+  0% { transform: translateY(1px); }
+  3% { transform: translateY(-0.3px); }
+  6%, 97% { transform: translateY(0); }
+  98.5% { transform: translateY(1.2px); }
+  100% { transform: translateY(1px); }
+}
+/* humo del escape: sólo mientras arranca */
+@keyframes esc-flor-escape-on {
+  0%, 7% { opacity: 0; }
+  10%, 17% { opacity: 1; }
+  20%, 100% { opacity: 0; }
+}
+@keyframes esc-flor-escape {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  25% { opacity: 0.85; }
+  100% { transform: translate(-12px, -5px) scale(1.8); opacity: 0; }
+}
+
+/*
+  El ramo, con la base en la mesa (x en una capa, y en otra):
+  0–11 %    en la canasta de la moto (cayó al final del ciclo anterior)
+  11–20 %   se va con la moto
+  20,5 %    vuelve a la mesa, invisible y desarmado
+  21–66 %   se arma (las flores, el follaje, el papel y el moño van aparte)
+  66–70 %   anticipación: se levanta apenas
+  70–97 %   arco hasta la canasta: sube, gira y cae
+*/
+@keyframes esc-flor-ramo-x {
+  0%, 11% { transform: translateX(69px); animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  20% { transform: translateX(129px); }
+  20.5%, 70% { transform: translateX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  97%, 100% { transform: translateX(69px); }
+}
+@keyframes esc-flor-ramo-y {
+  0%, 11% { transform: translateY(-1px) rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  20% { transform: translateY(-1px) rotate(0deg); opacity: 0; }
+  20.5% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  21%, 64% { transform: translateY(0) rotate(0deg); opacity: 1; animation-timing-function: ease-in-out; }
+  67% { transform: translateY(0.6px) rotate(2deg); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  70% { transform: translateY(-4px) rotate(-5deg); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  83% { transform: translateY(-38px) rotate(-10deg); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  97% { transform: translateY(-1px) rotate(5deg); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  100% { transform: translateY(-1px) rotate(0deg); opacity: 1; }
+}
+.escena .esc-flor-ramo-y { transform-origin: 50% 100%; }
+
+/*
+  Cada flor, relativa a su lugar en el ramo: espera escondida en su balde,
+  asoma (la sacan), salta en arco a la mesa y se queda en el ramo.
+  Rosa 22–29 %, girasol 28–35 %, lirio 34–41 %.
+*/
+@keyframes esc-flor-rosa-x {
+  0%, 20% { transform: translateX(0); }
+  20.5%, 23.5% { transform: translateX(-105px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  29%, 100% { transform: translateX(0); }
+}
+@keyframes esc-flor-rosa-y {
+  0%, 20% { transform: translateY(0); opacity: 1; }
+  20.5%, 22% { transform: translateY(8px); opacity: 0; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  23.5% { transform: translateY(-2px); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  26.2% { transform: translateY(-24px); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  29%, 100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes esc-flor-girasol-x {
+  0%, 20% { transform: translateX(0); }
+  20.5%, 29.5% { transform: translateX(-92.5px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  35%, 100% { transform: translateX(0); }
+}
+@keyframes esc-flor-girasol-y {
+  0%, 20% { transform: translateY(0); opacity: 1; }
+  20.5%, 28% { transform: translateY(9px); opacity: 0; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  29.5% { transform: translateY(-1px); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  32.2% { transform: translateY(-22px); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  35%, 100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes esc-flor-lirio-x {
+  0%, 20% { transform: translateX(0); }
+  20.5%, 35.5% { transform: translateX(-79.5px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  41%, 100% { transform: translateX(0); }
+}
+@keyframes esc-flor-lirio-y {
+  0%, 20% { transform: translateY(0); opacity: 1; }
+  20.5%, 34% { transform: translateY(6px); opacity: 0; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  35.5% { transform: translateY(-3px); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  38.2% { transform: translateY(-22px); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  41%, 100% { transform: translateY(0); opacity: 1; }
+}
+
+/* el follaje brota (41–45 %) */
+@keyframes esc-flor-verde {
+  0%, 20% { transform: scale(1); opacity: 1; }
+  20.5%, 40.5% { transform: scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  45%, 100% { transform: scale(1); opacity: 1; }
+}
+/* el kraft envuelve el ramo de abajo hacia arriba (45–52 %) */
+@keyframes esc-flor-papel {
+  0%, 20% { transform: scaleY(1); opacity: 1; }
+  20.5%, 45% { transform: scaleY(0.1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  46% { transform: scaleY(0.3); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  52%, 100% { transform: scaleY(1); opacity: 1; }
+}
+.escena .esc-flor-papel { transform-origin: 50% 100%; }
+/* el pliego de la mesa: aparece uno nuevo y se va al envolver */
+@keyframes esc-flor-lamina {
+  0%, 21% { opacity: 0; }
+  25%, 45% { opacity: 1; }
+  49%, 100% { opacity: 0; }
+}
+/* la tijera corta la cinta (52–56 %): cada hoja gira sobre el perno */
+@keyframes esc-flor-tijera-a {
+  0%, 52%, 56%, 100% { transform: rotate(0deg); }
+  53% { transform: rotate(-18deg); }
+  54% { transform: rotate(0deg); }
+  55% { transform: rotate(-18deg); }
+}
+@keyframes esc-flor-tijera-b {
+  0%, 52%, 56%, 100% { transform: rotate(0deg); }
+  53% { transform: rotate(18deg); }
+  54% { transform: rotate(0deg); }
+  55% { transform: rotate(18deg); }
+}
+.escena .esc-flor-tijera-a { transform-origin: 4.7px 1.4px; }
+.escena .esc-flor-tijera-b { transform-origin: 4.7px 2.4px; }
+/* el carrete larga cinta antes del corte */
+@keyframes esc-flor-carrete {
+  0%, 48% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  53%, 100% { transform: rotate(-360deg); }
+}
+/* el moño aparece de un salto (56–60 %) */
+@keyframes esc-flor-mono {
+  0%, 20% { transform: scale(1); opacity: 1; }
+  20.5%, 56% { transform: scale(0); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  60%, 100% { transform: scale(1); opacity: 1; }
+}
+
+/* el pin de la entrega cae y rebota; su onda se abre */
+@keyframes esc-flor-pin {
+  0% { transform: translateY(-14px); opacity: 0; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  4% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  6.5% { transform: translateY(-3px); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  9%, 14% { transform: translateY(0); opacity: 1; }
+  19% { transform: translateY(-4px); opacity: 0; }
+  20%, 100% { transform: translateY(-14px); opacity: 0; }
+}
+@keyframes esc-flor-onda {
+  0%, 3.5% { transform: scale(0.4); opacity: 0; }
+  5% { transform: scale(0.6); opacity: 0.9; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  18%, 100% { transform: scale(2.4); opacity: 0; }
+}
+/* aro de la venta y destellos (como en las demás escenas) */
+@keyframes esc-flor-aro {
+  0% { transform: scale(0.45); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  2% { transform: scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  18%, 100% { transform: scale(2); opacity: 0; }
+}
+@keyframes esc-flor-chispa {
+  0%, 3% { transform: scale(0) rotate(0deg); opacity: 0; }
+  7% { transform: scale(1) rotate(45deg); opacity: 1; }
+  16%, 100% { transform: scale(0.4) rotate(90deg); opacity: 0; }
+}
+
+/* ambiente: macetas que se mecen, luces, brillo del vidrio, mariposa y pétalos */
+@keyframes esc-flor-colgante {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+.escena .esc-flor-colgante { transform-origin: 50% 0%; }
+@keyframes esc-flor-foco {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.8; }
+}
+@keyframes esc-flor-halo {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@keyframes esc-flor-brillo {
+  0%, 40% { transform: translateX(0); opacity: 0; }
+  44% { opacity: 1; }
+  70% { transform: translateX(var(--d, 100px)); opacity: 1; }
+  74%, 100% { transform: translateX(var(--d, 100px)); opacity: 0; }
+}
+@keyframes esc-flor-mariposa {
+  0%, 100% { transform: translate(0, 0) rotate(-8deg); }
+  25% { transform: translate(9px, -7px) rotate(10deg); }
+  50% { transform: translate(18px, 1px) rotate(4deg); }
+  75% { transform: translate(6px, 5px) rotate(-12deg); }
+}
+@keyframes esc-flor-alas {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.25); }
+}
+@keyframes esc-flor-petalo {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  15% { opacity: 0.9; }
+  100% { transform: translate(var(--dx, 0), 34px) rotate(220deg); opacity: 0; }
+}
+
+.esc-flor-flota { animation: esc-flor-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-flor-sombra { animation: esc-flor-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-flor-moto { animation: esc-flor-moto 6.5s infinite; }
+.esc-flor-rueda { animation: esc-flor-rueda 6.5s infinite; }
+.esc-flor-amortigua { animation: esc-flor-amortigua 6.5s ease-out infinite; }
+.esc-flor-escape-on { animation: esc-flor-escape-on 6.5s linear infinite; }
+.esc-flor-escape { animation: esc-flor-escape 1.0833s ease-out infinite; }
+.esc-flor-ramo-x { animation: esc-flor-ramo-x 6.5s infinite; }
+.esc-flor-ramo-y { animation: esc-flor-ramo-y 6.5s infinite; }
+.esc-flor-rosa-x { animation: esc-flor-rosa-x 6.5s infinite; }
+.esc-flor-rosa-y { animation: esc-flor-rosa-y 6.5s infinite; }
+.esc-flor-girasol-x { animation: esc-flor-girasol-x 6.5s infinite; }
+.esc-flor-girasol-y { animation: esc-flor-girasol-y 6.5s infinite; }
+.esc-flor-lirio-x { animation: esc-flor-lirio-x 6.5s infinite; }
+.esc-flor-lirio-y { animation: esc-flor-lirio-y 6.5s infinite; }
+.esc-flor-verde { animation: esc-flor-verde 6.5s infinite; }
+.esc-flor-papel { animation: esc-flor-papel 6.5s infinite; }
+.esc-flor-lamina { animation: esc-flor-lamina 6.5s ease-in-out infinite; }
+.esc-flor-tijera-a { animation: esc-flor-tijera-a 6.5s ease-in-out infinite; }
+.esc-flor-tijera-b { animation: esc-flor-tijera-b 6.5s ease-in-out infinite; }
+.esc-flor-carrete { animation: esc-flor-carrete 6.5s infinite; }
+.esc-flor-mono { animation: esc-flor-mono 6.5s infinite; }
+.esc-flor-pin { animation: esc-flor-pin 6.5s infinite; }
+.esc-flor-onda { animation: esc-flor-onda 6.5s infinite; }
+.esc-flor-aro { animation: esc-flor-aro 6.5s infinite; }
+.esc-flor-chispa { animation: esc-flor-chispa 6.5s infinite; }
+.esc-flor-colgante { animation: esc-flor-colgante 3.25s ease-in-out infinite; }
+.esc-flor-foco { animation: esc-flor-foco 1.625s ease-in-out infinite; }
+.esc-flor-halo { animation: esc-flor-halo 3.25s ease-in-out infinite; }
+.esc-flor-brillo { animation: esc-flor-brillo 6.5s ease-in-out infinite; }
+.esc-flor-mariposa { animation: esc-flor-mariposa 6.5s ease-in-out infinite; }
+.esc-flor-alas { animation: esc-flor-alas 0.325s ease-in-out infinite; }
+.esc-flor-petalo { animation: esc-flor-petalo 3.25s ease-in infinite; }
+
+/* ===================== Materiales ===================== */
+
+@keyframes esc-mat-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-mat-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+
+/*
+  La camioneta (en dos capas: la caja por dentro, detrás del pallet, y la
+  carrocería adelante; mismo keyframe):
+  0–10 %    cargada, recién arrancó un poco (6 px): asoma el aviso
+  10–20 %   sigue y se va (se desvanece)
+  20,5–34 % retrocede vacía hasta la balanza
+  92–100 %  con el pallet arriba, arranca un poco
+*/
+@keyframes esc-mat-camion {
+  0%, 10% { transform: translateX(6px); opacity: 1; animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  20% { transform: translateX(70px); opacity: 0; }
+  20.5% { transform: translateX(44px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  34%, 92% { transform: translateX(0); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  100% { transform: translateX(6px); opacity: 1; }
+}
+/* las ruedas giran lo que avanza (r 7: 64 px ≈ 523°, 44 px = 360°, 6 px ≈ 49°) */
+@keyframes esc-mat-rueda {
+  0%, 10% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  20% { transform: rotate(523deg); }
+  20.5% { transform: rotate(311deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  34%, 92% { transform: rotate(-49deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  100% { transform: rotate(0deg); }
+}
+/* la carrocería se hunde con el peso del pallet */
+@keyframes esc-mat-suspension {
+  0%, 89.5% { transform: translateY(0); }
+  91% { transform: translateY(1.6px); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  93.5% { transform: translateY(-0.4px); }
+  95.5%, 100% { transform: translateY(0); }
+}
+/* humo del escape: mientras arranca y mientras se va */
+@keyframes esc-mat-escape-on {
+  0%, 17% { opacity: 1; }
+  21%, 89% { opacity: 0; }
+  92%, 100% { opacity: 1; }
+}
+@keyframes esc-mat-escape {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  25% { opacity: 0.9; }
+  100% { transform: translate(-14px, -6px) scale(1.9); opacity: 0; }
+}
+
+/*
+  El pallet, relativo a su lugar en la balanza (x en una capa, y en otra):
+  0–20 %    en la caja de la camioneta, se va con ella
+  20,5–25 % aparece vacío en la balanza
+  32–58 %   caen las 5 capas de bolsas (capa1…capa5)
+  64–68 %   anticipación: se despega de la balanza
+  68–90 %   arco hasta la caja; 92–100 % acompaña el arranque
+*/
+@keyframes esc-mat-pallet-x {
+  0%, 10% { transform: translateX(70px); animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  20% { transform: translateX(134px); }
+  20.5%, 68% { transform: translateX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  90%, 92% { transform: translateX(64px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  100% { transform: translateX(70px); }
+}
+@keyframes esc-mat-pallet-y {
+  0%, 10% { transform: translateY(-13px) rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  20% { transform: translateY(-13px) rotate(0deg); opacity: 0; }
+  20.5% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  25%, 64% { transform: translateY(0) rotate(0deg); opacity: 1; animation-timing-function: ease-in-out; }
+  66% { transform: translateY(0.6px) rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  68% { transform: translateY(-3px) rotate(-2deg); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  79% { transform: translateY(-42px) rotate(-4deg); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  90%, 100% { transform: translateY(-13px) rotate(0deg); opacity: 1; }
+}
+
+/* cada capa de 2 bolsas cae sobre el pallet y se aplasta un poco al llegar */
+@keyframes esc-mat-capa1 {
+  0%, 20% { transform: translateY(0) scale(1, 1); opacity: 1; }
+  20.5%, 31% { transform: translateY(-16px) scale(1, 1); opacity: 0; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  34% { transform: translateY(0) scale(1.05, 0.86); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  35.5%, 100% { transform: translateY(0) scale(1, 1); opacity: 1; }
+}
+@keyframes esc-mat-capa2 {
+  0%, 20% { transform: translateY(0) scale(1, 1); opacity: 1; }
+  20.5%, 37% { transform: translateY(-16px) scale(1, 1); opacity: 0; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  40% { transform: translateY(0) scale(1.05, 0.86); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  41.5%, 100% { transform: translateY(0) scale(1, 1); opacity: 1; }
+}
+@keyframes esc-mat-capa3 {
+  0%, 20% { transform: translateY(0) scale(1, 1); opacity: 1; }
+  20.5%, 43% { transform: translateY(-16px) scale(1, 1); opacity: 0; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  46% { transform: translateY(0) scale(1.05, 0.86); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  47.5%, 100% { transform: translateY(0) scale(1, 1); opacity: 1; }
+}
+@keyframes esc-mat-capa4 {
+  0%, 20% { transform: translateY(0) scale(1, 1); opacity: 1; }
+  20.5%, 49% { transform: translateY(-16px) scale(1, 1); opacity: 0; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  52% { transform: translateY(0) scale(1.05, 0.86); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  53.5%, 100% { transform: translateY(0) scale(1, 1); opacity: 1; }
+}
+@keyframes esc-mat-capa5 {
+  0%, 20% { transform: translateY(0) scale(1, 1); opacity: 1; }
+  20.5%, 55% { transform: translateY(-16px) scale(1, 1); opacity: 0; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  58% { transform: translateY(0) scale(1.05, 0.86); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  59.5%, 100% { transform: translateY(0) scale(1, 1); opacity: 1; }
+}
+.escena .esc-mat-capa { transform-origin: 50% 100%; }
+
+/*
+  El visor de la balanza: una tira de números (0, 2, 4, 6, 8, 10) que salta de
+  a uno cuando cae cada capa; vuelve a 0 cuando el pallet se levanta.
+*/
+@keyframes esc-mat-cuenta {
+  0%, 33.8% { transform: translateY(0); }
+  34%, 39.8% { transform: translateY(-9px); }
+  40%, 45.8% { transform: translateY(-18px); }
+  46%, 51.8% { transform: translateY(-27px); }
+  52%, 57.8% { transform: translateY(-36px); }
+  58%, 66.8% { transform: translateY(-45px); }
+  67%, 100% { transform: translateY(0); }
+}
+/* el led del visor parpadea con cada capa */
+@keyframes esc-mat-led {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+/* la carga confirmada: la insignia ×10, el golpe en la caja y el polvo */
+@keyframes esc-mat-insignia {
+  0%, 14% { transform: scale(1); opacity: 1; }
+  19% { transform: scale(0.8); opacity: 0; }
+  20%, 92% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  97%, 100% { transform: scale(1); opacity: 1; }
+}
+@keyframes esc-mat-aro {
+  0%, 90% { transform: scale(0.5); opacity: 0; }
+  91% { transform: scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  99% { transform: scale(1.7); opacity: 0; }
+  100% { transform: scale(0.5); opacity: 0; }
+}
+@keyframes esc-mat-polvo {
+  0%, 90% { transform: translate(0, 0) scale(0.3); opacity: 0; }
+  91.5% { transform: translate(0, 0) scale(0.6); opacity: 0.8; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  99% { transform: translate(var(--dx, 0), -4px) scale(1.6); opacity: 0; }
+  100% { transform: translate(0, 0) scale(0.3); opacity: 0; }
+}
+@keyframes esc-mat-chispa {
+  0%, 3% { transform: scale(0) rotate(0deg); opacity: 0; }
+  7% { transform: scale(1) rotate(45deg); opacity: 1; }
+  16%, 100% { transform: scale(0.4) rotate(90deg); opacity: 0; }
+}
+
+/* ambiente: banderines, foco, brillo de las varillas y polvo del patio */
+@keyframes esc-mat-banderin {
+  0%, 100% { transform: rotate(-9deg); }
+  50% { transform: rotate(9deg); }
+}
+.escena .esc-mat-banderin { transform-origin: 50% 0%; }
+@keyframes esc-mat-foco {
+  0%, 100% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+@keyframes esc-mat-brillo {
+  0%, 40% { transform: translateX(0); opacity: 0; }
+  44% { opacity: 1; }
+  70% { transform: translateX(var(--d, 100px)); opacity: 1; }
+  74%, 100% { transform: translateX(var(--d, 100px)); opacity: 0; }
+}
+@keyframes esc-mat-mota {
+  0% { transform: translate(0, 0); opacity: 0; }
+  30% { opacity: 0.8; }
+  100% { transform: translate(10px, -22px); opacity: 0; }
+}
+
+.esc-mat-flota { animation: esc-mat-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-mat-sombra { animation: esc-mat-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-mat-camion { animation: esc-mat-camion 6.5s infinite; }
+.esc-mat-rueda { animation: esc-mat-rueda 6.5s infinite; }
+.esc-mat-suspension { animation: esc-mat-suspension 6.5s ease-out infinite; }
+.esc-mat-escape-on { animation: esc-mat-escape-on 6.5s linear infinite; }
+.esc-mat-escape { animation: esc-mat-escape 1.0833s ease-out infinite; }
+.esc-mat-pallet-x { animation: esc-mat-pallet-x 6.5s infinite; }
+.esc-mat-pallet-y { animation: esc-mat-pallet-y 6.5s infinite; }
+.esc-mat-capa1 { animation: esc-mat-capa1 6.5s infinite; }
+.esc-mat-capa2 { animation: esc-mat-capa2 6.5s infinite; }
+.esc-mat-capa3 { animation: esc-mat-capa3 6.5s infinite; }
+.esc-mat-capa4 { animation: esc-mat-capa4 6.5s infinite; }
+.esc-mat-capa5 { animation: esc-mat-capa5 6.5s infinite; }
+.esc-mat-cuenta { animation: esc-mat-cuenta 6.5s linear infinite; }
+.esc-mat-led { animation: esc-mat-led 0.8125s ease-in-out infinite; }
+.esc-mat-insignia { animation: esc-mat-insignia 6.5s infinite; }
+.esc-mat-aro { animation: esc-mat-aro 6.5s infinite; }
+.esc-mat-polvo { animation: esc-mat-polvo 6.5s infinite; }
+.esc-mat-chispa { animation: esc-mat-chispa 6.5s infinite; }
+.esc-mat-banderin { animation: esc-mat-banderin 1.625s ease-in-out infinite; }
+.esc-mat-foco { animation: esc-mat-foco 3.25s ease-in-out infinite; }
+.esc-mat-brillo { animation: esc-mat-brillo 6.5s ease-in-out infinite; }
+.esc-mat-mota { animation: esc-mat-mota 3.25s ease-out infinite; }

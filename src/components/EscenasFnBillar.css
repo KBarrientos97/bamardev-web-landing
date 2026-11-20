@@ -1,0 +1,292 @@
+/*
+  Keyframes de EscenasFnBillar.tsx (supervisión, reservas y la tele del salón del
+  billar). Sólo transform y opacity. Todo vive dentro de `.escena`, así que la pausa
+  fuera de pantalla y «reducir movimiento» vienen de index.css. El estilo base de cada
+  clase (o el `opacity` en línea del .tsx) es la imagen quieta de «reducir movimiento»:
+  la Mesa 3 pausada hace 15 min, la reserva de Carlos ya puesta, la tele con la cuenta.
+
+  Ciclo maestro: 6,5 s, el del aviso (esc-chip), que asoma al 10 %. Lo que lo causa cae
+  justo antes.
+
+  Los relojes son «rodillos»: una columna de valores separados por --paso que sube con
+  `steps()`. Ojo: `.escena svg *` fija transform-origin al centro (especificidad 0,1,1);
+  las clases que necesitan otro pivote se escriben como `.escena .clase` (0,2,0).
+*/
+
+/* ------------------------------------------------------------------ */
+/*  Comunes                                                            */
+/* ------------------------------------------------------------------ */
+
+/* reloj que corre: 10 valores, uno por cada 0,65 s */
+@keyframes esc-bs-rueda {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(calc(var(--paso) * -10)); }
+}
+.escena .esc-bs-rueda { animation: esc-bs-rueda 6.5s steps(10, end) infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  1 · SUPERVISIÓN                                                    */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (% del ciclo):
+   60–62   reanudan la Mesa 3 (el aviso ya se va): vuelve a «Ocupada»
+   72–74   la pausan otra vez en el salón: «Pausada», el contador arranca en 1 min
+   74–100  el contador sube (time-lapse) hasta 14 min
+   0       llega a 15 min: destella la ficha, 2–8 vibra el celular del dueño
+   10      aviso «Mesa 3 · Pausada 15 min»
+*/
+
+/* luz de «En vivo» (1,3 s: cinco por ciclo) */
+@keyframes esc-bs-vivo {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+@keyframes esc-bs-vivo-aro {
+  0% { transform: scale(1); opacity: 0.8; }
+  70%, 100% { transform: scale(2.4); opacity: 0; }
+}
+.escena .esc-bs-vivo { animation: esc-bs-vivo 1.3s ease-in-out infinite; }
+.escena .esc-bs-vivo-aro { opacity: 0; animation: esc-bs-vivo-aro 1.3s ease-out infinite; }
+
+@keyframes esc-bs-s-ocu {
+  0%, 59.5% { opacity: 0; }
+  62%, 72% { opacity: 1; }
+  74.5%, 100% { opacity: 0; }
+}
+@keyframes esc-bs-s-pau {
+  0%, 59.5% { opacity: 1; }
+  62%, 72% { opacity: 0; }
+  74.5%, 100% { opacity: 1; }
+}
+/*
+  Contador de pausa. Columna: «hace 15 min», «hace 1 min»… «hace 14 min». Queda en 15
+  hasta que reanudan; escondido, salta a 1; desde 74,5 % sube de a uno y al dar la vuelta
+  cae otra vez en el primero (15 min).
+*/
+@keyframes esc-bs-s-min {
+  0%, 62% { transform: translateY(0); }
+  62.1%, 74.5% { transform: translateY(calc(var(--paso) * -1)); animation-timing-function: steps(14, end); }
+  100% { transform: translateY(calc(var(--paso) * -15)); }
+}
+@keyframes esc-bs-s-aro {
+  0% { transform: scale(1); opacity: 0.95; }
+  9%, 100% { transform: scale(1.12); opacity: 0; }
+}
+/* el celular del dueño: se prende con la alerta y vibra */
+@keyframes esc-bs-cel-luz {
+  0%, 0.5% { opacity: 0; }
+  2%, 34% { opacity: 1; }
+  40%, 100% { opacity: 0; }
+}
+@keyframes esc-bs-cel {
+  0%, 2% { transform: rotate(0); }
+  3% { transform: rotate(-5deg); }
+  4% { transform: rotate(5deg); }
+  5% { transform: rotate(-4deg); }
+  6% { transform: rotate(4deg); }
+  7% { transform: rotate(-2deg); }
+  8%, 100% { transform: rotate(0); }
+}
+@keyframes esc-bs-campana {
+  0%, 3% { transform: rotate(0); }
+  5% { transform: rotate(18deg); }
+  7% { transform: rotate(-14deg); }
+  9% { transform: rotate(9deg); }
+  11% { transform: rotate(-5deg); }
+  13%, 100% { transform: rotate(0); }
+}
+@keyframes esc-bs-vapor {
+  0% { transform: translateY(2px); opacity: 0; }
+  40% { opacity: 0.9; }
+  100% { transform: translateY(-4px); opacity: 0; }
+}
+
+.escena .esc-bs-s-ocu { animation: esc-bs-s-ocu 6.5s ease-in-out infinite; }
+.escena .esc-bs-s-pau { animation: esc-bs-s-pau 6.5s ease-in-out infinite; }
+.escena .esc-bs-s-min { animation: esc-bs-s-min 6.5s infinite; }
+.escena .esc-bs-s-aro { animation: esc-bs-s-aro 6.5s ease-out infinite; }
+.escena .esc-bs-cel-luz { animation: esc-bs-cel-luz 6.5s ease-in-out infinite; }
+.escena .esc-bs-cel { transform-origin: 50% 100%; animation: esc-bs-cel 6.5s ease-in-out infinite; }
+.escena .esc-bs-campana { transform-origin: 50% 0; animation: esc-bs-campana 6.5s ease-in-out infinite; }
+.escena .esc-bs-vapor { animation: esc-bs-vapor 3.25s ease-out infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  2 · RESERVAS                                                       */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (% del ciclo):
+   2–6     entra la reserva «Carlos · 20:00» en la Mesa 2 (aro), pasa a «Reservada»
+   3–8     cae el cartelito en el paño
+   10      aviso «Mesa 2 · 20:00»
+   12–47   la línea de la hora va de 19:45 a 20:00; 46–48 el reloj marca 20:00
+   44–50   el dedo toca ▶ en la reserva (48 %)
+   50–53   la reserva se abre (celeste), «Ocupada», se va el cartel y se prende la luz
+   53–90   corre el reloj de la mesa (0:00 → 0:07), aparecen las bolas y el chip
+   89–96   se limpia todo y la línea vuelve a las 19:45
+*/
+
+@keyframes esc-bs-r-bloque {
+  0%, 2% { transform: scale(0.6); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  5.5% { transform: scale(1.05); opacity: 1; }
+  7.5%, 89% { transform: scale(1); opacity: 1; }
+  92%, 100% { transform: scale(0.96); opacity: 0; }
+}
+@keyframes esc-bs-r-aro {
+  0%, 3.5% { transform: scale(0.95); opacity: 0; }
+  5% { opacity: 0.9; }
+  14%, 100% { transform: scale(1.3); opacity: 0; }
+}
+@keyframes esc-bs-r-aro2 {
+  0%, 49.5% { transform: scale(0.95); opacity: 0; }
+  51% { opacity: 0.9; }
+  60%, 100% { transform: scale(1.3); opacity: 0; }
+}
+@keyframes esc-bs-r-abierta {
+  0%, 50% { opacity: 0; }
+  52.5%, 92% { opacity: 1; }
+  92.1%, 100% { opacity: 0; }
+}
+@keyframes esc-bs-r-libre {
+  0%, 3% { opacity: 1; }
+  5.5%, 90% { opacity: 0; }
+  93%, 100% { opacity: 1; }
+}
+@keyframes esc-bs-r-reserv {
+  0%, 3% { opacity: 0; }
+  5.5%, 50% { opacity: 1; }
+  52.5%, 100% { opacity: 0; }
+}
+@keyframes esc-bs-r-ocu {
+  0%, 50% { opacity: 0; }
+  52.5%, 89% { opacity: 1; }
+  92%, 100% { opacity: 0; }
+}
+@keyframes esc-bs-r-ahora {
+  0%, 12% { transform: translateX(0); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  47%, 89% { transform: translateX(var(--dx)); opacity: 1; }
+  91% { transform: translateX(var(--dx)); opacity: 0; }
+  92% { transform: translateX(0); opacity: 0; }
+  95%, 100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes esc-bs-r-h1 {
+  0%, 46% { opacity: 1; }
+  47.5%, 90% { opacity: 0; }
+  93%, 100% { opacity: 1; }
+}
+@keyframes esc-bs-r-h2 {
+  0%, 46% { opacity: 0; }
+  47.5%, 90% { opacity: 1; }
+  93%, 100% { opacity: 0; }
+}
+@keyframes esc-bs-r-dedo {
+  0%, 40% { transform: translate(12px, 16px) scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  45% { transform: translate(0, 0) scale(1); opacity: 1; }
+  47% { transform: translate(0, 0) scale(1); opacity: 1; }
+  48% { transform: translate(0, 0) scale(0.82); opacity: 1; }
+  50% { transform: translate(0, 0) scale(1); opacity: 1; }
+  55%, 100% { transform: translate(8px, 12px) scale(1); opacity: 0; }
+}
+/* reloj de la mesa abierta: 8 valores (0:00 → 0:07) entre 53 % y 90 % */
+@keyframes esc-bs-r-reloj {
+  0%, 53% { transform: translateY(0); animation-timing-function: steps(7, end); }
+  90%, 92% { transform: translateY(calc(var(--paso) * -7)); }
+  92.1%, 100% { transform: translateY(0); }
+}
+@keyframes esc-bs-r-cartel {
+  0%, 3% { transform: translateY(-9px); opacity: 0; animation-timing-function: cubic-bezier(0.55, 0, 0.78, 0.45); }
+  6.5% { transform: translateY(0.6px); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  8%, 50% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  55%, 100% { transform: translateY(-8px); opacity: 0; }
+}
+@keyframes esc-bs-r-luz {
+  0%, 51% { opacity: 0; }
+  53%, 89% { opacity: 1; }
+  92%, 100% { opacity: 0; }
+}
+@keyframes esc-bs-r-foco {
+  0%, 51% { opacity: 0.35; }
+  53%, 89% { opacity: 1; }
+  92%, 100% { opacity: 0.35; }
+}
+@keyframes esc-bs-r-bolas {
+  0%, 53% { transform: scale(0.7); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  57%, 89% { transform: scale(1); opacity: 1; }
+  92%, 100% { transform: scale(1); opacity: 0; }
+}
+@keyframes esc-bs-r-chip {
+  0%, 53% { transform: translateY(4px) scale(0.9); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  57% { transform: translateY(0) scale(1.04); opacity: 1; }
+  59%, 88% { transform: translateY(0) scale(1); opacity: 1; }
+  92%, 100% { transform: translateY(-3px) scale(0.96); opacity: 0; }
+}
+
+.escena .esc-bs-r-bloque { animation: esc-bs-r-bloque 6.5s infinite; }
+.escena .esc-bs-r-aro { animation: esc-bs-r-aro 6.5s ease-out infinite; }
+.escena .esc-bs-r-aro2 { animation: esc-bs-r-aro2 6.5s ease-out infinite; }
+.escena .esc-bs-r-abierta { animation: esc-bs-r-abierta 6.5s ease-in-out infinite; }
+.escena .esc-bs-r-libre { opacity: 0; animation: esc-bs-r-libre 6.5s ease-in-out infinite; }
+.escena .esc-bs-r-reserv { animation: esc-bs-r-reserv 6.5s ease-in-out infinite; }
+.escena .esc-bs-r-ocu { animation: esc-bs-r-ocu 6.5s ease-in-out infinite; }
+.escena .esc-bs-r-ahora { animation: esc-bs-r-ahora 6.5s infinite; }
+.escena .esc-bs-r-h1 { animation: esc-bs-r-h1 6.5s ease-in-out infinite; }
+.escena .esc-bs-r-h2 { animation: esc-bs-r-h2 6.5s ease-in-out infinite; }
+.escena .esc-bs-r-dedo { animation: esc-bs-r-dedo 6.5s infinite; }
+.escena .esc-bs-r-reloj { animation: esc-bs-r-reloj 6.5s infinite; }
+.escena .esc-bs-r-cartel { animation: esc-bs-r-cartel 6.5s infinite; }
+.escena .esc-bs-r-luz { animation: esc-bs-r-luz 6.5s ease-in-out infinite; }
+.escena .esc-bs-r-foco { animation: esc-bs-r-foco 6.5s ease-in-out infinite; }
+.escena .esc-bs-r-bolas { animation: esc-bs-r-bolas 6.5s infinite; }
+.escena .esc-bs-r-chip { animation: esc-bs-r-chip 6.5s infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  3 · LA TELE DEL SALÓN                                              */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (% del ciclo): la cuenta de la Mesa 3 baja de 0:09 a 0:00 entre 0 % y 60 %
+  (un minuto cada 6,67 %). Con 0:05 (26,7 %) la casilla parpadea en ámbar; a 60 % pasa
+  a «Tiempo cumplido» con dos destellos; a 93–94,5 % la casilla roja se va rápido (un
+  fundido largo mezclaría los dos textos) y vuelve a empezar: escondida debajo, la cuenta
+  ya saltó a 0:09.
+*/
+
+@keyframes esc-bs-p-cuenta {
+  0% { transform: translateY(0); animation-timing-function: steps(9, end); }
+  60%, 91% { transform: translateY(calc(var(--paso) * -9)); }
+  91.1%, 100% { transform: translateY(0); }
+}
+@keyframes esc-bs-p-ambar {
+  0%, 26.5% { opacity: 0; }
+  27.3%, 30% { opacity: 1; }
+  31%, 33.3% { opacity: 0.15; }
+  34.3%, 36.7% { opacity: 1; }
+  37.7%, 40% { opacity: 0.15; }
+  41%, 43.3% { opacity: 1; }
+  44.3%, 46.7% { opacity: 0.15; }
+  47.7%, 50% { opacity: 1; }
+  51%, 53.3% { opacity: 0.15; }
+  54.3%, 61% { opacity: 1; }
+  62%, 100% { opacity: 0; }
+}
+@keyframes esc-bs-p-cumplido {
+  0%, 59.6% { transform: scale(0.94); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  61.5% { transform: scale(1.04); opacity: 1; }
+  63%, 93% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  94.5% { transform: scale(0.96); opacity: 0; }
+  100% { transform: scale(0.94); opacity: 0; }
+}
+@keyframes esc-bs-p-aro {
+  0%, 60.5% { transform: scale(0.96); opacity: 0; }
+  61.5% { transform: scale(1); opacity: 0.95; }
+  70% { transform: scale(1.16); opacity: 0; }
+  72.5% { transform: scale(0.96); opacity: 0; }
+  73.5% { transform: scale(1); opacity: 0.8; }
+  82%, 100% { transform: scale(1.16); opacity: 0; }
+}
+
+.escena .esc-bs-p-cuenta { animation: esc-bs-p-cuenta 6.5s infinite; }
+.escena .esc-bs-p-ambar { animation: esc-bs-p-ambar 6.5s ease-in-out infinite; }
+.escena .esc-bs-p-cumplido { animation: esc-bs-p-cumplido 6.5s infinite; }
+.escena .esc-bs-p-aro { animation: esc-bs-p-aro 6.5s ease-out infinite; }

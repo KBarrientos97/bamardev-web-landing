@@ -1,0 +1,332 @@
+/*
+  Keyframes propios de las escenas de la heladería (`esc-hela-*`) y de la
+  juguería (`esc-jugo-*`), en EscenasHeladeriaJugueria.tsx. Sólo transform y
+  opacity. Todo vive dentro de `.escena`, así que las pausas fuera de pantalla
+  y "reducir movimiento" ya vienen de index.css.
+  Ojo: `.escena svg *` fija transform-origin al centro (especificidad 0,1,1);
+  las clases que necesitan otro pivote se escriben como `.escena .clase`.
+
+  Ciclo maestro: 6,5 s, igual que el aviso (esc-chip), que asoma al 10 %. El
+  remate de cada historia cae justo antes. Cada keyframe termina con el mismo
+  valor con que empieza: el bucle no da tirón.
+*/
+
+/* ================================ HELADERÍA ================================ */
+
+@keyframes esc-hela-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-hela-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+
+/*
+  La cuchara, relativa a su vaso de agua (el pivote es el centro de la bola: el
+  <rect> invisible centra la caja ahí, así que girar no mueve la bocha):
+  0 %      sobre el cono, recién volcada: la bocha ya cayó
+  4–20 %   vuelve en arco a su vaso y se mete en el agua
+  20–58 %  descansa
+  58–68 %  sale y se mete por atrás en la bandeja de frutilla
+  68–76 %  raspa el helado y arma la bocha (crece en esc-hela-bola)
+  76–94 %  sube y viaja en arco hasta arriba del cono
+  94–100 % se vuelca y suelta la bocha (el relevo a esc-hela-bocha2 es al 98,5 %)
+*/
+@keyframes esc-hela-cuchara {
+  0% { transform: translate(36px, -28px) rotate(-60deg); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  4% { transform: translate(26px, -36px) rotate(-25deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  14% { transform: translate(6px, -16px) rotate(0deg); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  20%, 58% { transform: translate(0, 0) rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  62% { transform: translate(-6px, -16px) rotate(-8deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  67% { transform: translate(-46px, 18px) rotate(14deg); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  70% { transform: translate(-50px, 25px) rotate(22deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  76% { transform: translate(-42px, 23px) rotate(-12deg); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  80% { transform: translate(-38px, -2px) rotate(-6deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  89% { transform: translate(20px, -35px) rotate(4deg); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  94% { transform: translate(36px, -28px) rotate(0deg); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  99%, 100% { transform: translate(36px, -28px) rotate(-60deg); }
+}
+/* la bocha en la cuchara: se arma raspando y se va (el relevo es invisible) */
+@keyframes esc-hela-bola {
+  0%, 69% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(0.3); opacity: 1; }
+  76% { transform: scale(1); opacity: 1; }
+  98.4% { transform: scale(1); opacity: 1; }
+  98.6% { transform: scale(1); opacity: 0; }
+  99.5%, 100% { transform: scale(0); opacity: 0; }
+}
+/* la bocha de frutilla en el cono: cae de la cuchara, se aplasta y se asienta */
+@keyframes esc-hela-bocha2 {
+  0% { transform: translateY(-6px) scale(0.96); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  3% { transform: translateY(0) scale(1.1, 0.86); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  6% { transform: translateY(0) scale(0.96, 1.05); opacity: 1; }
+  9%, 32% { transform: translateY(0) scale(1); opacity: 1; }
+  33%, 98.4% { transform: translateY(-6px) scale(0.96); opacity: 0; }
+  98.6%, 100% { transform: translateY(-6px) scale(0.96); opacity: 1; }
+}
+/* el cono entero recibe la bocha: se aplasta y rebota (pivote en la punta) */
+@keyframes esc-hela-rebote {
+  0%, 2.5%, 100% { transform: scale(1, 1); }
+  4.5% { transform: scale(1.08, 0.92); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  7.5% { transform: scale(0.97, 1.04); }
+  10.5% { transform: scale(1, 1); }
+}
+/*
+  El cono que se vende:
+  0–24 %   servido en el portaconos
+  24–28 %  lo levantan del aro
+  28–33 %  se lo llevan a la derecha y se desvanece
+  34–44 %  baja otro cono (con su bocha de menta) al portaconos
+*/
+@keyframes esc-hela-cono {
+  0%, 24% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  28% { transform: translate(2px, -9px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  33% { transform: translate(34px, -12px) scale(0.92); opacity: 0; }
+  34% { transform: translate(0, -14px) scale(0.9); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  44%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+/* las chispas de colores que llueven sobre la bocha nueva */
+@keyframes esc-hela-chispa {
+  0%, 1.5% { transform: translateY(-22px); opacity: 0; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  2.5% { transform: translateY(-18px); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  7%, 32% { transform: translateY(0); opacity: 1; }
+  33%, 100% { transform: translateY(-22px); opacity: 0; }
+}
+/* aro de la venta en la base del cono */
+@keyframes esc-hela-aro {
+  0%, 3% { transform: scale(0.45); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  5% { transform: scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  21%, 100% { transform: scale(2); opacity: 0; }
+}
+/* destellos que saltan del cono */
+@keyframes esc-hela-destello {
+  0%, 4% { transform: scale(0) rotate(0deg); opacity: 0; }
+  8% { transform: scale(1) rotate(45deg); opacity: 1; }
+  17%, 100% { transform: scale(0.4) rotate(90deg); opacity: 0; }
+}
+/* el agua del vaso se mueve cuando entra la cuchara (20 %) y cuando sale (59 %) */
+@keyframes esc-hela-onda {
+  0%, 17% { transform: scale(0.4); opacity: 0; }
+  19% { transform: scale(0.7); opacity: 0.9; }
+  27% { transform: scale(1.5); opacity: 0; }
+  57% { transform: scale(0.4); opacity: 0; }
+  59% { transform: scale(0.7); opacity: 0.9; }
+  66%, 100% { transform: scale(1.5); opacity: 0; }
+}
+/* el brillo que cruza el vidrio y el letrero */
+@keyframes esc-hela-brillo {
+  0%, 40% { transform: translateX(0); opacity: 0; }
+  44% { opacity: 1; }
+  70% { transform: translateX(var(--d, 100px)); opacity: 1; }
+  74%, 100% { transform: translateX(var(--d, 100px)); opacity: 0; }
+}
+/* los copos de la escarcha titilan */
+@keyframes esc-hela-copo {
+  0%, 100% { opacity: 0.25; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 0.95; transform: scale(1.1) rotate(30deg); }
+}
+/* el frío que sube de la congeladora y de las bandejas */
+@keyframes esc-hela-frio {
+  0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  20% { opacity: 0.85; }
+  100% { transform: translate(var(--dx, 0), -26px) scale(1.25); opacity: 0; }
+}
+@keyframes esc-hela-vaho {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  30% { opacity: 0.55; }
+  100% { transform: translate(var(--dx, 0), -10px) scale(1.4); opacity: 0; }
+}
+
+.esc-hela-flota { animation: esc-hela-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-hela-sombra { animation: esc-hela-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-hela-cuchara { animation: esc-hela-cuchara 6.5s infinite; }
+.esc-hela-bola { animation: esc-hela-bola 6.5s linear infinite; }
+.escena .esc-hela-bocha2 { animation: esc-hela-bocha2 6.5s infinite; transform-origin: 50% 100%; }
+.escena .esc-hela-rebote { animation: esc-hela-rebote 6.5s infinite; transform-origin: 50% 100%; }
+.esc-hela-cono { animation: esc-hela-cono 6.5s infinite; }
+.esc-hela-chispa { animation: esc-hela-chispa 6.5s infinite; }
+.esc-hela-aro { animation: esc-hela-aro 6.5s infinite; }
+.esc-hela-destello { animation: esc-hela-destello 6.5s infinite; }
+.esc-hela-onda { animation: esc-hela-onda 6.5s ease-out infinite; }
+.esc-hela-brillo { animation: esc-hela-brillo 6.5s ease-in-out infinite; }
+.esc-hela-copo { animation: esc-hela-copo 3.2s ease-in-out infinite; }
+.esc-hela-frio { animation: esc-hela-frio 3.4s ease-out infinite; }
+.esc-hela-vaho { animation: esc-hela-vaho 3.3s ease-out infinite; }
+
+/* ================================ JUGUERÍA ================================ */
+
+@keyframes esc-jugo-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-jugo-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+/* los plátanos colgados y la rodaja del letrero se mecen */
+@keyframes esc-jugo-mece {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+@keyframes esc-jugo-rodaja {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(8deg); }
+}
+
+/*
+  La licuadora:
+  44–47 %  se levanta la tapa
+  46–55 %  caen las tres frutillas (cada una con su retraso)
+  57–60 %  vuelve la tapa
+  60–74 %  licúa: la jarra tiembla, gira el remolino y sube el jugo (las frutillas se deshacen)
+  75–80 %  la jarra se levanta y se inclina sobre el vaso
+  80–87 %  sirve: el chorro llena el vaso y la jarra se vacía
+  87–92 %  la jarra vuelve al motor
+*/
+@keyframes esc-jugo-tapa {
+  0%, 44% { transform: translate(0, 0) rotate(0deg); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  47%, 57% { transform: translate(-5px, -7px) rotate(-22deg); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  60% { transform: translate(0, 0) rotate(0deg); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  61.5% { transform: translate(0, -1px) rotate(0deg); }
+  63%, 100% { transform: translate(0, 0) rotate(0deg); }
+}
+@keyframes esc-jugo-cae {
+  0%, 45% { transform: translateY(-28px) scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  47% { transform: translateY(-24px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  52% { transform: translateY(0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  53.5% { transform: translateY(-2px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  55%, 61% { transform: translateY(0) scale(1); opacity: 1; }
+  66% { transform: translateY(0) scale(0.2); opacity: 0; }
+  70%, 100% { transform: translateY(-28px) scale(1); opacity: 0; }
+}
+/* la jarra: tiembla al licuar y se inclina para servir (pivote en su base, a la derecha) */
+@keyframes esc-jugo-jarra {
+  0%, 60% { transform: translate(0, 0) rotate(0deg); }
+  61% { transform: translate(0.7px, 0) rotate(1.2deg); }
+  62% { transform: translate(-0.7px, 0) rotate(-1.2deg); }
+  63% { transform: translate(0.7px, 0) rotate(1.2deg); }
+  64% { transform: translate(-0.7px, 0) rotate(-1.2deg); }
+  65% { transform: translate(0.7px, 0) rotate(1.2deg); }
+  66% { transform: translate(-0.7px, 0) rotate(-1.2deg); }
+  67% { transform: translate(0.7px, 0) rotate(1.2deg); }
+  68% { transform: translate(-0.7px, 0) rotate(-1.2deg); }
+  69% { transform: translate(0.7px, 0) rotate(1.2deg); }
+  70% { transform: translate(-0.7px, 0) rotate(-1.2deg); }
+  71% { transform: translate(0.7px, 0) rotate(1.2deg); }
+  72% { transform: translate(-0.7px, 0) rotate(-1.2deg); }
+  73% { transform: translate(0.7px, 0) rotate(1.2deg); }
+  74% { transform: translate(-0.7px, 0) rotate(-1.2deg); }
+  75% { transform: translate(0, 0) rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  80%, 87% { transform: translate(-3px, -15px) rotate(75deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  92%, 100% { transform: translate(0, 0) rotate(0deg); }
+}
+/* el jugo dentro de la jarra (pivote abajo) */
+@keyframes esc-jugo-nivel {
+  0%, 59% { transform: scaleY(0); }
+  61% { transform: scaleY(0.2); }
+  72%, 79% { transform: scaleY(1); }
+  84% { transform: scaleY(0.25); }
+  87%, 100% { transform: scaleY(0); }
+}
+@keyframes esc-jugo-remolino {
+  0%, 59% { opacity: 0; }
+  61%, 73% { opacity: 1; }
+  76%, 100% { opacity: 0; }
+}
+/* el remolino va y viene rápido (lo enciende y apaga esc-jugo-remolino) */
+@keyframes esc-jugo-giro {
+  0%, 100% { transform: translateX(-1.6px); }
+  50% { transform: translateX(1.6px); }
+}
+@keyframes esc-jugo-vibra {
+  0%, 59% { transform: scale(0.8); opacity: 0; }
+  61%, 73% { transform: scale(1); opacity: 1; }
+  75%, 100% { transform: scale(1.15); opacity: 0; }
+}
+/* el chorro de la jarra al vaso (pivote arriba) */
+@keyframes esc-jugo-chorro {
+  0%, 80% { transform: scaleY(0); opacity: 0; }
+  81.5%, 86.5% { transform: scaleY(1); opacity: 1; }
+  88.5%, 100% { transform: scaleY(0); opacity: 0; }
+}
+
+/*
+  El vaso que se vende (pivote en la base):
+  0–6 %    servido, se desliza por el mostrador hasta el cliente (se ladea al frenar)
+  6–22 %   espera; la mano entra a buscarlo
+  22–31 %  la mano lo levanta y se lo lleva
+  32–42 %  aparece un vaso vacío al lado de la licuadora
+  81–89 %  se llena (esc-jugo-lleno) y al 90–96 % le cae la pajita
+*/
+@keyframes esc-jugo-vaso {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  1.5% { transform: translate(4px, 0) rotate(-5deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1); }
+  6% { transform: translate(46px, 0) rotate(5deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  8% { transform: translate(46px, 0) rotate(-2deg) scale(1); opacity: 1; }
+  10%, 22% { transform: translate(46px, 0) rotate(0deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  24% { transform: translate(46px, -3px) rotate(0deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  31% { transform: translate(150px, -5px) rotate(0deg) scale(1); opacity: 1; }
+  31.5% { transform: translate(150px, -5px) rotate(0deg) scale(1); opacity: 0; }
+  32% { transform: translate(0, 4px) rotate(0deg) scale(0.6); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  42%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+}
+@keyframes esc-jugo-lleno {
+  0%, 30% { transform: scaleY(1); }
+  31%, 81% { transform: scaleY(0); }
+  89%, 100% { transform: scaleY(1); }
+}
+@keyframes esc-jugo-pajita {
+  0%, 30% { transform: translateY(0); opacity: 1; }
+  31%, 89% { transform: translateY(-14px); opacity: 0; }
+  90% { transform: translateY(-14px); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  93% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  94.5% { transform: translateY(-1.5px); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  96%, 100% { transform: translateY(0); opacity: 1; }
+}
+/* la mano del cliente: entra, agarra el vaso y se lo lleva (sale por la derecha) */
+@keyframes esc-jugo-mano {
+  0%, 12% { transform: translate(110px, 0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  19%, 22% { transform: translate(0, 0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  24% { transform: translate(0, -3px); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  31% { transform: translate(104px, -5px); }
+  32%, 100% { transform: translate(110px, 0); }
+}
+/* aro de la venta donde frena el vaso */
+@keyframes esc-jugo-aro {
+  0%, 5% { transform: scale(0.45); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  7% { transform: scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  23%, 100% { transform: scale(2); opacity: 0; }
+}
+@keyframes esc-jugo-destello {
+  0%, 5.5% { transform: scale(0) rotate(0deg); opacity: 0; }
+  9.5% { transform: scale(1) rotate(45deg); opacity: 1; }
+  18%, 100% { transform: scale(0.4) rotate(90deg); opacity: 0; }
+}
+/* el brillo que cruza el letrero */
+@keyframes esc-jugo-brillo {
+  0%, 40% { transform: translateX(0); opacity: 0; }
+  44% { opacity: 1; }
+  70% { transform: translateX(var(--d, 100px)); opacity: 1; }
+  74%, 100% { transform: translateX(var(--d, 100px)); opacity: 0; }
+}
+
+.esc-jugo-flota { animation: esc-jugo-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-jugo-sombra { animation: esc-jugo-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.escena .esc-jugo-mece { animation: esc-jugo-mece 3.6s ease-in-out infinite; transform-origin: 50% 0%; }
+.esc-jugo-rodaja { animation: esc-jugo-rodaja 4.2s ease-in-out infinite; }
+.escena .esc-jugo-tapa { animation: esc-jugo-tapa 6.5s infinite; transform-origin: 0% 100%; }
+.esc-jugo-cae { animation: esc-jugo-cae 6.5s infinite; }
+.escena .esc-jugo-jarra { animation: esc-jugo-jarra 6.5s linear infinite; transform-origin: 100% 100%; }
+.escena .esc-jugo-nivel { animation: esc-jugo-nivel 6.5s ease-in-out infinite; transform-origin: 50% 100%; }
+.esc-jugo-remolino { animation: esc-jugo-remolino 6.5s infinite; }
+.esc-jugo-giro { animation: esc-jugo-giro 0.34s ease-in-out infinite; }
+.esc-jugo-vibra { animation: esc-jugo-vibra 6.5s infinite; }
+.escena .esc-jugo-chorro { animation: esc-jugo-chorro 6.5s infinite; transform-origin: 50% 0%; }
+.escena .esc-jugo-vaso { animation: esc-jugo-vaso 6.5s infinite; transform-origin: 50% 100%; }
+.escena .esc-jugo-lleno { animation: esc-jugo-lleno 6.5s ease-in-out infinite; transform-origin: 50% 100%; }
+.esc-jugo-pajita { animation: esc-jugo-pajita 6.5s infinite; }
+.esc-jugo-mano { animation: esc-jugo-mano 6.5s infinite; }
+.esc-jugo-aro { animation: esc-jugo-aro 6.5s infinite; }
+.esc-jugo-destello { animation: esc-jugo-destello 6.5s infinite; }
+.esc-jugo-brillo { animation: esc-jugo-brillo 6.5s ease-in-out infinite; }

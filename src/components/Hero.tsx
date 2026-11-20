@@ -90,6 +90,7 @@ const NEGOCIOS = [
   'ferreterías',
   'minimarkets',
   'billares',
+  'licorerías',
   'peluquerías',
   'barberías',
   'spas',
@@ -158,7 +159,7 @@ export function Hero() {
 
           <m.h1
             variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
-            aria-label="El sistema que maneja todo tu negocio, stock al día, venta rápida y caja sin fugas, para restaurantes, farmacias, ferreterías, minimarkets, billares, peluquerías, barberías, spas y academias."
+            aria-label="El sistema que maneja todo tu negocio, stock al día, venta rápida y caja sin fugas, para restaurantes, farmacias, ferreterías, minimarkets, billares, licorerías, peluquerías, barberías, spas y academias."
             className="mt-6 font-extrabold tracking-tight"
           >
             <span aria-hidden>

@@ -1,0 +1,109 @@
+/*
+  Keyframes propios de la escena de la licorería (EscenasLicoreria.tsx).
+  Sólo transform y opacity. Todo vive dentro de `.escena`, así que las pausas
+  fuera de pantalla y "reducir movimiento" ya vienen de index.css.
+  Ojo: `.escena svg *` fija transform-origin al centro (especificidad 0,1,1);
+  las clases que necesitan otro pivote se escriben como `.escena .clase`.
+
+  Ciclo maestro: 6,5 s, igual que el aviso (esc-chip), que asoma al 10 %. La
+  botella cae en la bolsa justo antes (0 %) y la bolsa salta entre el 4 % y el
+  10 %: el aviso de la venta llega con el salto. Cada keyframe termina con el
+  mismo valor con que empieza: el bucle no da tirón.
+*/
+
+/* respiración del conjunto (2 px) y de su sombra de contacto */
+@keyframes esc-licor-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-licor-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+
+/*
+  La botella que se vende, relativa a su lugar en el estante (x en una capa, y en otra,
+  para que el recorrido sea una parábola sin tocar `d`):
+  0–14 %   asomada en la bolsa (cayó al final del ciclo anterior)
+  14–22 %  se hunde en la bolsa y se desvanece: ya se cobró
+  24 %     vuelve al estante, invisible
+  26–34 %  aparece en su lugar (la repone el estante)
+  76–80 %  anticipación: se levanta apenas
+  80–98 %  arco hasta la bolsa: sube, gira un poco y cae
+*/
+@keyframes esc-licor-vuelo-x {
+  0%, 23% { transform: translateX(58px); }
+  24%, 80% { transform: translateX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  98%, 100% { transform: translateX(58px); }
+}
+@keyframes esc-licor-vuelo-y {
+  0%, 14% { transform: translateY(28px) rotate(0deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  22% { transform: translateY(40px) rotate(0deg) scale(1); opacity: 0; }
+  24% { transform: translateY(0) rotate(0deg) scale(0.7); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  34% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  76% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  80% { transform: translateY(-3px) rotate(-4deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  89% { transform: translateY(-16px) rotate(-14deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  98% { transform: translateY(28px) rotate(6deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  100% { transform: translateY(28px) rotate(0deg) scale(1); opacity: 1; }
+}
+
+/* la bolsa recibe la botella: se aplasta y rebota (pivote en la base) */
+@keyframes esc-licor-bolsa {
+  0%, 100% { transform: scale(1, 1); }
+  3% { transform: scale(1.08, 0.9); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  7% { transform: scale(0.97, 1.04); }
+  10% { transform: scale(1, 1); }
+}
+/* aro de la venta sobre la bolsa */
+@keyframes esc-licor-aro {
+  0%, 2% { transform: scale(0.45); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  4% { transform: scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  20%, 100% { transform: scale(2); opacity: 0; }
+}
+/* destellos que saltan de la bolsa */
+@keyframes esc-licor-chispa {
+  0%, 3% { transform: scale(0) rotate(0deg); opacity: 0; }
+  7% { transform: scale(1) rotate(45deg); opacity: 1; }
+  16%, 100% { transform: scale(0.4) rotate(90deg); opacity: 0; }
+}
+
+/* el brillo que recorre el vidrio de las botellas y de la heladera */
+@keyframes esc-licor-brillo {
+  0%, 40% { transform: translateX(0); opacity: 0; }
+  44% { opacity: 1; }
+  70% { transform: translateX(var(--d, 100px)); opacity: 1; }
+  74%, 100% { transform: translateX(var(--d, 100px)); opacity: 0; }
+}
+
+/* el letrero de neón: encendido, con un parpadeo corto de vez en cuando */
+@keyframes esc-licor-neon {
+  0%, 52%, 58%, 100% { opacity: 1; }
+  54% { opacity: 0.35; }
+  56% { opacity: 0.85; }
+  57% { opacity: 0.45; }
+}
+@keyframes esc-licor-halo {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.85; }
+}
+
+/* el frío que sale de la heladera */
+@keyframes esc-licor-frio {
+  0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  20% { opacity: 0.9; }
+  100% { transform: translate(var(--dx, 0), -30px) scale(1.2); opacity: 0; }
+}
+
+.esc-licor-flota { animation: esc-licor-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-licor-sombra { animation: esc-licor-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-licor-vuelo-x { animation: esc-licor-vuelo-x 6.5s infinite; }
+.esc-licor-vuelo-y { animation: esc-licor-vuelo-y 6.5s infinite; }
+.escena .esc-licor-vuelo-y { transform-origin: 50% 100%; }
+.escena .esc-licor-bolsa { animation: esc-licor-bolsa 6.5s infinite; transform-origin: 50% 100%; }
+.esc-licor-aro { animation: esc-licor-aro 6.5s infinite; }
+.esc-licor-chispa { animation: esc-licor-chispa 6.5s infinite; }
+.esc-licor-brillo { animation: esc-licor-brillo 6.5s ease-in-out infinite; }
+.esc-licor-neon { animation: esc-licor-neon 6.5s steps(1, end) infinite; }
+.esc-licor-halo { animation: esc-licor-halo 3.2s ease-in-out infinite; }
+.esc-licor-frio { animation: esc-licor-frio 3.4s ease-out infinite; }
