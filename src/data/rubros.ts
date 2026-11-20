@@ -439,7 +439,8 @@ export const RUBROS: RubroLanding[] = [
     ],
     quienEscribe: 'tengo una ferretería o casa de repuestos',
     escena: 'ferreteria',
-    enInicio: true,
+    // Fuera de la home desde el 20-nov (dueño): con 6 tarjetas la grilla de
+    // escritorio queda pareja (2 filas de 3). Sigue en /rubros.
     funciones: ['venta', 'peso', 'encargos', 'inventario', 'fiado', 'sucursales', 'catalogoweb', 'reportes', 'roles'],
     extras: ['kg', 'sucursales', 'qr', 'pagina'],
   },
