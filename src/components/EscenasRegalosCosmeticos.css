@@ -1,0 +1,393 @@
+/*
+  Keyframes propios de las escenas de la tienda de regalos y de la perfumería
+  (EscenasRegalosCosmeticos.tsx). Sólo transform y opacity. Todo vive dentro de
+  `.escena`, así que las pausas fuera de pantalla y "reducir movimiento" ya
+  vienen de index.css.
+  Ojo: `.escena svg *` fija transform-origin al centro (especificidad 0,1,1);
+  las clases que necesitan otro pivote se escriben como `.escena .clase`.
+
+  Ciclo maestro de las dos: 6,5 s, igual que el aviso (esc-chip), que asoma al
+  10 %. El remate de cada historia cae justo antes (90–100 %) y el salto de la
+  venta entre el 0 % y el 10 %: el aviso llega con él. Cada keyframe termina con
+  el mismo valor con que empieza: el bucle no da tirón.
+*/
+
+/* ===================== Tienda de regalos ===================== */
+
+@keyframes esc-reg-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-reg-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+
+/*
+  La caja del mostrador, entera (con lo que tenga adentro):
+  0–12 %   el regalo envuelto, recién vendido
+  12–19 %  se lo llevan: sube y se desvanece
+  22–28 %  aparece la caja vacía, con la tapa apoyada al costado
+*/
+@keyframes esc-reg-caja {
+  0%, 12% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  19% { transform: translateY(-7px); opacity: 0; }
+  20%, 22% { transform: translateY(0); opacity: 0; animation-timing-function: ease-out; }
+  28%, 100% { transform: translateY(0); opacity: 1; }
+}
+
+/*
+  El osito, relativo a su lugar dentro de la caja (x en una capa, y en otra):
+  22–28 %  aparece en la repisa (17 px a la izquierda, 14 px más arriba)
+  30–36 %  salta en arco a la caja y se acomoda (se aplasta y rebota)
+  57 %     la tapa lo tapa: desaparece y vuelve a la repisa, invisible
+*/
+@keyframes esc-reg-osito-x {
+  0%, 30% { transform: translateX(-17px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  36%, 57% { transform: translateX(0); }
+  57.5%, 100% { transform: translateX(-17px); }
+}
+@keyframes esc-reg-osito-y {
+  0%, 22% { transform: translateY(-14px) scale(1, 1); opacity: 0; animation-timing-function: ease-out; }
+  28%, 30% { transform: translateY(-14px) scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  32.5% { transform: translateY(-21px) scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  36% { transform: translateY(0) scale(1, 1); opacity: 1; }
+  37.5% { transform: translateY(0) scale(1.12, 0.86); opacity: 1; }
+  39.5% { transform: translateY(0) scale(0.96, 1.05); opacity: 1; }
+  41%, 56.5% { transform: translateY(0) scale(1, 1); opacity: 1; }
+  57% { transform: translateY(0) scale(1, 1); opacity: 0; }
+  57.5%, 100% { transform: translateY(-14px) scale(1, 1); opacity: 0; }
+}
+.escena .esc-reg-osito-y { transform-origin: 50% 100%; }
+
+/*
+  La tarjeta, relativa a su lugar dentro de la caja: sale del exhibidor
+  (122 px a la izquierda, 25 px más abajo) al 39 %, vuela en arco y cae al 50 %.
+*/
+@keyframes esc-reg-tarjeta-x {
+  0%, 41% { transform: translateX(-122px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  50%, 57% { transform: translateX(0); }
+  57.5%, 100% { transform: translateX(-122px); }
+}
+@keyframes esc-reg-tarjeta-y {
+  0%, 38% { transform: translateY(25.5px) rotate(0deg); opacity: 0; }
+  39% { transform: translateY(25.5px) rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  41% { transform: translateY(20px) rotate(-8deg); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  45.5% { transform: translateY(-14px) rotate(-24deg); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  50% { transform: translateY(0) rotate(4deg); opacity: 1; }
+  51.5% { transform: translateY(-1px) rotate(0deg); opacity: 1; }
+  53%, 56.5% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  57% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  57.5%, 100% { transform: translateY(25.5px) rotate(0deg); opacity: 0; }
+}
+
+/* la tapa: apoyada al costado mientras se llena la caja; se levanta y cierra al 57 % */
+@keyframes esc-reg-tapa {
+  0%, 20% { transform: translate(0, 0) rotate(0deg); }
+  20.5%, 50% { transform: translate(17px, 9px) rotate(78deg); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  53.5% { transform: translate(7px, -10px) rotate(18deg); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  57% { transform: translate(0, 0) rotate(0deg); }
+  58.5% { transform: translate(0, -1px) rotate(0deg); }
+  60%, 100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* el rollo gira mientras suelta papel (las rayitas bajan un múltiplo de su paso) */
+@keyframes esc-reg-rueda {
+  0%, 57% { transform: translateY(0); }
+  70% { transform: translateY(-12px); }
+  70.1%, 100% { transform: translateY(0); }
+}
+/* la tira de papel sale del rollo hasta la caja y se corta cuando ya la envolvió */
+@keyframes esc-reg-tira {
+  0%, 57% { transform: scaleX(0); opacity: 0; }
+  57.5% { transform: scaleX(0); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  63%, 70% { transform: scaleX(1); opacity: 1; }
+  72% { transform: scaleX(1); opacity: 0; }
+  72.5%, 100% { transform: scaleX(0); opacity: 0; }
+}
+.escena .esc-reg-tira { transform-origin: 0% 50%; }
+/* el papel sube desde la tabla y cubre la caja */
+@keyframes esc-reg-papel {
+  0%, 19% { transform: scaleY(1); }
+  20%, 62% { transform: scaleY(0); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  69%, 100% { transform: scaleY(1); }
+}
+.escena .esc-reg-papel { transform-origin: 50% 100%; }
+/* la cinta: primero la vertical (de arriba abajo), después la horizontal (desde el centro) */
+@keyframes esc-reg-cinta-v {
+  0%, 19% { transform: scaleY(1); }
+  20%, 69% { transform: scaleY(0); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  73%, 100% { transform: scaleY(1); }
+}
+.escena .esc-reg-cinta-v { transform-origin: 50% 0%; }
+@keyframes esc-reg-cinta-h {
+  0%, 19% { transform: scaleX(1); }
+  20%, 71% { transform: scaleX(0); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  75%, 100% { transform: scaleX(1); }
+}
+/* el moño cae desde arriba, se aplasta y rebota (pivote en el nudo) */
+@keyframes esc-reg-mono {
+  0%, 19% { transform: translateY(0) scale(1, 1); opacity: 1; }
+  20%, 78% { transform: translateY(-26px) scale(1, 1); opacity: 0; }
+  79% { transform: translateY(-26px) scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  84% { transform: translateY(0) scale(1, 1); opacity: 1; }
+  85.5% { transform: translateY(0) scale(1.25, 0.75); opacity: 1; }
+  87.5% { transform: translateY(0) scale(0.92, 1.08); opacity: 1; }
+  89.5%, 100% { transform: translateY(0) scale(1, 1); opacity: 1; }
+}
+.escena .esc-reg-mono { transform-origin: 50% 100%; }
+/* la caja acusa el golpe del moño */
+@keyframes esc-reg-golpe {
+  0%, 84% { transform: scale(1, 1); }
+  85.5% { transform: scale(1.03, 0.96); }
+  88%, 100% { transform: scale(1, 1); }
+}
+.escena .esc-reg-golpe { transform-origin: 50% 100%; }
+
+/*
+  El globo-corazón: se infla sobre el moño (88–91 %), se suelta y sube hacia la
+  esquina del aviso; al 8 % ya se fue y al 10 % asoma el aviso.
+*/
+@keyframes esc-reg-globo {
+  0% { transform: translate(26px, -60px) rotate(8deg); opacity: 1; }
+  8% { transform: translate(34px, -92px) rotate(12deg); opacity: 0; }
+  8.5%, 88% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  88.5% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  91% { transform: translate(0, 0) rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.7); }
+  100% { transform: translate(26px, -60px) rotate(8deg); opacity: 1; }
+}
+.escena .esc-reg-globo { transform-origin: 50% 100%; }
+@keyframes esc-reg-inflar {
+  0%, 8% { transform: scale(1); }
+  8.5%, 88% { transform: scale(0.15); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  91%, 100% { transform: scale(1); }
+}
+.escena .esc-reg-inflar { transform-origin: 50% 100%; }
+
+/* la venta: aro y destellos sobre la caja */
+@keyframes esc-reg-aro {
+  0%, 2% { transform: scale(0.45); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  4% { transform: scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  20%, 100% { transform: scale(2); opacity: 0; }
+}
+@keyframes esc-reg-chispa {
+  0%, 3% { transform: scale(0) rotate(0deg); opacity: 0; }
+  7% { transform: scale(1) rotate(45deg); opacity: 1; }
+  16%, 100% { transform: scale(0.4) rotate(90deg); opacity: 0; }
+}
+
+/* ambiente: el exhibidor que gira, los globos que se mecen, los foquitos y el vidrio */
+@keyframes esc-reg-gira {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(28px); }
+}
+@keyframes esc-reg-racimo {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
+}
+@keyframes esc-reg-globo-b {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.6px); }
+}
+@keyframes esc-reg-corazon {
+  0%, 100% { transform: rotate(-5deg) translateY(0); }
+  50% { transform: rotate(4deg) translateY(-1.4px); }
+}
+@keyframes esc-reg-foco {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.6; }
+}
+@keyframes esc-reg-brillo {
+  0%, 40% { transform: translateX(0); opacity: 0; }
+  44% { opacity: 1; }
+  70% { transform: translateX(var(--d, 100px)); opacity: 1; }
+  74%, 100% { transform: translateX(var(--d, 100px)); opacity: 0; }
+}
+@keyframes esc-reg-destello {
+  0%, 60%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+  75% { transform: scale(1.2) rotate(45deg); opacity: 1; }
+  90% { transform: scale(0.2) rotate(90deg); opacity: 0; }
+}
+
+.esc-reg-flota { animation: esc-reg-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-reg-sombra { animation: esc-reg-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-reg-caja { animation: esc-reg-caja 6.5s infinite; }
+.esc-reg-osito-x { animation: esc-reg-osito-x 6.5s infinite; }
+.esc-reg-osito-y { animation: esc-reg-osito-y 6.5s infinite; }
+.esc-reg-tarjeta-x { animation: esc-reg-tarjeta-x 6.5s infinite; }
+.esc-reg-tarjeta-y { animation: esc-reg-tarjeta-y 6.5s infinite; }
+.esc-reg-tapa { animation: esc-reg-tapa 6.5s ease-in-out infinite; }
+.esc-reg-rueda { animation: esc-reg-rueda 6.5s linear infinite; }
+.esc-reg-tira { animation: esc-reg-tira 6.5s infinite; }
+.esc-reg-papel { animation: esc-reg-papel 6.5s infinite; }
+.esc-reg-cinta-v { animation: esc-reg-cinta-v 6.5s infinite; }
+.esc-reg-cinta-h { animation: esc-reg-cinta-h 6.5s infinite; }
+.esc-reg-mono { animation: esc-reg-mono 6.5s infinite; }
+.esc-reg-golpe { animation: esc-reg-golpe 6.5s ease-out infinite; }
+.esc-reg-globo { animation: esc-reg-globo 6.5s linear infinite; }
+.esc-reg-inflar { animation: esc-reg-inflar 6.5s infinite; }
+.esc-reg-aro { animation: esc-reg-aro 6.5s infinite; }
+.esc-reg-chispa { animation: esc-reg-chispa 6.5s infinite; }
+.esc-reg-gira { animation: esc-reg-gira 6.5s linear infinite; }
+.escena .esc-reg-racimo { animation: esc-reg-racimo 6.5s ease-in-out infinite; transform-origin: 50% 100%; }
+.esc-reg-globo-b { animation: esc-reg-globo-b 3.25s ease-in-out infinite; }
+.escena .esc-reg-corazon { animation: esc-reg-corazon 4.33s ease-in-out infinite; transform-origin: 50% 100%; }
+.esc-reg-foco { animation: esc-reg-foco 1.625s ease-in-out infinite; }
+.esc-reg-foco-b { animation: esc-reg-foco 1.625s ease-in-out -0.8125s infinite; }
+.esc-reg-brillo { animation: esc-reg-brillo 6.5s ease-in-out infinite; }
+.esc-reg-destello { animation: esc-reg-destello 3.25s ease-in-out infinite; }
+
+/* ===================== Cosméticos y perfumería ===================== */
+
+@keyframes esc-cos-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-cos-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+
+/*
+  El perfume, relativo a su lugar en el mostrador (x en una capa, y en otra):
+  0–12 %   dentro de la bolsita (48 px a la derecha, 2 px más arriba)
+  12–19 %  se llevan la bolsa: sube con ella y se desvanece
+  20–28 %  vuelve al mostrador, invisible, y aparece creciendo
+  30–61 %  la prueba: tapa afuera, tres disparos del atomizador, tapa adentro
+  66–70 %  anticipación: se inclina y se levanta apenas
+  70–96 %  arco hasta la bolsa: sube, gira y cae adentro
+*/
+@keyframes esc-cos-x {
+  0%, 19.9% { transform: translateX(48px); }
+  20%, 70% { transform: translateX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { transform: translateX(48px); }
+}
+@keyframes esc-cos-y {
+  0%, 12% { transform: translateY(-2px) rotate(0deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  19% { transform: translateY(-9px) rotate(0deg) scale(1); opacity: 0; }
+  20%, 22% { transform: translateY(0) rotate(0deg) scale(0.85); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  28%, 66% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  70% { transform: translateY(-3px) rotate(-6deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  83% { transform: translateY(-32px) rotate(-12deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  96% { transform: translateY(-2px) rotate(5deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  98%, 100% { transform: translateY(-2px) rotate(0deg) scale(1); opacity: 1; }
+}
+.escena .esc-cos-y { transform-origin: 50% 100%; }
+
+/* la tapa de cristal: sale (30–36 %), espera parada al costado y vuelve (56–61 %) */
+@keyframes esc-cos-tapa {
+  0%, 30% { transform: translate(0, 0) rotate(0deg); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  32% { transform: translate(0, -6px) rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  34% { transform: translate(9px, -3px) rotate(14deg); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  36% { transform: translate(15px, 18.6px) rotate(0deg); }
+  37% { transform: translate(15px, 18px) rotate(0deg); }
+  38%, 56% { transform: translate(15px, 18.6px) rotate(0deg); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  58.5% { transform: translate(6px, -8px) rotate(-10deg); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  61% { transform: translate(0, 0) rotate(0deg); }
+  62% { transform: translate(0, -0.8px) rotate(0deg); }
+  63%, 100% { transform: translate(0, 0) rotate(0deg); }
+}
+/* el botón del atomizador baja con cada disparo (38, 44 y 50 %) */
+@keyframes esc-cos-boton {
+  0%, 37%, 39.5%, 43%, 45.5%, 49%, 51.5%, 100% { transform: translateY(0); }
+  38%, 44%, 50% { transform: translateY(1.2px); }
+}
+/*
+  Un disparo de brillitos (al 38 %); los otros dos son el mismo con retraso
+  negativo (-6,11 s → 44 % y -5,72 s → 50 %). Cada brillito sale hacia su
+  --dx/--dy y se apaga.
+*/
+@keyframes esc-cos-brillito {
+  0%, 37.6% { transform: translate(0, 0) scale(0); opacity: 0; }
+  38.6% { transform: translate(calc(var(--dx) * 0.2), calc(var(--dy) * 0.2)) scale(1.15); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  43% { transform: translate(calc(var(--dx) * 0.8), calc(var(--dy) * 0.8)) scale(0.95); opacity: 1; animation-timing-function: ease-in; }
+  46% { transform: translate(var(--dx), var(--dy)) scale(0.4); opacity: 0; }
+  46.1%, 100% { transform: translate(0, 0) scale(0); opacity: 0; }
+}
+@keyframes esc-cos-niebla {
+  0%, 37.6% { transform: translate(0, 0) scale(0.2); opacity: 0; }
+  39% { transform: translate(-2px, -1px) scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  43% { transform: translate(-7px, -3.5px) scale(1.2); opacity: 0.6; }
+  47% { transform: translate(-10px, -5px) scale(1.5); opacity: 0; }
+  47.1%, 100% { transform: translate(0, 0) scale(0.2); opacity: 0; }
+}
+/* las ondas del aroma suben después de los disparos */
+@keyframes esc-cos-onda {
+  0%, 50% { transform: translateY(0); opacity: 0; }
+  54% { transform: translateY(-3px); opacity: 0.8; }
+  64% { transform: translateY(-11px); opacity: 0; }
+  64.1%, 100% { transform: translateY(0); opacity: 0; }
+}
+
+/*
+  La bolsita: recibe el perfume (se aplasta y rebota, pivote en la base), se la
+  llevan (12–19 %) y vuelve vacía (24–30 %).
+*/
+@keyframes esc-cos-bolsa {
+  0% { transform: translateY(0) scale(1, 1); opacity: 1; }
+  3% { transform: translateY(0) scale(1.08, 0.9); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  7% { transform: translateY(0) scale(0.97, 1.04); opacity: 1; }
+  10%, 12% { transform: translateY(0) scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  19% { transform: translateY(-7px) scale(1, 1); opacity: 0; }
+  20%, 24% { transform: translateY(0) scale(1, 1); opacity: 0; animation-timing-function: ease-out; }
+  30%, 100% { transform: translateY(0) scale(1, 1); opacity: 1; }
+}
+.escena .esc-cos-bolsa { transform-origin: 50% 100%; }
+
+/* la venta: aro y destellos sobre la bolsa */
+@keyframes esc-cos-aro {
+  0%, 2% { transform: scale(0.45); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  4% { transform: scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  20%, 100% { transform: scale(2); opacity: 0; }
+}
+@keyframes esc-cos-chispa {
+  0%, 3% { transform: scale(0) rotate(0deg); opacity: 0; }
+  7% { transform: scale(1) rotate(45deg); opacity: 1; }
+  16%, 100% { transform: scale(0.4) rotate(90deg); opacity: 0; }
+}
+
+/* ambiente: los foquitos del espejo, el brillo del espejo y del vidrio, los labiales y los destellos dorados */
+@keyframes esc-cos-foco {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+@keyframes esc-cos-espejo {
+  0%, 20% { transform: translateX(0); opacity: 0; }
+  24% { opacity: 1; }
+  44% { transform: translateX(var(--d, 60px)); opacity: 1; }
+  48%, 100% { transform: translateX(var(--d, 60px)); opacity: 0; }
+}
+@keyframes esc-cos-vidrio {
+  0%, 60% { transform: translateX(0); opacity: 0; }
+  64% { opacity: 1; }
+  88% { transform: translateX(var(--d, 100px)); opacity: 1; }
+  92%, 100% { transform: translateX(var(--d, 100px)); opacity: 0; }
+}
+@keyframes esc-cos-labial {
+  0%, 30%, 100% { transform: translateY(0); }
+  45%, 85% { transform: translateY(2.2px); }
+}
+@keyframes esc-cos-destello {
+  0%, 60%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+  75% { transform: scale(1.3) rotate(45deg); opacity: 1; }
+  90% { transform: scale(0.2) rotate(90deg); opacity: 0; }
+}
+
+.esc-cos-flota { animation: esc-cos-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-cos-sombra { animation: esc-cos-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-cos-x { animation: esc-cos-x 6.5s infinite; }
+.esc-cos-y { animation: esc-cos-y 6.5s infinite; }
+.esc-cos-tapa { animation: esc-cos-tapa 6.5s infinite; }
+.esc-cos-boton { animation: esc-cos-boton 6.5s ease-in-out infinite; }
+.esc-cos-brillito { animation: esc-cos-brillito 6.5s infinite; }
+.esc-cos-niebla { animation: esc-cos-niebla 6.5s infinite; }
+.esc-cos-onda { animation: esc-cos-onda 6.5s ease-out infinite; }
+.esc-cos-bolsa { animation: esc-cos-bolsa 6.5s infinite; }
+.esc-cos-aro { animation: esc-cos-aro 6.5s infinite; }
+.esc-cos-chispa { animation: esc-cos-chispa 6.5s infinite; }
+.esc-cos-foco { animation: esc-cos-foco 1.625s ease-in-out infinite; }
+.esc-cos-foco-b { animation: esc-cos-foco 1.625s ease-in-out -0.8125s infinite; }
+.esc-cos-espejo { animation: esc-cos-espejo 6.5s ease-in-out infinite; }
+.esc-cos-vidrio { animation: esc-cos-vidrio 6.5s ease-in-out infinite; }
+.esc-cos-labial { animation: esc-cos-labial 3.25s ease-in-out infinite; }
+.esc-cos-destello { animation: esc-cos-destello 3.25s ease-in-out infinite; }

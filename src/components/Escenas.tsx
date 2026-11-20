@@ -8,6 +8,9 @@ import { EscenaPostres } from './EscenasPostres'
 import { EscenaPanaderia, EscenaCafeteria } from './EscenasPanaderiaCafeteria'
 import { EscenaHeladeria, EscenaJugueria } from './EscenasHeladeriaJugueria'
 import { EscenaSalteneria, EscenaBar } from './EscenasSalteneriaBar'
+import { EscenaLibreria, EscenaBazar } from './EscenasLibreriaBazar'
+import { EscenaRegalos, EscenaCosmeticos } from './EscenasRegalosCosmeticos'
+import { EscenaFloreria, EscenaMateriales } from './EscenasFloreriaMateriales'
 import { EscenaPeluqueria, EscenaBarberia } from './EscenasPelo'
 import { EscenaSpa, EscenaUnas } from './EscenasBelleza'
 
@@ -542,6 +545,12 @@ export const ESCENAS = {
   cafeteria: EscenaCafeteria,
   salteneria: EscenaSalteneria,
   bar: EscenaBar,
+  libreria: EscenaLibreria,
+  bazar: EscenaBazar,
+  regalos: EscenaRegalos,
+  cosmeticos: EscenaCosmeticos,
+  floreria: EscenaFloreria,
+  materiales: EscenaMateriales,
   minimarket: EscenaMinimarket,
   ferreteria: EscenaFerreteria,
   farmacia: EscenaFarmacia,
