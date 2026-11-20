@@ -1,0 +1,404 @@
+/*
+  Keyframes propios de las escenas de la librería y del bazar
+  (EscenasLibreriaBazar.tsx). Sólo transform y opacity. Todo vive dentro de
+  `.escena`, así que las pausas fuera de pantalla y "reducir movimiento" ya
+  vienen de index.css.
+  Ojo: `.escena svg *` fija transform-origin al centro (especificidad 0,1,1);
+  las clases que necesitan otro pivote se escriben como `.escena .clase`.
+
+  Ciclo maestro de las dos: 6,5 s, igual que el aviso (esc-chip), que asoma al
+  10 %. El remate de cada historia cae justo antes (96–100 %) y el golpe de la
+  venta entre el 0 % y el 10 %: el aviso llega con él. Cada keyframe termina
+  con el mismo valor con que empieza: el bucle no da tirón.
+*/
+
+/* grupos estáticos con escala o giro: el pivote clásico del SVG (su 0,0), no el centro */
+.escena .esc-lb-fijo {
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+
+/* ===================== Librería ===================== */
+
+@keyframes esc-lib-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-lib-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+
+/*
+  La temporada escolar, al empezar cada pedido:
+  14–20 %  la guirnalda y el cartel se recogen (el pedido anterior ya se fue)
+  24–30 %  cae la guirnalda; el cartel entra girando desde su cuerda y se balancea
+*/
+@keyframes esc-lib-guirnalda {
+  0%, 14% { transform: translateY(0); opacity: 1; }
+  20%, 24% { transform: translateY(-6px); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  30%, 100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes esc-lib-cartel {
+  0%, 14% { transform: rotate(0deg) scale(1); opacity: 1; }
+  19% { transform: rotate(0deg) scale(1, 0.3); opacity: 0; }
+  19.5%, 25% { transform: rotate(-28deg) scale(0.5); opacity: 0; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  30% { transform: rotate(12deg) scale(1); opacity: 1; animation-timing-function: ease-in-out; }
+  33.5% { transform: rotate(-6deg) scale(1); opacity: 1; animation-timing-function: ease-in-out; }
+  37% { transform: rotate(3deg) scale(1); opacity: 1; animation-timing-function: ease-in-out; }
+  40%, 100% { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+.escena .esc-lib-cartel { transform-origin: 50% 0%; }
+
+/* la lista escolar: se guarda (14–20 %) y vuelve a salir para el pedido nuevo (30–36 %) */
+@keyframes esc-lib-lista {
+  0%, 14% { transform: translateY(0) scale(1); opacity: 1; }
+  20% { transform: translateY(5px) scale(1); opacity: 0; }
+  20.5%, 30% { transform: translateY(0) scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  35%, 100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.escena .esc-lib-lista { transform-origin: 50% 100%; }
+
+/* los tildes de la lista, uno por cosa que entra al pedido (40, 50 y 60 %) */
+@keyframes esc-lib-tilde-1 {
+  0%, 22% { transform: scale(1); opacity: 1; }
+  23%, 39% { transform: scale(0); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  42%, 100% { transform: scale(1); opacity: 1; }
+}
+@keyframes esc-lib-tilde-2 {
+  0%, 22% { transform: scale(1); opacity: 1; }
+  23%, 49% { transform: scale(0); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  52%, 100% { transform: scale(1); opacity: 1; }
+}
+@keyframes esc-lib-tilde-3 {
+  0%, 22% { transform: scale(1); opacity: 1; }
+  23%, 59% { transform: scale(0); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  62%, 100% { transform: scale(1); opacity: 1; }
+}
+
+/*
+  Lo que entra al pedido: cae sobre el mostrador con su aplastón y se queda
+  hasta que el pedido se hunde en la bolsa (98 %); ahí se apaga para volver a
+  empezar. Cuaderno al 38 %, lápices al 48 %, regla al 58 %.
+*/
+@keyframes esc-lib-item-1 {
+  0%, 37% { transform: translateY(-9px) scale(0.5); opacity: 0; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  40% { transform: translateY(0) scale(1.1, 0.88); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  42.5% { transform: translateY(0) scale(0.96, 1.04); opacity: 1; }
+  45%, 97.5% { transform: translateY(0) scale(1); opacity: 1; }
+  98.5%, 100% { transform: translateY(-9px) scale(0.5); opacity: 0; }
+}
+@keyframes esc-lib-item-2 {
+  0%, 47% { transform: translateY(-9px) scale(0.5); opacity: 0; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  50% { transform: translateY(0) scale(1.1, 0.88); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  52.5% { transform: translateY(0) scale(0.96, 1.04); opacity: 1; }
+  55%, 97.5% { transform: translateY(0) scale(1); opacity: 1; }
+  98.5%, 100% { transform: translateY(-9px) scale(0.5); opacity: 0; }
+}
+@keyframes esc-lib-item-3 {
+  0%, 57% { transform: translateY(-9px) scale(0.5); opacity: 0; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  60% { transform: translateY(0) scale(1.1, 0.88); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  62.5% { transform: translateY(0) scale(0.96, 1.04); opacity: 1; }
+  65%, 97.5% { transform: translateY(0) scale(1); opacity: 1; }
+  98.5%, 100% { transform: translateY(-9px) scale(0.5); opacity: 0; }
+}
+.escena .esc-lib-item { transform-origin: 50% 100%; }
+
+/*
+  El pedido armado vuela a la bolsa (x en una capa, y en otra: el recorrido es
+  una parábola): 76–80 % se levanta apenas, 80–95 % arco por encima del QR,
+  95–98 % se hunde en la bolsa y se apaga.
+*/
+@keyframes esc-lib-vuelo-x {
+  0%, 80% { transform: translateX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  95%, 98% { transform: translateX(47px); }
+  98.5%, 100% { transform: translateX(0); }
+}
+@keyframes esc-lib-vuelo-y {
+  0%, 76% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  80% { transform: translateY(-3px) rotate(-4deg) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  88% { transform: translateY(-30px) rotate(-10deg) scale(0.86); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  95% { transform: translateY(-13px) rotate(5deg) scale(0.8); opacity: 1; animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+  98% { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
+  99% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0; }
+  100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+}
+.escena .esc-lib-vuelo-y { transform-origin: 50% 100%; }
+
+/*
+  La bolsa (pivote en la base): recibe el pedido y se aplasta (0–10 %), se va
+  con el cliente (16–24 %) y vuelve vacía al mostrador (70–76 %).
+*/
+@keyframes esc-lib-bolsa {
+  0%, 100% { transform: translateX(0) scale(1, 1); opacity: 1; }
+  3% { transform: translateX(0) scale(1.08, 0.9); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  7% { transform: translateX(0) scale(0.97, 1.04); opacity: 1; }
+  10%, 16% { transform: translateX(0) scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 0.75, 0.3); }
+  24% { transform: translateX(18px) scale(1, 1); opacity: 0; }
+  24.5%, 70% { transform: translateX(0) scale(0.5, 0.5); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  76% { transform: translateX(0) scale(1, 1); opacity: 1; }
+}
+.escena .esc-lib-bolsa { transform-origin: 50% 100%; }
+/* lo que asoma de la bolsa: sólo cuando el pedido ya cayó adentro */
+@keyframes esc-lib-contenido {
+  0%, 24% { opacity: 1; }
+  24.5%, 95.5% { opacity: 0; }
+  97%, 100% { opacity: 1; }
+}
+
+/* aro de la venta y destellos */
+@keyframes esc-lib-aro {
+  0%, 2% { transform: scale(0.45); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  4% { transform: scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  20%, 100% { transform: scale(2); opacity: 0; }
+}
+@keyframes esc-lib-chispa {
+  0%, 3% { transform: scale(0) rotate(0deg); opacity: 0; }
+  7% { transform: scale(1) rotate(45deg); opacity: 1; }
+  16%, 100% { transform: scale(0.4) rotate(90deg); opacity: 0; }
+}
+
+/* ambiente: mochilas que se mecen, el globo que gira, la fotocopiadora trabajando */
+@keyframes esc-lib-mochila {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
+}
+.escena .esc-lib-mochila { transform-origin: 50% 0%; }
+@keyframes esc-lib-globo {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-46px); }
+}
+@keyframes esc-lib-escaneo {
+  0% { transform: translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  50% { transform: translateX(32px); opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(0); opacity: 0; }
+}
+/* cada copia sale de la máquina, se desliza a la bandeja y se apila */
+@keyframes esc-lib-hoja {
+  0%, 20% { transform: translate(5px, -1.2px); opacity: 0; }
+  30% { transform: translate(3.4px, -0.8px); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  62% { transform: translate(0, 0); opacity: 1; }
+  85%, 100% { transform: translate(0, 0); opacity: 0; }
+}
+@keyframes esc-lib-led {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+@keyframes esc-lib-halo {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.75; }
+}
+@keyframes esc-lib-brillo {
+  0%, 40% { transform: translateX(0); opacity: 0; }
+  44% { opacity: 1; }
+  70% { transform: translateX(var(--d, 100px)); opacity: 1; }
+  74%, 100% { transform: translateX(var(--d, 100px)); opacity: 0; }
+}
+
+.esc-lib-flota { animation: esc-lib-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-lib-sombra { animation: esc-lib-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-lib-guirnalda { animation: esc-lib-guirnalda 6.5s infinite; }
+.esc-lib-cartel { animation: esc-lib-cartel 6.5s infinite; }
+.esc-lib-lista { animation: esc-lib-lista 6.5s infinite; }
+.esc-lib-tilde-1 { animation: esc-lib-tilde-1 6.5s infinite; }
+.esc-lib-tilde-2 { animation: esc-lib-tilde-2 6.5s infinite; }
+.esc-lib-tilde-3 { animation: esc-lib-tilde-3 6.5s infinite; }
+.esc-lib-item-1 { animation: esc-lib-item-1 6.5s infinite; }
+.esc-lib-item-2 { animation: esc-lib-item-2 6.5s infinite; }
+.esc-lib-item-3 { animation: esc-lib-item-3 6.5s infinite; }
+.esc-lib-vuelo-x { animation: esc-lib-vuelo-x 6.5s infinite; }
+.esc-lib-vuelo-y { animation: esc-lib-vuelo-y 6.5s infinite; }
+.esc-lib-bolsa { animation: esc-lib-bolsa 6.5s infinite; }
+.esc-lib-contenido { animation: esc-lib-contenido 6.5s infinite; }
+.esc-lib-aro { animation: esc-lib-aro 6.5s infinite; }
+.esc-lib-chispa { animation: esc-lib-chispa 6.5s infinite; }
+.esc-lib-mochila { animation: esc-lib-mochila 3.25s ease-in-out infinite; }
+.esc-lib-globo { animation: esc-lib-globo 6.5s linear infinite; }
+.esc-lib-escaneo { animation: esc-lib-escaneo 2.1667s ease-in-out infinite; }
+.esc-lib-hoja { animation: esc-lib-hoja 2.1667s infinite; }
+.esc-lib-led { animation: esc-lib-led 1.0833s ease-in-out infinite; }
+.esc-lib-halo { animation: esc-lib-halo 3.25s ease-in-out infinite; }
+.esc-lib-brillo { animation: esc-lib-brillo 6.5s ease-in-out infinite; }
+
+/* ===================== Bazar ===================== */
+
+@keyframes esc-baz-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-baz-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+
+/*
+  El carrito de carga (dos capas: atrás y adelante de la mercadería):
+  0–12 %   afuera, a la izquierda
+  12–29 %  entra rodando y se asienta (con un pasito de más)
+  29–68 %  quieto: la caja se abre y se vacía
+  68–82 %  se va con la caja vacía
+*/
+@keyframes esc-baz-carro {
+  0%, 11.5% { transform: translateX(-86px); opacity: 0; }
+  12% { transform: translateX(-84px); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  26% { transform: translateX(1.6px); opacity: 1; animation-timing-function: ease-in-out; }
+  29%, 68% { transform: translateX(0); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 0.75, 0.3); }
+  82% { transform: translateX(-86px); opacity: 1; }
+  82.5%, 100% { transform: translateX(-86px); opacity: 0; }
+}
+/* la rueda gira con el recorrido (2,9 vueltas en 86 px), con los mismos tiempos */
+@keyframes esc-baz-rueda {
+  0%, 12% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  26% { transform: rotate(1094deg); animation-timing-function: ease-in-out; }
+  29%, 68% { transform: rotate(1070deg); animation-timing-function: cubic-bezier(0.55, 0, 0.75, 0.3); }
+  82%, 100% { transform: rotate(0deg); }
+}
+
+/* las solapas se abren hacia los costados (31–36 %) y se cierran cuando el carrito ya se fue */
+@keyframes esc-baz-solapa-i {
+  0%, 31% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  36%, 82.5% { transform: rotate(-124deg); }
+  83%, 100% { transform: rotate(0deg); }
+}
+@keyframes esc-baz-solapa-d {
+  0%, 32% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  37%, 82.5% { transform: rotate(124deg); }
+  83%, 100% { transform: rotate(0deg); }
+}
+.escena .esc-baz-solapa-i { transform-origin: 0% 100%; }
+.escena .esc-baz-solapa-d { transform-origin: 100% 100%; }
+
+/*
+  Lo que sube de la caja al estante (el peluche; el balde va con 6 % de
+  retraso), relativo a su lugar en la caja (x en una capa, y en otra):
+  0–14 %   en su hueco (llegó en el ciclo anterior)
+  14–20 %  se vende de a poco: se achica y se apaga
+  38–50 %  sale de la caja, sube en arco y cae en su hueco con aplastón
+*/
+@keyframes esc-baz-sube-x {
+  0%, 20% { transform: translateX(var(--dx)); }
+  20.5%, 38% { transform: translateX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  50%, 100% { transform: translateX(var(--dx)); }
+}
+@keyframes esc-baz-sube-y {
+  0%, 14% { transform: translateY(var(--dy)) scale(1); opacity: 1; }
+  20% { transform: translateY(var(--dy)) scale(0.85); opacity: 0; }
+  20.5%, 37.5% { transform: translateY(0) scale(1); opacity: 0; }
+  38% { transform: translateY(0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  45% { transform: translateY(var(--pk)) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  50% { transform: translateY(var(--dy)) scale(1.12, 0.86); opacity: 1; animation-timing-function: ease-out; }
+  53% { transform: translateY(var(--dy)) scale(0.95, 1.05); opacity: 1; }
+  56%, 100% { transform: translateY(var(--dy)) scale(1); opacity: 1; }
+}
+.escena .esc-baz-sube-y { transform-origin: 50% 100%; }
+
+/* el +3 de stock: asoma sobre la caja cuando la mercadería ya está en su lugar */
+@keyframes esc-baz-stock {
+  0%, 54% { transform: translateY(4px) scale(0.6); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  58% { transform: translateY(0) scale(1); opacity: 1; animation-timing-function: ease-out; }
+  68% { transform: translateY(-6px) scale(1); opacity: 1; }
+  72%, 100% { transform: translateY(-9px) scale(1); opacity: 0; }
+}
+
+/*
+  La olla nueva: sale de la caja (50 %) y vuela en arco hasta el mostrador
+  (64 %), relativa a su lugar ahí (x en una capa, y en otra). Del 0 al 12 %
+  la mano se la está llevando (capa "lleva"); al 12 % vuelve, invisible, a la caja.
+*/
+@keyframes esc-baz-olla-x {
+  0%, 12% { transform: translateX(0); }
+  12.5%, 50% { transform: translateX(var(--dx)); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  64%, 100% { transform: translateX(0); }
+}
+@keyframes esc-baz-olla-y {
+  0%, 11% { transform: translateY(0) scale(1); opacity: 1; }
+  11.5%, 49.5% { transform: translateY(var(--dy)) scale(1); opacity: 0; }
+  50% { transform: translateY(var(--dy)) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  57% { transform: translateY(-34px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  64% { transform: translateY(0) scale(1.12, 0.86); opacity: 1; animation-timing-function: ease-out; }
+  67% { transform: translateY(0) scale(0.96, 1.04); opacity: 1; }
+  70%, 100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.escena .esc-baz-olla-y { transform-origin: 50% 100%; }
+
+/*
+  La mano del cliente y la olla que se lleva (los mismos tiempos):
+  83–89 %  la mano entra desde la derecha hasta el asa
+  89–92 %  la agarra
+  92–96 %  la levanta
+  96–10 %  se la lleva fuera de cuadro (pasa por el 0 %: el remate es la venta)
+*/
+@keyframes esc-baz-mano {
+  0% { transform: translate(16px, -7px); }
+  10% { transform: translate(112px, -7px); }
+  11%, 83% { transform: translate(112px, 0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  89%, 92% { transform: translate(0, 0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96% { transform: translate(0, -7px); animation-timing-function: cubic-bezier(0.5, 0, 1, 1); }
+  100% { transform: translate(16px, -7px); }
+}
+@keyframes esc-baz-lleva {
+  0% { transform: translate(16px, -7px); }
+  10%, 11.9% { transform: translate(112px, -7px); }
+  12%, 92% { transform: translate(0, 0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96% { transform: translate(0, -7px); animation-timing-function: cubic-bezier(0.5, 0, 1, 1); }
+  100% { transform: translate(16px, -7px); }
+}
+
+/* la venta: aro en el mostrador, destellos y el QR que dice pagado */
+@keyframes esc-baz-aro {
+  0%, 2% { transform: scale(0.45); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  4% { transform: scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  20%, 100% { transform: scale(2); opacity: 0; }
+}
+@keyframes esc-baz-chispa {
+  0%, 3% { transform: scale(0) rotate(0deg); opacity: 0; }
+  7% { transform: scale(1) rotate(45deg); opacity: 1; }
+  16%, 100% { transform: scale(0.4) rotate(90deg); opacity: 0; }
+}
+@keyframes esc-baz-pagado {
+  0%, 1% { transform: scale(0); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  5%, 16% { transform: scale(1); opacity: 1; }
+  20%, 100% { transform: scale(0.6); opacity: 0; }
+}
+
+/* ambiente: utensilios que se mecen, el rehilete, la estrella del letrero y la luz del estante */
+@keyframes esc-baz-cuelga {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+.escena .esc-baz-cuelga { transform-origin: 50% 0%; }
+@keyframes esc-baz-rehilete {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes esc-baz-estrella {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(18deg); }
+}
+@keyframes esc-baz-halo {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.75; }
+}
+
+.esc-baz-flota { animation: esc-baz-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-baz-sombra { animation: esc-baz-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-baz-carro { animation: esc-baz-carro 6.5s infinite; }
+.esc-baz-rueda { animation: esc-baz-rueda 6.5s infinite; }
+.esc-baz-solapa-i { animation: esc-baz-solapa-i 6.5s infinite; }
+.esc-baz-solapa-d { animation: esc-baz-solapa-d 6.5s infinite; }
+.esc-baz-sube-x { animation: esc-baz-sube-x 6.5s infinite; }
+.esc-baz-sube-y { animation: esc-baz-sube-y 6.5s infinite; }
+.esc-baz-stock { animation: esc-baz-stock 6.5s infinite; }
+.esc-baz-olla-x { animation: esc-baz-olla-x 6.5s infinite; }
+.esc-baz-olla-y { animation: esc-baz-olla-y 6.5s infinite; }
+.esc-baz-mano { animation: esc-baz-mano 6.5s infinite; }
+.esc-baz-lleva { animation: esc-baz-lleva 6.5s infinite; }
+.esc-baz-aro { animation: esc-baz-aro 6.5s infinite; }
+.esc-baz-chispa { animation: esc-baz-chispa 6.5s infinite; }
+.esc-baz-pagado { animation: esc-baz-pagado 6.5s infinite; }
+.esc-baz-cuelga { animation: esc-baz-cuelga 3.25s ease-in-out infinite; }
+.esc-baz-rehilete { animation: esc-baz-rehilete 1.625s linear infinite; }
+.esc-baz-estrella { animation: esc-baz-estrella 3.25s ease-in-out infinite; }
+.esc-baz-halo { animation: esc-baz-halo 3.25s ease-in-out infinite; }
