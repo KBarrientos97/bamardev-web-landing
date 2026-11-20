@@ -46,6 +46,19 @@ const RUBROS: Record<Modo, Rubro[]> = {
       escena: 'pollo',
     },
     {
+      // Postres (variante del restaurante, 13-nov): el carrito de fresas con
+      // crema o de arroz con leche, con sus vasos por tamaño y sus toppings.
+      emoji: '🍓',
+      nombre: 'Postres y carritos',
+      puntos: [
+        'Vasos por tamaño y toppings que se suman solos al precio',
+        'Varios carritos o locales, cada uno con su caja y su conteo del día',
+        'Pedidos de Yango y PedidosYa, y tu página para que te pidan con toppings',
+      ],
+      quienEscribe: 'tengo un carrito o negocio de postres',
+      escena: 'postres',
+    },
+    {
       emoji: '🛒',
       nombre: 'Minimarkets y tiendas',
       puntos: [
