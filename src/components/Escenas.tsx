@@ -5,6 +5,9 @@ import { EscenaMinimarket, EscenaFerreteria } from './EscenasComercio'
 import { EscenaBillar, EscenaAcademia } from './EscenasBillarYAcademia'
 import { EscenaLicoreria } from './EscenasLicoreria'
 import { EscenaPostres } from './EscenasPostres'
+import { EscenaPanaderia, EscenaCafeteria } from './EscenasPanaderiaCafeteria'
+import { EscenaHeladeria, EscenaJugueria } from './EscenasHeladeriaJugueria'
+import { EscenaSalteneria, EscenaBar } from './EscenasSalteneriaBar'
 import { EscenaPeluqueria, EscenaBarberia } from './EscenasPelo'
 import { EscenaSpa, EscenaUnas } from './EscenasBelleza'
 
@@ -533,6 +536,12 @@ export function EscenaPollo() {
 export const ESCENAS = {
   pollo: EscenaPollo,
   postres: EscenaPostres,
+  panaderia: EscenaPanaderia,
+  heladeria: EscenaHeladeria,
+  jugueria: EscenaJugueria,
+  cafeteria: EscenaCafeteria,
+  salteneria: EscenaSalteneria,
+  bar: EscenaBar,
   minimarket: EscenaMinimarket,
   ferreteria: EscenaFerreteria,
   farmacia: EscenaFarmacia,
