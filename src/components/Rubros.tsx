@@ -2,180 +2,20 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, m } from 'motion/react'
 import { linkWhatsApp } from '../data/planes'
 import { WhatsAppIcon } from './ui'
-import { ESCENAS, type ClaveEscena } from './Escenas'
+import { ESCENAS } from './Escenas'
+import { RUBROS as TODOS, RUBROS_INICIO, type Modo } from '../data/rubros'
 import { Aparecer, Escalonado, SUAVE, itemVariantes } from './animacion'
-
-type Modo = 'ventas' | 'agenda' | 'clases'
 
 /** Orden de las pestañas: la animación del panel sale hacia el lado contrario al que entra. */
 const MODOS: Modo[] = ['ventas', 'agenda', 'clases']
 
-interface Rubro {
-  emoji: string
-  nombre: string
-  puntos: string[]
-  /** Cómo se presenta el interesado en el WhatsApp de la demo. */
-  quienEscribe: string
-  /** Ilustración animada del rubro (Escenas.tsx). Sin ella, la tarjeta usa el emoji. */
-  escena?: ClaveEscena
-}
-
 /*
-  Dos maneras de trabajar, como en la pieza de campaña del Emprendedor (oct-2026):
-  el que vende productos y el que trabaja con agenda. Los rubros son los de
-  PerfilRubro (GET /api/rubros) y los puntos sólo nombran features que su vertical
-  recibe (FeatureVertical); las que son de Profesional lo dicen.
-
-  Belleza: `agenda`, `clientes` y la cola de la barbería son fijas del rubro y
-  vienen en todos los planes. Reservas online, comisiones, propinas, paquetes,
-  gift cards y ficha técnica no tienen plan asignado (PLAN-AGENDA-BELLEZA §2.5):
-  el operador las prende negocio por negocio, por eso llevan asterisco y la nota
-  de abajo, y no se prometen en las tarjetas de planes.
+  Los rubros salen del catálogo único (`data/rubros.ts`): acá van sólo los
+  `enInicio`, y el resto vive en /rubros, con todo lo que hace cada uno. Así la
+  home no se vuelve la mitad rubros a medida que se suman (pedido del dueño,
+  20-nov-2026).
 */
-const RUBROS: Record<Modo, Rubro[]> = {
-  ventas: [
-    {
-      emoji: '🍗',
-      nombre: 'Restaurantes',
-      puntos: [
-        'Comanda Mesa / Llevar y pedidos para recoger',
-        'Insumos y recetas: sabés cuánto te cuesta cada plato',
-        'Salón con meseros y delivery con app del repartidor (Profesional)',
-      ],
-      quienEscribe: 'tengo un restaurante',
-      escena: 'pollo',
-    },
-    {
-      // Postres (variante del restaurante, 13-nov): el carrito de fresas con
-      // crema o de arroz con leche, con sus vasos por tamaño y sus toppings.
-      emoji: '🍓',
-      nombre: 'Postres y carritos',
-      puntos: [
-        'Vasos por tamaño y toppings que se suman solos al precio',
-        'Varios carritos o locales, cada uno con su caja y su conteo del día',
-        'Pedidos de Yango y PedidosYa, y tu página para que te pidan con toppings',
-      ],
-      quienEscribe: 'tengo un carrito o negocio de postres',
-      escena: 'postres',
-    },
-    {
-      emoji: '🛒',
-      nombre: 'Minimarkets y tiendas',
-      puntos: [
-        'Venta rápida con buscador y categorías',
-        'Stock real con aviso de lo que se está acabando',
-        'Fiado por cliente, con sus abonos y lo que te debe',
-      ],
-      quienEscribe: 'tengo un minimarket o tienda',
-      escena: 'minimarket',
-    },
-    {
-      emoji: '🔩',
-      nombre: 'Ferreterías y repuestos',
-      puntos: [
-        'Muchos productos, ordenados y fáciles de encontrar',
-        'Encargos de lo que el cliente pidió y no había',
-        'Stock y precio por sucursal',
-      ],
-      quienEscribe: 'tengo una ferretería o casa de repuestos',
-      escena: 'ferreteria',
-    },
-    {
-      emoji: '💊',
-      nombre: 'Farmacias',
-      puntos: [
-        'Lotes y vencimientos: nada vencido se vende (Profesional)',
-        'Venta con receta y libro de controlados',
-        'Encargos, proveedores y catálogo importado desde Excel',
-      ],
-      quienEscribe: 'tengo una farmacia',
-      escena: 'farmacia',
-    },
-    {
-      emoji: '🎱',
-      nombre: 'Billar y Restobar',
-      puntos: [
-        'Mesas por tiempo: libre, por horas o por minutos, con pausa y extensión',
-        'La cuenta de cada mesa suma los consumos del restobar y se cobra en la misma caja',
-        'Tarifas por mesa, supervisión del turno y reporte del billar',
-      ],
-      quienEscribe: 'tengo un billar o restobar',
-      escena: 'billar',
-    },
-    {
-      // Licorería (20-nov-2026): el núcleo viene en todos los planes; delivery,
-      // la página y los pedidos de Yango y PedidosYa se le prenden aparte.
-      emoji: '🍷',
-      nombre: 'Licorerías',
-      puntos: [
-        'Venta rápida con buscador: cervezas, vinos y destilados por categoría',
-        'Stock real de cada botella y cierre de caja con arqueo',
-        'Delivery, tu página web y los pedidos de Yango o PedidosYa, cuando los quieras sumar',
-      ],
-      quienEscribe: 'tengo una licorería',
-      escena: 'licoreria',
-    },
-  ],
-  agenda: [
-    {
-      emoji: '✂️',
-      nombre: 'Peluquerías',
-      puntos: [
-        'Agenda del día y de la semana por estilista',
-        'Ficha del cliente con historial y alergias',
-        'Ficha técnica con fotos de cada trabajo*',
-      ],
-      quienEscribe: 'tengo una peluquería',
-      escena: 'peluqueria',
-    },
-    {
-      emoji: '💈',
-      nombre: 'Barberías',
-      puntos: [
-        'Cola para los que llegan sin turno',
-        'Agenda por barbero, sin turnos repetidos',
-        'Propinas y comisiones por barbero*',
-      ],
-      quienEscribe: 'tengo una barbería',
-      escena: 'barberia',
-    },
-    {
-      emoji: '🧖',
-      nombre: 'Spa',
-      puntos: [
-        'Cabinas y profesionales, cada uno con su agenda',
-        'Paquetes de sesiones y gift cards*',
-        'Reservas online desde tu enlace*',
-      ],
-      quienEscribe: 'tengo un spa',
-      escena: 'spa',
-    },
-    {
-      emoji: '💅',
-      nombre: 'Uñas y estética',
-      puntos: [
-        'Tu cliente elige servicio, profesional y hora*',
-        'La cita se cobra en la misma caja',
-        'Comisiones por profesional, con adelantos*',
-      ],
-      quienEscribe: 'tengo un local de uñas o estética',
-      escena: 'unas',
-    },
-  ],
-  clases: [
-    {
-      emoji: '🎓',
-      nombre: 'Academias e institutos',
-      puntos: [
-        'Calendario de cursos y grupos, con inscripciones también online',
-        'Cobranza de cuotas con QR por WhatsApp y estado de cuenta de cada estudiante',
-        'Asistencia, notas y planilla de pago de tus docentes',
-      ],
-      quienEscribe: 'tengo una academia o instituto',
-      escena: 'academia',
-    },
-  ],
-}
+const RUBROS = RUBROS_INICIO
 
 /** `#agenda` y `#ventas` abren la pestaña: los anuncios de belleza enlazan directo. */
 function modoDelHash(): Modo | null {
@@ -209,6 +49,8 @@ export function Rubros() {
       {/* Anclas para enlazar una pestaña desde un anuncio (bamardev.com/#agenda) */}
       <span id="ventas" className="absolute top-0 scroll-mt-16" aria-hidden />
       <span id="agenda" className="absolute top-0 scroll-mt-16" aria-hidden />
+      {/* #academia también: sin el ancla abría la pestaña pero la página quedaba arriba. */}
+      <span id="academia" className="absolute top-0 scroll-mt-16" aria-hidden />
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Aparecer>
@@ -375,6 +217,17 @@ export function Rubros() {
           </Escalonado>
         </m.div>
         </AnimatePresence>
+
+        {/* El resto de los rubros, uno por vez y con todo lo que hace cada uno. */}
+        <div className="mt-10 flex justify-center">
+          <a
+            href="/rubros"
+            className="group inline-flex items-center gap-2 rounded-full border-2 border-brand-200 bg-white px-6 py-3 text-sm font-extrabold text-brand-700 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-400 hover:shadow-lg hover:shadow-brand-100 active:scale-[0.97]"
+          >
+            Ver todos los rubros ({TODOS.length})
+            <span className="transition-transform duration-300 ease-out group-hover:translate-x-1">→</span>
+          </a>
+        </div>
 
         {esAgenda && (
           <p className="mt-6 text-center text-xs text-slate-500">
