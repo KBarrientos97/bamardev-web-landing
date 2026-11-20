@@ -1,0 +1,375 @@
+/*
+  Keyframes propios de las escenas de la salteñería y del bar-karaoke
+  (EscenasSalteneriaBar.tsx). Sólo transform y opacity. Todo vive dentro de
+  `.escena`, así que las pausas fuera de pantalla y "reducir movimiento" ya
+  vienen de index.css.
+  Ojo: `.escena svg *` fija transform-origin al centro (especificidad 0,1,1);
+  las clases que necesitan otro pivote se escriben como `.escena .clase`.
+
+  Ciclo maestro de las dos: 6,5 s, igual que el aviso (esc-chip), que asoma al
+  10 %. El remate de cada historia cae justo antes (98 % - 0 %) y el aviso llega
+  con él. Cada keyframe termina con el mismo valor con que empieza: el bucle no
+  da tirón.
+*/
+
+/* Vuelve al sistema de coordenadas de SVG de siempre (pivote en el 0,0 local):
+   para escalar o girar piezas dibujadas alrededor de su base. */
+.escena .esc-salte-o,
+.escena .esc-bar-o {
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+
+/* ============================ SALTEÑERÍA ============================ */
+
+@keyframes esc-salte-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-salte-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+
+/*
+  La salteña que se vende, relativa a su hueco en la fila de atrás de la
+  vitrina (x en una capa, y en otra: el recorrido es una parábola):
+  0–44 %   no está (viaja en el platillo y se la comen)
+  44–52 %  la vitrina la repone: aparece en su hueco, del tamaño de la fila
+  60–63 %  anticipación: se levanta apenas
+  63–76 %  arco por encima de la vitrina hasta el platillo del mostrador
+  76 %     cae en el platillo y se cambia por la que viaja con él
+*/
+@keyframes esc-salte-vuelo-x {
+  0%, 63% { transform: translateX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  76%, 77% { transform: translateX(25px); }
+  78%, 100% { transform: translateX(0); }
+}
+@keyframes esc-salte-vuelo-y {
+  0%, 44% { transform: translateY(0) scale(0.6); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  52% { transform: translateY(0) scale(0.86); opacity: 1; }
+  60% { transform: translateY(0) scale(0.86); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  63% { transform: translateY(-2.5px) scale(0.9) rotate(-4deg); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  69% { transform: translateY(-23px) scale(1) rotate(-10deg); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  76% { transform: translateY(17.4px) scale(1) rotate(0deg); opacity: 1; }
+  76.1%, 77% { transform: translateY(17.4px) scale(1); opacity: 0; }
+  78%, 100% { transform: translateY(0) scale(0.6); opacity: 0; }
+}
+.escena .esc-salte-vuelo-y { transform-origin: 50% 100%; }
+
+/*
+  El platillo, relativo al extremo del mostrador:
+  0–34 %   en la mesa, con la salteña (llegó al 98 % del ciclo anterior)
+  34–39 %  ya comieron: se desvanece y vuelve al mostrador sin verse
+  41–47 %  aparece de nuevo en el mostrador, vacío, esperando
+  86–98 %  viaja a la mesa en un arquito y se asienta
+*/
+@keyframes esc-salte-plato-x {
+  0%, 34% { transform: translateX(42px); opacity: 1; }
+  38% { transform: translateX(42px); opacity: 0; }
+  39%, 41% { transform: translateX(0); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  47% { transform: translateX(0); opacity: 1; }
+  86% { transform: translateX(0); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  98%, 100% { transform: translateX(42px); opacity: 1; }
+}
+@keyframes esc-salte-plato-y {
+  0%, 38% { transform: translateY(10.6px); }
+  39%, 86% { transform: translateY(0); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  91% { transform: translateY(-7px); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  98%, 100% { transform: translateY(10.6px); }
+}
+/* se aplasta al tocar la mesa y rebota (pivote en la base) */
+@keyframes esc-salte-plato-rebote {
+  0% { transform: scale(0.97, 1.04); }
+  4%, 97% { transform: scale(1, 1); }
+  98.6% { transform: scale(1.12, 0.86); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  100% { transform: scale(0.97, 1.04); }
+}
+.escena .esc-salte-plato-rebote { transform-origin: 50% 100%; }
+
+/* la salteña del platillo: aparece cuando llega la que vuela y se la comen al 30 % */
+@keyframes esc-salte-enplato {
+  0%, 30% { transform: scale(1); opacity: 1; }
+  36% { transform: scale(0.55); opacity: 0; }
+  75.9% { transform: scale(1); opacity: 0; }
+  76% { transform: scale(1.1, 0.88); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  80%, 100% { transform: scale(1); opacity: 1; }
+}
+.escena .esc-salte-enplato { transform-origin: 50% 100%; }
+
+/* el hilo de vapor de la salteña servida (6,5 s / 3: siempre en fase con el ciclo) */
+@keyframes esc-salte-hilo {
+  0% { transform: translateY(2px) scaleY(0.5); opacity: 0; }
+  30% { opacity: 0.85; }
+  100% { transform: translateY(-7px) scaleY(1.15); opacity: 0; }
+}
+.escena .esc-salte-hilo { transform-origin: 50% 100%; }
+
+/* el vapor de la bandeja del horno */
+@keyframes esc-salte-vapor {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  25% { opacity: 0.75; }
+  100% { transform: translate(var(--dx, 0), -28px) scale(1.7); opacity: 0; }
+}
+
+/* aro de la venta sobre la mesa y destellos */
+@keyframes esc-salte-aro {
+  0%, 1% { transform: scale(0.45); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  3% { transform: scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  20%, 100% { transform: scale(2); opacity: 0; }
+}
+@keyframes esc-salte-chispa {
+  0%, 2% { transform: scale(0) rotate(0deg); opacity: 0; }
+  6% { transform: scale(1) rotate(45deg); opacity: 1; }
+  15%, 100% { transform: scale(0.4) rotate(90deg); opacity: 0; }
+}
+
+/* el brillo que cruza el letrero y el vidrio de la vitrina */
+@keyframes esc-salte-brillo {
+  0%, 40% { transform: translateX(0); opacity: 0; }
+  44% { opacity: 1; }
+  70% { transform: translateX(var(--d, 100px)); opacity: 1; }
+  74%, 100% { transform: translateX(var(--d, 100px)); opacity: 0; }
+}
+
+/* el calor de la vitrina, las brasas y el fuego del horno */
+@keyframes esc-salte-halo {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.6; }
+}
+@keyframes esc-salte-lampara {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+@keyframes esc-salte-brasa {
+  0%, 100% { opacity: 0.55; transform: scaleX(1); }
+  40% { opacity: 0.9; transform: scaleX(1.08); }
+  70% { opacity: 0.65; transform: scaleX(0.96); }
+}
+@keyframes esc-salte-llama {
+  0%, 100% { transform: scale(1, 0.8); }
+  35% { transform: scale(0.86, 1.2); }
+  70% { transform: scale(1.06, 0.94); }
+}
+
+/* el sol gira despacito (ocho rayos: al 45° queda igual) y la nube deriva */
+@keyframes esc-salte-rayos {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(45deg); }
+}
+@keyframes esc-salte-nube {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(7px); }
+}
+/* burbujas del refresco */
+@keyframes esc-salte-burbuja {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 0.9; }
+  100% { transform: translateY(-6px); opacity: 0; }
+}
+
+.esc-salte-flota { animation: esc-salte-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-salte-sombra { animation: esc-salte-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-salte-vuelo-x { animation: esc-salte-vuelo-x 6.5s infinite; }
+.esc-salte-vuelo-y { animation: esc-salte-vuelo-y 6.5s infinite; }
+.esc-salte-plato-x { animation: esc-salte-plato-x 6.5s infinite; }
+.esc-salte-plato-y { animation: esc-salte-plato-y 6.5s infinite; }
+.esc-salte-plato-rebote { animation: esc-salte-plato-rebote 6.5s infinite; }
+.esc-salte-enplato { animation: esc-salte-enplato 6.5s infinite; }
+.esc-salte-hilo { animation: esc-salte-hilo 2.1667s ease-out infinite; }
+.esc-salte-vapor { animation: esc-salte-vapor 2.1667s ease-out infinite; }
+.esc-salte-aro { animation: esc-salte-aro 6.5s infinite; }
+.esc-salte-chispa { animation: esc-salte-chispa 6.5s infinite; }
+.esc-salte-brillo { animation: esc-salte-brillo 6.5s ease-in-out infinite; }
+.esc-salte-halo { animation: esc-salte-halo 3.25s ease-in-out infinite; }
+.esc-salte-lampara { animation: esc-salte-lampara 3.25s ease-in-out infinite; }
+.esc-salte-brasa { animation: esc-salte-brasa 1.3s ease-in-out infinite; }
+.escena .esc-salte-llama { animation: esc-salte-llama 0.9s ease-in-out infinite; transform-origin: 50% 100%; }
+.esc-salte-rayos { animation: esc-salte-rayos 6.5s linear infinite; }
+.esc-salte-nube { animation: esc-salte-nube 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-salte-burbuja { animation: esc-salte-burbuja 1.6s ease-out infinite; }
+
+/* ============================ BAR-KARAOKE ============================ */
+
+@keyframes esc-bar-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-bar-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+
+/*
+  El trago que se vende, relativo a la mano del barman (x en una capa, y en otra):
+  0–34 %   en la mesa 3 (llegó al 97 % del ciclo anterior); 22–34 % se lo toman
+  34–38 %  el vaso vacío se va; al 39 % vuelve a la barra sin verse
+  44–50 %  aparece vacío junto al barman y 52–64 % se llena
+  68–72 %  el barman lo empuja
+  70–86 %  se desliza por toda la barra (con rayitas de velocidad)
+  86–97 %  salta de la punta de la barra a la mesa y se asienta
+*/
+@keyframes esc-bar-trago-x {
+  0%, 38% { transform: translateX(128px); }
+  39%, 70% { transform: translateX(0); animation-timing-function: cubic-bezier(0.3, 0.45, 0.7, 0.95); }
+  86% { transform: translateX(88px); animation-timing-function: linear; }
+  97%, 100% { transform: translateX(128px); }
+}
+@keyframes esc-bar-trago-y {
+  0%, 86% { transform: translateY(0) rotate(0deg); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  91.5% { transform: translateY(-13px) rotate(8deg); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  97%, 100% { transform: translateY(0) rotate(0deg); }
+}
+.escena .esc-bar-trago-y { transform-origin: 50% 100%; }
+@keyframes esc-bar-trago {
+  0% { transform: scale(0.96, 1.05); opacity: 1; }
+  3%, 34% { transform: scale(1); opacity: 1; }
+  38% { transform: scale(0.9); opacity: 0; }
+  44% { transform: scale(0.7); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  50%, 96.6% { transform: scale(1); opacity: 1; }
+  98% { transform: scale(1.14, 0.86); opacity: 1; animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  100% { transform: scale(0.96, 1.05); opacity: 1; }
+}
+.escena .esc-bar-trago { transform-origin: 50% 100%; }
+/* el nivel del trago: se lo toman en la mesa y se llena en la barra */
+@keyframes esc-bar-nivel {
+  0%, 22% { transform: scaleY(1); }
+  34%, 52% { transform: scaleY(0.12); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  64%, 100% { transform: scaleY(1); }
+}
+.escena .esc-bar-nivel { transform-origin: 50% 100%; }
+/* rayitas de velocidad mientras se desliza */
+@keyframes esc-bar-rayas {
+  0%, 70% { transform: translateX(4px); opacity: 0; }
+  73% { transform: translateX(0); opacity: 0.9; }
+  84% { transform: translateX(0); opacity: 0.9; }
+  88%, 100% { transform: translateX(4px); opacity: 0; }
+}
+/* el brazo del barman: se acerca, empuja y vuelve */
+@keyframes esc-bar-brazo {
+  0%, 64% { transform: translateX(0); }
+  68% { transform: translateX(-1.5px); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  72% { transform: translateX(5px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  82%, 100% { transform: translateX(0); }
+}
+
+/* la venta: aro sobre la mesa, destellos y el «+Bs 30» que sube */
+@keyframes esc-bar-aro {
+  0%, 1% { transform: scale(0.45); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  3% { transform: scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  20%, 100% { transform: scale(2); opacity: 0; }
+}
+@keyframes esc-bar-chispa {
+  0%, 2% { transform: scale(0) rotate(0deg); opacity: 0; }
+  6% { transform: scale(1) rotate(45deg); opacity: 1; }
+  15%, 100% { transform: scale(0.4) rotate(90deg); opacity: 0; }
+}
+@keyframes esc-bar-suma {
+  0%, 1% { transform: translateY(4px) scale(0.6); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  6% { transform: translateY(0) scale(1); opacity: 1; }
+  20% { transform: translateY(-6px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  28%, 100% { transform: translateY(-12px) scale(0.9); opacity: 0; }
+}
+
+/* los haces barren la pista (pivote arriba) y su charco de luz los sigue en el piso */
+@keyframes esc-bar-haz {
+  0%, 100% { transform: rotate(-12deg); }
+  50% { transform: rotate(12deg); }
+}
+.escena .esc-bar-haz { transform-origin: 50% 0%; }
+@keyframes esc-bar-charco {
+  0%, 100% { transform: translateX(31px); }
+  50% { transform: translateX(-31px); }
+}
+/* la bola de espejos: las facetas corren (tres columnas = el mismo dibujo) y los puntitos titilan */
+@keyframes esc-bar-facetas {
+  0% { transform: translateX(-9px); }
+  100% { transform: translateX(0); }
+}
+@keyframes esc-bar-punto {
+  0%, 100% { transform: translateX(0) scale(0.4); opacity: 0; }
+  50% { transform: translateX(4px) scale(1); opacity: 0.95; }
+}
+@keyframes esc-bar-destello {
+  0%, 60%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+  75% { transform: scale(0.7) rotate(45deg); opacity: 1; }
+  90% { transform: scale(0) rotate(90deg); opacity: 0; }
+}
+
+/* el letrero de neón: encendido, con un parpadeo corto de vez en cuando */
+@keyframes esc-bar-neon {
+  0%, 46%, 52%, 100% { opacity: 1; }
+  48% { opacity: 0.3; }
+  50% { opacity: 0.9; }
+  51% { opacity: 0.4; }
+}
+@keyframes esc-bar-halo {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@keyframes esc-bar-luz {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* la letra del karaoke se va pintando, renglón por renglón */
+@keyframes esc-bar-letra {
+  0% { transform: scaleX(0); opacity: 1; }
+  75%, 86% { transform: scaleX(1); opacity: 1; }
+  96% { transform: scaleX(1); opacity: 0; }
+  100% { transform: scaleX(0); opacity: 0; }
+}
+.escena .esc-bar-letra,
+.escena .esc-bar-letra-b { transform-origin: 0% 50%; }
+/* el bajo del parlante, a tiempo (6,5 s / 12) */
+@keyframes esc-bar-bajo {
+  0%, 100% { transform: scale(1); }
+  20% { transform: scale(1.12); }
+}
+/* las notas que suben del micrófono */
+@keyframes esc-bar-nota {
+  0% { transform: translate(0, 0) rotate(-10deg) scale(0.6); opacity: 0; }
+  18% { opacity: 1; }
+  70% { opacity: 0.9; }
+  100% { transform: translate(var(--dx, 0), -38px) rotate(12deg) scale(1); opacity: 0; }
+}
+/* burbujas de los chops */
+@keyframes esc-bar-burbuja {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 0.9; }
+  100% { transform: translateY(-7px); opacity: 0; }
+}
+
+.esc-bar-flota { animation: esc-bar-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-bar-sombra { animation: esc-bar-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-bar-trago-x { animation: esc-bar-trago-x 6.5s infinite; }
+.esc-bar-trago-y { animation: esc-bar-trago-y 6.5s infinite; }
+.esc-bar-trago { animation: esc-bar-trago 6.5s infinite; }
+.esc-bar-nivel { animation: esc-bar-nivel 6.5s infinite; }
+.esc-bar-rayas { animation: esc-bar-rayas 6.5s infinite; }
+.esc-bar-brazo { animation: esc-bar-brazo 6.5s infinite; }
+.esc-bar-aro { animation: esc-bar-aro 6.5s infinite; }
+.esc-bar-chispa { animation: esc-bar-chispa 6.5s infinite; }
+.esc-bar-suma { animation: esc-bar-suma 6.5s infinite; }
+.esc-bar-haz { animation: esc-bar-haz 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-bar-charco { animation: esc-bar-charco 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-bar-facetas { animation: esc-bar-facetas 1.625s linear infinite; }
+.esc-bar-punto { animation: esc-bar-punto 2.1667s ease-in-out infinite; }
+.esc-bar-destello { animation: esc-bar-destello 3.25s ease-in-out infinite; }
+.esc-bar-neon { animation: esc-bar-neon 6.5s steps(1, end) infinite; }
+.esc-bar-halo { animation: esc-bar-halo 3.25s ease-in-out infinite; }
+.esc-bar-luzestante { animation: esc-bar-luz 3.25s ease-in-out infinite; }
+.esc-bar-filo { animation: esc-bar-luz 2.1667s ease-in-out infinite; }
+.esc-bar-letra { animation: esc-bar-letra 3.25s linear infinite; }
+.esc-bar-letra-b { animation: esc-bar-letra 3.25s linear infinite; animation-delay: -1.625s; }
+.esc-bar-bajo { animation: esc-bar-bajo 0.5417s ease-out infinite; }
+.esc-bar-nota { animation: esc-bar-nota 3.25s ease-out infinite; }
+.esc-bar-burbuja { animation: esc-bar-burbuja 1.6s ease-out infinite; }
+
+/* los foquitos de la guirnalda titilan alternados */
+@keyframes esc-bar-foco {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.esc-bar-foco { animation: esc-bar-foco 1.625s ease-in-out infinite; }
+.esc-bar-foco-b { animation: esc-bar-foco 1.625s ease-in-out infinite; animation-delay: -0.8125s; }

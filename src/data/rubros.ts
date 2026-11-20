@@ -47,6 +47,9 @@ export type ClaveFuncion =
   | 'reserva'
   | 'comisiones'
   | 'tiempo'
+  | 'supervisionbillar'
+  | 'reservasbillar'
+  | 'pantallasalon'
   | 'clases'
   | 'inscripcion'
   | 'cuotas'
@@ -171,6 +174,7 @@ export const RUBROS: RubroLanding[] = [
       'Tu página para que te pidan tortas, con delivery o para recoger',
     ],
     quienEscribe: 'tengo una panadería o pastelería',
+    escena: 'panaderia',
     funciones: ['menutv', 'catalogoweb', 'inventario', 'delivery', 'fiado', 'sucursales', 'reportes', 'offline', 'roles'],
     extras: ['insumos', 'pagina', 'combos', 'sucursales'],
   },
@@ -190,6 +194,7 @@ export const RUBROS: RubroLanding[] = [
       'Pedidos de Yango y PedidosYa con su reporte',
     ],
     quienEscribe: 'tengo una heladería',
+    escena: 'heladeria',
     funciones: ['toppings', 'menutv', 'plataformas', 'inventario', 'catalogoweb', 'reportes'],
     extras: ['insumos', 'plataformas', 'pagina', 'sucursales'],
   },
@@ -209,6 +214,7 @@ export const RUBROS: RubroLanding[] = [
       'Pedidos de Yango y PedidosYa, y tu página',
     ],
     quienEscribe: 'tengo una juguería',
+    escena: 'jugueria',
     funciones: ['toppings', 'menutv', 'plataformas', 'inventario', 'reportes', 'offline'],
     extras: ['insumos', 'plataformas', 'pagina'],
   },
@@ -228,6 +234,7 @@ export const RUBROS: RubroLanding[] = [
       'Combos de desayuno y tu página para pedir',
     ],
     quienEscribe: 'tengo una cafetería',
+    escena: 'cafeteria',
     funciones: ['comandas', 'menutv', 'tickets', 'inventario', 'catalogoweb', 'reportes'],
     extras: ['insumos', 'combos', 'pagina', 'plataformas'],
   },
@@ -247,6 +254,7 @@ export const RUBROS: RubroLanding[] = [
       'Pedidos por WhatsApp, delivery y tu página',
     ],
     quienEscribe: 'tengo una salteñería',
+    escena: 'salteneria',
     funciones: ['menutv', 'comandas', 'tickets', 'plataformas', 'delivery', 'inventario', 'reportes', 'offline', 'roles'],
     extras: ['insumos', 'plataformas', 'pagina', 'sucursales'],
   },
@@ -266,6 +274,7 @@ export const RUBROS: RubroLanding[] = [
       'Combos y promos de la noche, con el PIN del encargado para anular',
     ],
     quienEscribe: 'tengo un bar, karaoke o discoteca',
+    escena: 'bar',
     funciones: ['comandas', 'menutv', 'inventario', 'reportes', 'roles', 'offline'],
     extras: ['combos', 'qr', 'sucursales'],
   },
@@ -489,7 +498,7 @@ export const RUBROS: RubroLanding[] = [
     quienEscribe: 'tengo un billar o restobar',
     escena: 'billar',
     enInicio: true,
-    funciones: ['tiempo', 'inventario', 'sucursales', 'reportes', 'roles', 'offline'],
+    funciones: ['tiempo', 'supervisionbillar', 'reservasbillar', 'pantallasalon', 'inventario', 'reportes', 'sucursales', 'roles', 'offline'],
     extras: ['tv', 'qr', 'sucursales'],
   },
 

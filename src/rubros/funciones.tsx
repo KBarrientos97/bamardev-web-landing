@@ -13,6 +13,7 @@ import {
   EscenaFnReservaOnline,
   EscenaFnComisiones,
 } from '../components/EscenasFnAgenda'
+import { EscenaFnSupervisionBillar, EscenaFnReservasBillar, EscenaFnPantallaSalon } from '../components/EscenasFnBillar'
 import { EscenaFnInscripcionWeb, EscenaFnCuotas, EscenaFnGrupos, EscenaFnAsistencia } from '../components/EscenasFnAcademia'
 
 /*
@@ -131,6 +132,21 @@ export const FUNCIONES: Record<ClaveFuncion, Funcion> = {
     texto: 'Calendario de grupos, inscripciones, cuotas con QR y la asistencia de cada alumno.',
     Escena: ESCENAS.academia,
   },
+  supervisionbillar: {
+    titulo: 'Supervisión de cada mesa',
+    texto: 'Desde tu casa ves en vivo cada mesa: si está libre, ocupada o pausada, quién la abrió y cuánto debería haber en la caja. Si hace falta, pausás una mesa desde lejos.',
+    Escena: EscenaFnSupervisionBillar,
+  },
+  reservasbillar: {
+    titulo: 'Reservas por horario',
+    texto: 'Reservás una mesa a nombre del cliente para una hora; queda marcada en el tablero y, cuando llegan, se abre desde la reserva y el tiempo arranca solo.',
+    Escena: EscenaFnReservasBillar,
+  },
+  pantallasalon: {
+    titulo: 'Pantalla del salón',
+    texto: 'Una TV en el salón muestra todas las mesas: las libres, el tiempo de las que juegan y la cuenta regresiva de las de tiempo fijo, con aviso al terminar.',
+    Escena: EscenaFnPantallaSalon,
+  },
   inscripcion: {
     titulo: 'Inscripción online',
     texto: 'El alumno elige el curso y el horario desde tu página y la inscripción llega a la recepción, lista para cobrar e inscribir.',
@@ -219,5 +235,5 @@ export const EXTRA_ANIMADO: Partial<Record<ClaveExtra, ClaveFuncion>> = {
   notas: 'asistencia',
   cola: 'agendabarberia',
   cabinas: 'agendaspa',
-  tv: 'menutv',
+  tv: 'pantallasalon',
 }
