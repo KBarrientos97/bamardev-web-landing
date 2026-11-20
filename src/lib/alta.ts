@@ -29,7 +29,12 @@ export function urlLogin(alias: string): string {
   return `${APP_URL}/?negocio=${encodeURIComponent(alias)}`
 }
 
-/** Un rubro que se puede crear desde la landing y el color que trae (B1). */
+/**
+ * Un rubro que se puede crear desde la landing y el color que trae (B1).
+ * `rubro` es lo que se manda en el alta: el código del rubro («RESTAURANTE») o,
+ * si la fila es una variante, el de la variante («HELADERIA»), que el backend
+ * resuelve a su rubro y guarda con su nombre (20-nov-2026).
+ */
 export interface RubroAlta {
   rubro: string
   nombre: string
@@ -71,7 +76,14 @@ export function leerOpciones(cuerpo: unknown): OpcionesAlta {
       /^#[0-9a-f]{3,8}$/i.test(String((p as PaletaAlta).color)),
   )
   return {
-    rubros: rubros.map((r) => ({ rubro: r.rubro, nombre: r.nombre, temaClave: esTexto(r.temaClave) ? r.temaClave : '' })),
+    rubros: rubros.map((r) => {
+      const variante = (r as RubroAlta & { variante?: unknown }).variante
+      return {
+        rubro: esTexto(variante) ? variante : r.rubro,
+        nombre: r.nombre,
+        temaClave: esTexto(r.temaClave) ? r.temaClave : '',
+      }
+    }),
     paletas: paletas.map((p) => ({ clave: p.clave, nombre: p.nombre, color: p.color })),
   }
 }
