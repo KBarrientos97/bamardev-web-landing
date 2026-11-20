@@ -4,6 +4,7 @@ import './Escenas.css'
 import { EscenaMinimarket, EscenaFerreteria } from './EscenasComercio'
 import { EscenaBillar, EscenaAcademia } from './EscenasBillarYAcademia'
 import { EscenaLicoreria } from './EscenasLicoreria'
+import { EscenaPostres } from './EscenasPostres'
 import { EscenaPeluqueria, EscenaBarberia } from './EscenasPelo'
 import { EscenaSpa, EscenaUnas } from './EscenasBelleza'
 
@@ -531,6 +532,7 @@ export function EscenaPollo() {
 /** Escena de cada rubro que ya tiene su ilustración animada. */
 export const ESCENAS = {
   pollo: EscenaPollo,
+  postres: EscenaPostres,
   minimarket: EscenaMinimarket,
   ferreteria: EscenaFerreteria,
   farmacia: EscenaFarmacia,

@@ -1,0 +1,89 @@
+/*
+  Keyframes propios de la escena del carrito de postres (EscenasPostres.tsx).
+  Sólo transform y opacity. Todo vive dentro de `.escena`, así que las pausas
+  fuera de pantalla y "reducir movimiento" ya vienen de index.css.
+  Ojo: `.escena svg *` fija transform-origin al centro (especificidad 0,1,1);
+  las clases que necesitan otro pivote se escriben como `.escena .clase`.
+
+  Ciclo maestro: 6,5 s, igual que el aviso (esc-chip), que asoma al 10 %. El
+  topping cae sobre el vaso justo antes (5 %) y el vaso salta entre el 5 % y el
+  11 %: el aviso de la venta llega con el salto. Cada keyframe termina con el
+  mismo valor con que empieza: el bucle no da tirón.
+*/
+
+@keyframes esc-postre-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes esc-postre-sombra {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.96); }
+}
+
+/*
+  El vaso que se vende, en su lugar del mostrador:
+  0–20 %   servido, con su topping (cae al 5 %)
+  20–30 %  se lo llevan: sale hacia la derecha y se desvanece
+  31 %     vuelve vacío, invisible
+  34–42 %  aparece en el mostrador (lo sirven de nuevo)
+*/
+@keyframes esc-postre-vaso {
+  0%, 20% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  30% { transform: translate(34px, -6px) scale(0.92); opacity: 0; }
+  31% { transform: translate(0, 4px) scale(0.6); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  42%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+/* el vaso recibe el topping: se aplasta y rebota (pivote en la base) */
+@keyframes esc-postre-rebote {
+  0%, 4%, 100% { transform: scale(1, 1); }
+  6% { transform: scale(1.1, 0.88); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  9% { transform: scale(0.96, 1.05); }
+  12% { transform: scale(1, 1); }
+}
+/*
+  El topping (la frutilla con su chocolate) y las grageas viajan dentro del
+  vaso, así que se van con él. Caen desde arriba al 88–100 % y se asientan al
+  5 %; mientras el vaso no está (31–84 %) esperan arriba, invisibles.
+*/
+@keyframes esc-postre-topping {
+  0% { transform: translateY(-6px); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  5%, 30% { transform: translateY(0); opacity: 1; }
+  31%, 84% { transform: translateY(-46px); opacity: 0; }
+  88% { transform: translateY(-46px); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  100% { transform: translateY(-6px); opacity: 1; }
+}
+@keyframes esc-postre-gragea {
+  0%, 30% { transform: translateY(0); opacity: 1; }
+  31%, 84% { transform: translateY(-40px); opacity: 0; }
+  88% { transform: translateY(-40px); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  100% { transform: translateY(0); opacity: 1; }
+}
+/* aro de la venta sobre el vaso */
+@keyframes esc-postre-aro {
+  0%, 4% { transform: scale(0.45); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  6% { transform: scale(0.6); opacity: 0.85; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  22%, 100% { transform: scale(2); opacity: 0; }
+}
+/* destellos que saltan del vaso */
+@keyframes esc-postre-chispa {
+  0%, 5% { transform: scale(0) rotate(0deg); opacity: 0; }
+  9% { transform: scale(1) rotate(45deg); opacity: 1; }
+  18%, 100% { transform: scale(0.4) rotate(90deg); opacity: 0; }
+}
+/* el brillo que cruza el toldo */
+@keyframes esc-postre-brillo {
+  0%, 40% { transform: translateX(0); opacity: 0; }
+  44% { opacity: 1; }
+  70% { transform: translateX(var(--d, 80px)); opacity: 1; }
+  74%, 100% { transform: translateX(var(--d, 80px)); opacity: 0; }
+}
+
+.esc-postre-flota { animation: esc-postre-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-postre-sombra { animation: esc-postre-sombra 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-postre-vaso { animation: esc-postre-vaso 6.5s infinite; }
+.escena .esc-postre-rebote { animation: esc-postre-rebote 6.5s infinite; transform-origin: 50% 100%; }
+.esc-postre-topping { animation: esc-postre-topping 6.5s infinite; }
+.esc-postre-gragea { animation: esc-postre-gragea 6.5s infinite; }
+.esc-postre-aro { animation: esc-postre-aro 6.5s infinite; }
+.esc-postre-chispa { animation: esc-postre-chispa 6.5s infinite; }
+.esc-postre-brillo { animation: esc-postre-brillo 6.5s ease-in-out infinite; }
