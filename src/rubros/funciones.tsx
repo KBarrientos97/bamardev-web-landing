@@ -4,6 +4,16 @@ import { EscenaFnOffline, EscenaFnInventario, EscenaFnDelivery } from '../compon
 import { EscenaFnReportes, EscenaFnFiado, EscenaFnRoles } from '../components/EscenasFuncionesB'
 import { ESCENAS } from '../components/Escenas'
 import { EscenaFnMenuTv } from '../components/EscenasMenuTv'
+import { EscenaFnTickets, EscenaFnPlataformas } from '../components/EscenasFnComida'
+import { EscenaFnCatalogoWeb, EscenaFnSucursales, EscenaFnVentaPeso, EscenaFnEncargos } from '../components/EscenasFnTiendas'
+import {
+  EscenaFnAgendaBarberia,
+  EscenaFnAgendaSpa,
+  EscenaFnAgendaUnas,
+  EscenaFnReservaOnline,
+  EscenaFnComisiones,
+} from '../components/EscenasFnAgenda'
+import { EscenaFnInscripcionWeb, EscenaFnCuotas, EscenaFnGrupos, EscenaFnAsistencia } from '../components/EscenasFnAcademia'
 
 /*
   Las funciones que muestra la página /rubros, cada una con su animación.
@@ -32,9 +42,19 @@ export const FUNCIONES: Record<ClaveFuncion, Funcion> = {
     Escena: ESCENAS.pollo,
   },
   menutv: {
-    titulo: 'Tu menú en la TV',
-    texto: 'La tele del local pasa tus platos con su foto y su precio. Lo cambiás desde el sistema y la TV se actualiza sola.',
+    titulo: 'Tu menú en las TV del local',
+    texto: 'Una tele pasa tus platos y promos con foto y precio; la otra, la carta completa. Lo cambiás desde el sistema y las dos se actualizan solas.',
     Escena: EscenaFnMenuTv,
+  },
+  tickets: {
+    titulo: 'Pedidos con número',
+    texto: 'Al cobrar sale el ticket con su número; la TV de pedidos lo pasa de «Preparando» a «Listo» y el cliente lo retira sin gritar nombres.',
+    Escena: EscenaFnTickets,
+  },
+  plataformas: {
+    titulo: 'Pedidos de Yango y PedidosYa',
+    texto: 'Registrás cada pedido de las apps con un toque, el stock baja solo y el reporte te muestra cuánto te tiene que pagar cada app por período.',
+    Escena: EscenaFnPlataformas,
   },
   toppings: {
     titulo: 'Tamaños y toppings',
@@ -51,10 +71,55 @@ export const FUNCIONES: Record<ClaveFuncion, Funcion> = {
     texto: 'Cada lote con su fecha: el sistema avisa lo que vence y no deja vender nada vencido (Profesional).',
     Escena: ESCENAS.farmacia,
   },
+  encargos: {
+    titulo: 'Encargos',
+    texto: 'Lo que el cliente pidió y no había queda anotado; cuando llega la mercadería, el encargo pasa a «Llegó» y le avisás por WhatsApp.',
+    Escena: EscenaFnEncargos,
+  },
+  peso: {
+    titulo: 'Venta por kilo, litro o metro',
+    texto: 'Cantidades con decimales: pesás o medís, el precio se calcula solo y la línea entra al ticket.',
+    Escena: EscenaFnVentaPeso,
+  },
+  sucursales: {
+    titulo: 'Varias sucursales',
+    texto: 'Cada local con su caja y su stock; transferís mercadería entre ellos y ves las ventas de todos juntos desde el celular.',
+    Escena: EscenaFnSucursales,
+  },
+  catalogoweb: {
+    titulo: 'Tu página web con catálogo',
+    texto: 'Tus productos con foto y precio en tu propia página; el cliente arma su pedido y te llega por WhatsApp, listo para cobrar.',
+    Escena: EscenaFnCatalogoWeb,
+  },
   agenda: {
     titulo: 'Agenda y turnos',
     texto: 'La agenda de cada profesional, sin turnos repetidos, y la cita se cobra en la misma caja.',
     Escena: ESCENAS.peluqueria,
+  },
+  agendabarberia: {
+    titulo: 'Agenda de barberos y cola sin turno',
+    texto: 'Cada barbero con su agenda, sin turnos repetidos, y en la misma pantalla la cola de los que llegan sin turno.',
+    Escena: EscenaFnAgendaBarberia,
+  },
+  agendaspa: {
+    titulo: 'Cabinas y terapeutas sin choques',
+    texto: 'Cada masaje ocupa la cabina y la terapeuta a la vez: el sistema no deja dar dos turnos a la misma hora.',
+    Escena: EscenaFnAgendaSpa,
+  },
+  agendaunas: {
+    titulo: 'Tu clienta elige la hora',
+    texto: 'Elige el servicio, la profesional y el horario desde su celular, y la cita cae sola en tu agenda.',
+    Escena: EscenaFnAgendaUnas,
+  },
+  reserva: {
+    titulo: 'Reservas online',
+    texto: 'Tu enlace de reservas muestra sólo los horarios libres; el cliente reserva, paga el anticipo con QR si lo pedís y el turno cae en tu agenda.',
+    Escena: EscenaFnReservaOnline,
+  },
+  comisiones: {
+    titulo: 'Comisiones y propinas',
+    texto: 'Al cobrar cada servicio se calcula la comisión de la profesional y la propina va aparte; al cerrar el día ves cuánto le toca a cada una.',
+    Escena: EscenaFnComisiones,
   },
   tiempo: {
     titulo: 'Cobro por tiempo',
@@ -65,6 +130,26 @@ export const FUNCIONES: Record<ClaveFuncion, Funcion> = {
     titulo: 'Grupos y cuotas',
     texto: 'Calendario de grupos, inscripciones, cuotas con QR y la asistencia de cada alumno.',
     Escena: ESCENAS.academia,
+  },
+  inscripcion: {
+    titulo: 'Inscripción online',
+    texto: 'El alumno elige el curso y el horario desde tu página y la inscripción llega a la recepción, lista para cobrar e inscribir.',
+    Escena: EscenaFnInscripcionWeb,
+  },
+  cuotas: {
+    titulo: 'Cobro de cuotas con QR',
+    texto: 'El recordatorio con el QR llega por WhatsApp; el alumno paga y su cuota del mes pasa a pagada en su estado de cuenta.',
+    Escena: EscenaFnCuotas,
+  },
+  grupos: {
+    titulo: 'Grupos y horarios',
+    texto: 'El calendario de cada sede con sus franjas: abrís un grupo en un horario libre con su aula y su docente, y ves los cupos que quedan.',
+    Escena: EscenaFnGrupos,
+  },
+  asistencia: {
+    titulo: 'Asistencia',
+    texto: 'El docente pasa lista desde su celular y ves el porcentaje de asistencia de cada grupo y de cada alumno.',
+    Escena: EscenaFnAsistencia,
   },
   delivery: {
     titulo: 'Delivery y recojo',
@@ -116,4 +201,23 @@ export const EXTRAS: Record<ClaveExtra, { emoji: string; texto: string }> = {
   cobranza: { emoji: '💬', texto: 'Cobranza de cuotas por WhatsApp con QR' },
   notas: { emoji: '📊', texto: 'Notas y asistencia de cada alumno' },
   planilla: { emoji: '🧾', texto: 'Planilla de pago de los docentes' },
+}
+
+/**
+ * Un extra que ya tiene su animación no se repite en «Y además»: la página web
+ * es el catálogo, las sucursales, las plataformas…
+ */
+export const EXTRA_ANIMADO: Partial<Record<ClaveExtra, ClaveFuncion>> = {
+  pagina: 'catalogoweb',
+  sucursales: 'sucursales',
+  kg: 'peso',
+  plataformas: 'plataformas',
+  reservas: 'reserva',
+  comisiones: 'comisiones',
+  inscripciones: 'inscripcion',
+  cobranza: 'cuotas',
+  notas: 'asistencia',
+  cola: 'agendabarberia',
+  cabinas: 'agendaspa',
+  tv: 'menutv',
 }

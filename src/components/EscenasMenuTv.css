@@ -1,66 +1,75 @@
 /*
   Keyframes de la escena «Menú en la TV» (EscenasMenuTv.tsx). Sólo transform y
-  opacity. Todo vive dentro de `.escena`, así que las pausas fuera de pantalla y
-  "reducir movimiento" ya vienen de index.css.
+  opacity. Todo vive dentro de `.escena`, así que la pausa fuera de pantalla y
+  «reducir movimiento» ya vienen de index.css.
 
-  Ciclo maestro: 6,5 s, el del aviso (esc-chip). La TV pasa tres platos, uno por
-  tercio del ciclo (0 %, 33 % y 66 %): cada uno usa el mismo keyframe con su
-  desfase. La franja de la lista baja al plato que se está mostrando, y el
-  celular de al lado "toca" justo antes de cada cambio.
+  Ciclo maestro: 6,5 s. La TV 1 pasa tres platos, uno por tercio del ciclo (0 %,
+  33 % y 66 %): cada plato y su punto del carrusel usan el mismo keyframe con su
+  desfase. La franja de la carta (TV 2) baja al plato nuevo durante el cambio, y
+  el cliente gira la cabeza de una tele a la otra.
+
+  El estilo base (fuera del @keyframes) es la imagen quieta de «reducir
+  movimiento»: el primer plato en pantalla y la franja en su fila.
 */
 
-@keyframes esc-tv-flota {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-1.6px); }
+/*
+  cada plato: entra desde la derecha, se queda su tercio y sale por la izquierda
+  mientras entra el siguiente (se cruzan entre el 33 y el 37 %: la tele nunca queda negra)
+*/
+@keyframes esc-mtv-plato {
+  0% { opacity: 0; transform: translateX(var(--dx, 12px)); }
+  4%, 33% { opacity: 1; transform: translateX(0); }
+  37%, 100% { opacity: 0; transform: translateX(calc(var(--dx, 12px) * -1)); }
 }
 
-/* cada plato: entra, se queda su tercio y se va */
-@keyframes esc-tv-plato {
-  0% { opacity: 0; transform: translateY(5px) scale(0.92); }
-  5%, 29% { opacity: 1; transform: translateY(0) scale(1); }
-  33%, 100% { opacity: 0; transform: translateY(-4px) scale(0.96); }
+/* el nombre y el precio no se cruzan (dos textos encimados no se leen): uno sale y el otro entra */
+@keyframes esc-mtv-texto {
+  0%, 2% { opacity: 0; transform: translateX(var(--dx, 5px)); }
+  5%, 33% { opacity: 1; transform: translateX(0); }
+  35%, 100% { opacity: 0; transform: translateX(calc(var(--dx, 5px) * -1)); }
 }
 
-/* la franja de la lista sigue al plato de la pantalla */
-@keyframes esc-tv-franja {
-  0%, 30% { transform: translateY(0); }
-  34%, 63% { transform: translateY(14px); }
-  67%, 96% { transform: translateY(28px); }
-  100% { transform: translateY(0); }
+/* el punto del carrusel del plato que está en pantalla */
+@keyframes esc-mtv-punto {
+  0% { opacity: 0; transform: scale(0.6); }
+  4%, 33% { opacity: 1; transform: scale(1.15); }
+  37%, 100% { opacity: 0; transform: scale(0.6); }
 }
 
-/* la etiqueta PROMO late */
-@keyframes esc-tv-promo {
+/* la franja de la carta: Pollo frito (0), Hamburguesa (+7) y Copa helada (+29) */
+@keyframes esc-mtv-franja {
+  0% { transform: translateY(29px); }
+  4%, 33% { transform: translateY(0); }
+  37%, 66% { transform: translateY(7px); }
+  70%, 100% { transform: translateY(29px); }
+}
+
+/* la etiqueta PROMO late (3,25 s = medio ciclo) */
+@keyframes esc-mtv-promo {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.12); }
+  50% { transform: scale(1.1); }
 }
 
-/* el brillo que cruza la pantalla */
-@keyframes esc-tv-brillo {
+/* el brillo de vidrio que cruza cada pantalla */
+@keyframes esc-mtv-brillo {
   0%, 55% { transform: translateX(0); opacity: 0; }
   60% { opacity: 1; }
-  85% { transform: translateX(var(--d, 200px)); opacity: 1; }
-  90%, 100% { transform: translateX(var(--d, 200px)); opacity: 0; }
+  85% { transform: translateX(var(--d, 150px)); opacity: 1; }
+  90%, 100% { transform: translateX(var(--d, 150px)); opacity: 0; }
 }
 
-/* el toque en el celular, antes de cada cambio de plato */
-@keyframes esc-tv-toque {
-  0% { transform: scale(0.4); opacity: 0; }
-  12% { opacity: 0.85; }
-  60%, 100% { transform: scale(1.9); opacity: 0; }
+/* el cliente mira la tele de la izquierda y después la de la derecha */
+@keyframes esc-mtv-mira {
+  0%, 28% { transform: translateX(-0.8px) rotate(-8deg); }
+  40%, 82% { transform: translateX(0.8px) rotate(8deg); }
+  94%, 100% { transform: translateX(-0.8px) rotate(-8deg); }
 }
 
-/* el vapor del café */
-@keyframes esc-tv-vapor {
-  0% { transform: translateY(2px); opacity: 0; }
-  40% { opacity: 0.8; }
-  100% { transform: translateY(-6px); opacity: 0; }
-}
-
-.esc-tv-flota { animation: esc-tv-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
-.esc-tv-plato { animation: esc-tv-plato 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
-.esc-tv-franja { animation: esc-tv-franja 6.5s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
-.esc-tv-promo { animation: esc-tv-promo 1.6s ease-in-out infinite; }
-.esc-tv-brillo { animation: esc-tv-brillo 6.5s ease-in-out infinite; }
-.esc-tv-toque { animation: esc-tv-toque 2.1667s ease-out 1.95s infinite; }
-.esc-tv-vapor { animation: esc-tv-vapor 1.8s ease-out infinite; }
+.escena .esc-mtv-plato { animation: esc-mtv-plato 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+.escena .esc-mtv-texto { animation: esc-mtv-texto 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+.escena .esc-mtv-punto { animation: esc-mtv-punto 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+.escena .esc-mtv-franja { animation: esc-mtv-franja 6.5s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+.escena .esc-mtv-promo { animation: esc-mtv-promo 3.25s ease-in-out infinite; }
+.escena .esc-mtv-brillo { opacity: 0; animation: esc-mtv-brillo 6.5s ease-in-out infinite; }
+/* gira desde el cuello */
+.escena .esc-mtv-mira { transform-origin: 50% 100%; animation: esc-mtv-mira 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }

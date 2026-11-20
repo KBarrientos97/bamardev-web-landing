@@ -193,6 +193,12 @@ function Asistente() {
       .then((cuerpo: unknown) => {
         const { rubros, paletas } = leerOpciones(cuerpo)
         setOpciones(rubros.length ? { estado: 'listo', rubros, paletas } : { estado: 'error' })
+        // /empezar?rubro=PANADERIA (el «Probar gratis» de /rubros): llega con
+        // el rubro elegido, si se puede crear desde acá y no eligió otro.
+        const pedido = new URLSearchParams(window.location.search).get('rubro')?.toUpperCase()
+        if (pedido && rubros.some((r) => r.rubro === pedido)) {
+          setDatos((d) => (d.rubro ? d : { ...d, rubro: pedido }))
+        }
       })
       .catch(() => {
         if (!control.signal.aborted) setOpciones({ estado: 'error' })

@@ -6,7 +6,7 @@ import { ESCENAS } from '../components/Escenas'
 import { WhatsAppIcon } from '../components/ui'
 import { Escalonado, SUAVE, itemVariantes } from '../components/animacion'
 import { WhatsAppFlotante } from '../components/WhatsAppFlotante'
-import { EXTRAS, FUNCIONES } from './funciones'
+import { EXTRA_ANIMADO, EXTRAS, FUNCIONES } from './funciones'
 
 /*
   /rubros (pedido del dueño, 20-nov-2026): todos los rubros en un lugar, para
@@ -207,7 +207,11 @@ function Detalle({ rubro }: { rubro: RubroLanding }) {
   // La función que cuenta la escena del rubro (la comanda en el restaurante) ya
   // se ve arriba: abajo no se repite la misma animación.
   const funciones = rubro.funciones.map((c) => FUNCIONES[c]).filter((f) => f.Escena !== (escenaPropia as unknown as () => ReactElement))
-  const conAsterisco = rubro.puntos.some((p) => p.endsWith('*')) || rubro.extras.some((e) => EXTRAS[e].texto.endsWith('*'))
+  const extras = rubro.extras.filter((e) => {
+    const animada = EXTRA_ANIMADO[e]
+    return !animada || !rubro.funciones.includes(animada)
+  })
+  const conAsterisco = rubro.puntos.some((p) => p.endsWith('*')) || extras.some((e) => EXTRAS[e].texto.endsWith('*'))
 
   return (
     <div>
@@ -218,7 +222,8 @@ function Detalle({ rubro }: { rubro: RubroLanding }) {
             {grupo?.emoji} {grupo?.nombre}
           </p>
           <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">{rubro.nombre}</h2>
-          <p className="mt-3 text-lg text-slate-600">{rubro.lema}</p>
+          <p className="mt-3 text-lg font-semibold text-slate-700">{rubro.lema}</p>
+          <p className="mt-3 leading-relaxed text-slate-600">{rubro.descripcion}</p>
           <ul className="mt-5 space-y-2.5 text-slate-700">
             {rubro.puntos.map((p) => (
               <li key={p} className="flex gap-2.5">
@@ -238,7 +243,7 @@ function Detalle({ rubro }: { rubro: RubroLanding }) {
               Quiero verlo
             </a>
             <a
-              href="/empezar"
+              href={`/empezar?rubro=${encodeURIComponent(rubro.alta)}`}
               className="inline-flex items-center justify-center rounded-full border-2 border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-800 transition hover:-translate-y-0.5 hover:border-brand-300 hover:text-brand-700 active:scale-[0.97]"
             >
               Probar gratis
@@ -268,11 +273,11 @@ function Detalle({ rubro }: { rubro: RubroLanding }) {
         ))}
       </Escalonado>
 
-      {rubro.extras.length > 0 && (
+      {extras.length > 0 && (
         <div className="mt-10 rounded-3xl bg-slate-50 p-6 ring-1 ring-slate-200 sm:p-8">
           <h4 className="text-lg font-extrabold text-slate-900">Y además</h4>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {rubro.extras.map((e) => (
+            {extras.map((e) => (
               <li key={e} className="flex items-center gap-3 text-sm font-semibold text-slate-700">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-lg shadow-sm ring-1 ring-slate-200">
                   {EXTRAS[e].emoji}

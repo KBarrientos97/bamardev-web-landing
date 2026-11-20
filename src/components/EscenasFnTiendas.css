@@ -1,0 +1,545 @@
+/*
+  Keyframes de las ilustraciones de «Funciones» para tiendas (EscenasFnTiendas.tsx): catálogo
+  web, sucursales, venta por peso y encargos. Sólo transform y opacity. Todo vive dentro de
+  `.escena`, así que la pausa fuera de pantalla y «reducir movimiento» vienen de index.css.
+
+  Ciclo maestro: 6,5 s, el del <Aviso> (esc-chip), que asoma al 10 % global. Los keyframes
+  están en «tiempo local» y cada elemento se adelanta 2,6 s (40 %) con
+  `animation-delay: calc(var(--d, 0s) - 2.6s)`: local 0 % = global 60 % (el aviso anterior ya
+  se está yendo), la historia se arma entre el 0 y el 48 % local y el aviso cae al 50 % local.
+  Se queda armada hasta el ~90 % local y vuelve a cero entre el 90 y el 100 %. `--d` escalona
+  piezas de una misma familia (ondas, monedas); todos los retrasos quedan negativos.
+
+  Ojo: `.escena svg *` fija transform-origin al centro (especificidad 0,1,1); las clases
+  que necesitan otro pivote se escriben como `.escena .clase` (0,2,0).
+
+  El estilo base de cada clase (fuera del @keyframes) es la imagen quieta de «reducir
+  movimiento»: la historia ya terminada.
+*/
+
+/* respiración del conjunto (2 px), común a las cuatro */
+@keyframes esc-ti-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+.escena .esc-ti-flota { animation: esc-ti-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+/* luz de «en vivo» (3,25 s = mitad exacta del ciclo) */
+@keyframes esc-ti-led {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.55; }
+}
+.escena .esc-ti-led { animation: esc-ti-led 3.25s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  1 · CATÁLOGO WEB                                                   */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (local):
+   5–9     entra el dedo; 11 toca el «+» de la polera (tilde 12, carrito «1» 13)
+   15–21   va a la taza; 23 toca (tilde 24, carrito «2» 25)
+   27–33   va al botón; 35 toca «Pedir por WhatsApp»
+   37–45   el globito con el monto viaja en arco a la laptop
+   44–48   el pedido entra arriba de la bandeja y empuja a los anteriores
+   50      aviso «Pedido nuevo»
+   90–98   todo vuelve a cero
+*/
+
+@keyframes esc-ti-cw-dedo {
+  0%, 4% { transform: translate(10px, 14px) scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  9% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  11% { transform: translate(0, 0) scale(0.75); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  13%, 15% { transform: translate(0, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  21% { transform: translate(33px, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  23% { transform: translate(33px, 0) scale(0.75); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  25%, 27% { transform: translate(33px, 0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  33% { transform: translate(15px, 53px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  35% { transform: translate(15px, 53px) scale(0.75); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  37%, 39% { transform: translate(15px, 53px) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  43% { transform: translate(20px, 60px) scale(1); opacity: 0; }
+  43.1%, 100% { transform: translate(10px, 14px) scale(1); opacity: 0; }
+}
+/* onda de cada toque (la de la taza va 0,78 s atrás y la del botón 1,56 s) */
+@keyframes esc-ti-cw-onda {
+  0%, 10.5% { transform: scale(0.6); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  11% { transform: scale(0.6); opacity: 0.9; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  19%, 100% { transform: scale(2.3); opacity: 0; }
+}
+/* el «+» de cada producto tocado se vuelve tilde */
+@keyframes esc-ti-cw-ok1 {
+  0%, 11.5% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  14.5%, 92% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  95%, 100% { transform: scale(0.3); opacity: 0; }
+}
+@keyframes esc-ti-cw-ok2 {
+  0%, 23.5% { transform: scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  26.5%, 92% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  95%, 100% { transform: scale(0.3); opacity: 0; }
+}
+/* contador del carrito: nace con el primer producto y late con el segundo */
+@keyframes esc-ti-cw-badge {
+  0%, 12.5% { transform: scale(0); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  15.5% { transform: scale(1.15); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  17.5%, 24.5% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  26.5% { transform: scale(1.3); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  29%, 92% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  95%, 100% { transform: scale(0); opacity: 0; }
+}
+@keyframes esc-ti-cw-uno {
+  0%, 25.5% { opacity: 1; }
+  26%, 99.9% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes esc-ti-cw-dos {
+  0%, 25.5% { opacity: 0; }
+  26%, 99.9% { opacity: 1; }
+  100% { opacity: 0; }
+}
+/* el botón se hunde al tocarlo */
+@keyframes esc-ti-cw-boton {
+  0%, 33.5% { transform: scale(1); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  35% { transform: scale(0.93); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  38.5%, 100% { transform: scale(1); }
+}
+/* vuelo del globito: x pareja, y sube rápido y cae acelerando (arco), tamaño aparte */
+@keyframes esc-ti-cw-vx {
+  0%, 37% { transform: translateX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  45% { transform: translateX(108.5px); }
+  45.1%, 100% { transform: translateX(0); }
+}
+@keyframes esc-ti-cw-vy {
+  0%, 37% { transform: translateY(0); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  41% { transform: translateY(-52px); animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0); }
+  45% { transform: translateY(-31px); }
+  45.1%, 100% { transform: translateY(0); }
+}
+@keyframes esc-ti-cw-vs {
+  0%, 36.5% { transform: scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  39% { transform: scale(1.05); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  43% { transform: scale(0.9); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  45.5%, 100% { transform: scale(0.35); opacity: 0; }
+}
+/* la bandeja: los pedidos anteriores bajan un renglón y entra el nuevo arriba */
+@keyframes esc-ti-cw-viejos {
+  0%, 44% { transform: translateY(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  47.5%, 93% { transform: translateY(14px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  98%, 100% { transform: translateY(0); }
+}
+@keyframes esc-ti-cw-nuevo {
+  0%, 44.5% { transform: translateX(-8px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  48%, 89% { transform: translateX(0); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  92.5% { transform: translateX(0); opacity: 0; }
+  92.6%, 100% { transform: translateX(-8px); opacity: 0; }
+}
+@keyframes esc-ti-cw-brillo {
+  0%, 46% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  48.5% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  75%, 100% { opacity: 0; }
+}
+
+.escena .esc-ti-cw-dedo { opacity: 0; animation: esc-ti-cw-dedo 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-cw-onda { opacity: 0; animation: esc-ti-cw-onda 6.5s infinite; animation-delay: calc(var(--d, 0s) - 2.6s); }
+.escena .esc-ti-cw-ok1 { animation: esc-ti-cw-ok1 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-cw-ok2 { animation: esc-ti-cw-ok2 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-cw-badge { animation: esc-ti-cw-badge 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-cw-uno { opacity: 0; animation: esc-ti-cw-uno 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-cw-dos { animation: esc-ti-cw-dos 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-cw-boton { animation: esc-ti-cw-boton 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-cw-vx { animation: esc-ti-cw-vx 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-cw-vy { animation: esc-ti-cw-vy 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-cw-vs { opacity: 0; animation: esc-ti-cw-vs 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-cw-viejos { transform: translateY(14px); animation: esc-ti-cw-viejos 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-cw-nuevo { animation: esc-ti-cw-nuevo 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-cw-brillo { opacity: 0; animation: esc-ti-cw-brillo 6.5s infinite; animation-delay: -2.6s; }
+
+/* ------------------------------------------------------------------ */
+/*  2 · SUCURSALES                                                     */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (local):
+   5       suena la caja del Centro (cajón y pantalla); 6–16 su moneda vuela al tablero
+   11      suena la del Norte (--d = 0,39 s = 6 %); 12–22 su moneda vuela
+   16 / 22 rueda la cifra de cada sucursal; el total rueda dos veces (17 y 23)
+   28–31   sale la caja de la transferencia del Centro; su stock baja a 28
+   31–43   cruza en arco por encima del tablero; 43 aterriza en la puerta del Norte
+   44–46   el stock del Norte sube a 20 (de ámbar a verde) y sale una onda
+   50      aviso «Transferencia recibida»
+   92–97   todo vuelve a cero
+*/
+
+/* caja registradora: el cajón sale y la pantalla se enciende */
+@keyframes esc-ti-su-cajon {
+  0%, 4% { transform: translateY(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  6% { transform: translateY(2.6px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  12%, 100% { transform: translateY(0); }
+}
+@keyframes esc-ti-su-luz {
+  0%, 4% { opacity: 0.35; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  5.5% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  14%, 100% { opacity: 0.35; }
+}
+/* monedas: x pareja, y en arco (--pk = altura, --dy = destino), tamaño aparte */
+@keyframes esc-ti-su-mx {
+  0%, 6% { transform: translateX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  15.5% { transform: translateX(var(--dx)); }
+  15.6%, 100% { transform: translateX(0); }
+}
+@keyframes esc-ti-su-my {
+  0%, 6% { transform: translateY(0); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  10.5% { transform: translateY(var(--pk)); animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0); }
+  15.5% { transform: translateY(var(--dy)); }
+  15.6%, 100% { transform: translateY(0); }
+}
+@keyframes esc-ti-su-ms {
+  0%, 5% { transform: scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  7.5% { transform: scale(1.1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  14% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  16%, 100% { transform: scale(0.3); opacity: 0; }
+}
+/* cifras del tablero: la vieja sube y se va, la nueva entra desde abajo */
+@keyframes esc-ti-su-c0 {
+  0%, 15.5% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  17.5% { transform: translateY(-3px); opacity: 0; }
+  17.6%, 93% { transform: translateY(3px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  96%, 100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes esc-ti-su-c1 {
+  0%, 16% { transform: translateY(3px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  18.5%, 93% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  95.5% { transform: translateY(-3px); opacity: 0; }
+  95.6%, 100% { transform: translateY(3px); opacity: 0; }
+}
+@keyframes esc-ti-su-n0 {
+  0%, 21.5% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  23.5% { transform: translateY(-3px); opacity: 0; }
+  23.6%, 93% { transform: translateY(3px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  96%, 100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes esc-ti-su-n1 {
+  0%, 22% { transform: translateY(3px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  24.5%, 93% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  95.5% { transform: translateY(-3px); opacity: 0; }
+  95.6%, 100% { transform: translateY(3px); opacity: 0; }
+}
+@keyframes esc-ti-su-t0 {
+  0%, 16.5% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  18.5% { transform: translateY(-3px); opacity: 0; }
+  18.6%, 93% { transform: translateY(3px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  96%, 100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes esc-ti-su-t1 {
+  0%, 17% { transform: translateY(3px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  19.5%, 22.5% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  24.5% { transform: translateY(-3px); opacity: 0; }
+  24.6%, 100% { transform: translateY(3px); opacity: 0; }
+}
+@keyframes esc-ti-su-t2 {
+  0%, 23% { transform: translateY(3px) scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  25.5% { transform: translateY(0) scale(1.12); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  27.5%, 93% { transform: translateY(0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  95.5% { transform: translateY(-3px) scale(1); opacity: 0; }
+  95.6%, 100% { transform: translateY(3px) scale(1); opacity: 0; }
+}
+/* chapas de stock: Centro 40 → 28 al salir la caja; Norte 8 → 20 al llegar */
+@keyframes esc-ti-su-sc0 {
+  0%, 29% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  31% { transform: scale(0.85); opacity: 0; }
+  31.1%, 93% { transform: scale(0.85); opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { transform: scale(1); opacity: 1; }
+}
+@keyframes esc-ti-su-sc1 {
+  0%, 29.5% { transform: scale(0.85); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  32.5%, 93% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { transform: scale(0.85); opacity: 0; }
+}
+@keyframes esc-ti-su-sn0 {
+  0%, 43.5% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  45% { transform: scale(0.85); opacity: 0; }
+  45.1%, 93% { transform: scale(0.85); opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { transform: scale(1); opacity: 1; }
+}
+@keyframes esc-ti-su-sn1 {
+  0%, 44% { transform: scale(0.8); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  47% { transform: scale(1.18); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  49.5%, 93% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  96%, 100% { transform: scale(0.8); opacity: 0; }
+}
+/* la caja de la transferencia: x pareja, y salta de la puerta y cruza en arco */
+@keyframes esc-ti-su-bx {
+  0%, 31% { transform: translateX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  43%, 49.5% { transform: translateX(154px); }
+  49.6%, 100% { transform: translateX(0); }
+}
+@keyframes esc-ti-su-by {
+  0%, 28% { transform: translateY(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  30.5%, 31% { transform: translateY(-6px); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  37% { transform: translateY(-54px); animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0); }
+  43% { transform: translateY(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  44.5% { transform: translateY(-2px); animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  46%, 100% { transform: translateY(0); }
+}
+@keyframes esc-ti-su-bs {
+  0%, 27% { transform: scale(0.5); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  30% { transform: scale(1.06); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  32% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  43% { transform: scale(1.12, 0.86); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  45.5%, 46.5% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  49.5%, 100% { transform: scale(0.5); opacity: 0; }
+}
+/* onda en la puerta del Norte al recibir */
+@keyframes esc-ti-su-onda {
+  0%, 43.5% { transform: scale(0.5); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  44% { transform: scale(0.5); opacity: 0.9; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  56%, 100% { transform: scale(1.8); opacity: 0; }
+}
+
+.escena .esc-ti-su-cajon { animation: esc-ti-su-cajon 6.5s infinite; animation-delay: calc(var(--d, 0s) - 2.6s); }
+.escena .esc-ti-su-luz { opacity: 0.35; animation: esc-ti-su-luz 6.5s infinite; animation-delay: calc(var(--d, 0s) - 2.6s); }
+.escena .esc-ti-su-mx { animation: esc-ti-su-mx 6.5s infinite; animation-delay: calc(var(--d, 0s) - 2.6s); }
+.escena .esc-ti-su-my { animation: esc-ti-su-my 6.5s infinite; animation-delay: calc(var(--d, 0s) - 2.6s); }
+.escena .esc-ti-su-ms { opacity: 0; animation: esc-ti-su-ms 6.5s infinite; animation-delay: calc(var(--d, 0s) - 2.6s); }
+.escena .esc-ti-su-c0 { opacity: 0; animation: esc-ti-su-c0 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-c1 { animation: esc-ti-su-c1 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-n0 { opacity: 0; animation: esc-ti-su-n0 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-n1 { animation: esc-ti-su-n1 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-t0 { opacity: 0; animation: esc-ti-su-t0 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-t1 { opacity: 0; animation: esc-ti-su-t1 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-t2 { animation: esc-ti-su-t2 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-sc0 { opacity: 0; animation: esc-ti-su-sc0 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-sc1 { animation: esc-ti-su-sc1 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-sn0 { opacity: 0; animation: esc-ti-su-sn0 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-sn1 { animation: esc-ti-su-sn1 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-bx { animation: esc-ti-su-bx 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-by { animation: esc-ti-su-by 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-bs { opacity: 0; animation: esc-ti-su-bs 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-su-onda { opacity: 0; animation: esc-ti-su-onda 6.5s infinite; animation-delay: -2.6s; }
+
+/* ------------------------------------------------------------------ */
+/*  3 · VENTA POR PESO                                                 */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (local):
+   4–9,5   baja la bolsa de clavos; 9,5 apoya (el plato se hunde, la bolsa se aplasta)
+   10–22   el peso sube 0,000 → 1,250 (cada renglón rebota un poco) y se asienta
+   24      luz de estable; 25–28 el total pasa de 0,00 a 22,50
+   29–38   el monto viaja como ficha a la pantalla de la caja
+   38–41   entra la línea «Clavos 2"»; 43–45 el total del ticket rueda a Bs 43,50
+   50      aviso «Venta por peso»
+   89–96   la bolsa se va, el visor y el ticket vuelven a cero
+*/
+
+@keyframes esc-ti-pe-bolsa {
+  0%, 3% { transform: translateY(-34px) scale(1, 1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  5% { transform: translateY(-30px) scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  9.5% { transform: translateY(0) scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  11% { transform: translateY(0) scale(1.05, 0.93); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  13.5% { transform: translateY(0) scale(0.99, 1.02); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  15.5%, 89% { transform: translateY(0) scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  95% { transform: translateY(-30px) scale(1, 1); opacity: 0; }
+  95.1%, 100% { transform: translateY(-34px) scale(1, 1); opacity: 0; }
+}
+@keyframes esc-ti-pe-plato {
+  0%, 9.5% { transform: translateY(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  11% { transform: translateY(2px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  14%, 90% { transform: translateY(1px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  94%, 100% { transform: translateY(0); }
+}
+/* tira de lecturas: un renglón (13 u) por paso; el último se asienta más lento */
+@keyframes esc-ti-pe-tira {
+  0%, 10% { transform: translateY(0); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  12.5% { transform: translateY(-13px); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  15.5% { transform: translateY(-26px); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  18.5% { transform: translateY(-39px); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  22%, 92% { transform: translateY(-52px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  95.5%, 100% { transform: translateY(0); }
+}
+@keyframes esc-ti-pe-estable {
+  0%, 22% { transform: scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  24.5%, 92% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  94%, 100% { transform: scale(0.4); opacity: 0; }
+}
+@keyframes esc-ti-pe-t0 {
+  0%, 24.5% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  25.5%, 93% { opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  95.5%, 100% { opacity: 1; }
+}
+@keyframes esc-ti-pe-t1 {
+  0%, 24.5% { transform: scale(0.7); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  27% { transform: scale(1.12); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  29%, 93% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  95.5%, 100% { transform: scale(0.7); opacity: 0; }
+}
+/* la ficha con el monto: x pareja, y en arco, tamaño aparte */
+@keyframes esc-ti-pe-cx {
+  0%, 29.5% { transform: translateX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  38% { transform: translateX(157px); }
+  38.1%, 100% { transform: translateX(0); }
+}
+@keyframes esc-ti-pe-cy {
+  0%, 29.5% { transform: translateY(0); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  33% { transform: translateY(-30px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  38% { transform: translateY(-17px); }
+  38.1%, 100% { transform: translateY(0); }
+}
+@keyframes esc-ti-pe-cs {
+  0%, 28.5% { transform: scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  31% { transform: scale(1.06); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  36% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  38.5%, 100% { transform: scale(0.5); opacity: 0; }
+}
+/* la línea nueva del ticket y su resaltado */
+@keyframes esc-ti-pe-linea {
+  0%, 37.5% { transform: translateX(-6px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  41%, 89% { transform: translateX(0); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  92.5% { transform: translateX(0); opacity: 0; }
+  92.6%, 100% { transform: translateX(-6px); opacity: 0; }
+}
+@keyframes esc-ti-pe-brillo {
+  0%, 38% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  41% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  78%, 100% { opacity: 0; }
+}
+@keyframes esc-ti-pe-ta {
+  0%, 42.5% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  44.5% { transform: translateY(-3px); opacity: 0; }
+  44.6%, 93% { transform: translateY(3px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  96%, 100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes esc-ti-pe-tb {
+  0%, 43% { transform: translateY(3px) scale(1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  45.5% { transform: translateY(0) scale(1.1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  47.5%, 93% { transform: translateY(0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  95.5% { transform: translateY(-3px) scale(1); opacity: 0; }
+  95.6%, 100% { transform: translateY(3px) scale(1); opacity: 0; }
+}
+
+.escena .esc-ti-pe-bolsa { transform-origin: 50% 100%; animation: esc-ti-pe-bolsa 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-pe-plato { transform: translateY(1px); animation: esc-ti-pe-plato 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-pe-tira { transform: translateY(-52px); animation: esc-ti-pe-tira 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-pe-estable { animation: esc-ti-pe-estable 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-pe-t0 { opacity: 0; animation: esc-ti-pe-t0 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-pe-t1 { transform-origin: 100% 50%; animation: esc-ti-pe-t1 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-pe-cx { animation: esc-ti-pe-cx 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-pe-cy { animation: esc-ti-pe-cy 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-pe-cs { opacity: 0; animation: esc-ti-pe-cs 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-pe-linea { animation: esc-ti-pe-linea 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-pe-brillo { opacity: 0; animation: esc-ti-pe-brillo 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-pe-ta { opacity: 0; animation: esc-ti-pe-ta 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-pe-tb { transform-origin: 100% 50%; animation: esc-ti-pe-tb 6.5s infinite; animation-delay: -2.6s; }
+
+/* ------------------------------------------------------------------ */
+/*  4 · ENCARGOS                                                       */
+/* ------------------------------------------------------------------ */
+
+/*
+  Guion (local):
+   2–5     aparece el renglón nuevo; 4–7 el avatar; 5–14 el texto se escribe solo
+   14–16   queda «Pendiente»
+   18–25   cae la caja del proveedor; 25 apoya (se aplasta y levanta polvito)
+   30–35   el renglón se ilumina y la pastilla gira de «Pendiente» a «Llegó ✓»
+   36–43   el globito de chat viaja al celular de la clienta
+   43–48   el celular vibra y aparece «¡Llegó tu pintura, Ana!»
+   50      aviso «Encargo listo»
+   88–96   la caja se va, el renglón se borra, el mensaje se va
+*/
+
+@keyframes esc-ti-en-fila {
+  0%, 2% { transform: translateY(4px); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  5%, 90% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  94% { transform: translateY(0); opacity: 0; }
+  94.1%, 100% { transform: translateY(4px); opacity: 0; }
+}
+@keyframes esc-ti-en-avatar {
+  0%, 4% { transform: scale(0); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  7% { transform: scale(1.15); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  8.5%, 94% { transform: scale(1); }
+  94.1%, 100% { transform: scale(0); }
+}
+/* «se escribe»: la ventana de la máscara se abre a saltos, como letras */
+@keyframes esc-ti-en-escribe {
+  0%, 5% { transform: scaleX(0); animation-timing-function: steps(9, end); }
+  14%, 94% { transform: scaleX(1); }
+  94.1%, 100% { transform: scaleX(0); }
+}
+@keyframes esc-ti-en-pend {
+  0%, 13.5% { transform: scale(0, 0); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  16.5%, 30% { transform: scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  32.5% { transform: scale(0, 1); opacity: 1; }
+  32.6%, 100% { transform: scale(0, 0); opacity: 0; }
+}
+@keyframes esc-ti-en-llego {
+  0%, 32.5% { transform: scale(0, 1); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  35.5% { transform: scale(1.1, 1.1); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  37.5%, 92% { transform: scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  94%, 100% { transform: scale(0, 1); opacity: 0; }
+}
+@keyframes esc-ti-en-flash {
+  0%, 30% { opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  33% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  70%, 100% { opacity: 0; }
+}
+/* la caja: cae acelerando, se aplasta al apoyar y se va al final */
+@keyframes esc-ti-en-caja {
+  0%, 18% { transform: translateY(-60px) scale(1, 1); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  20% { transform: translateY(-52px) scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  25% { transform: translateY(0) scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  26.5% { transform: translateY(0) scale(1.08, 0.9); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  29% { transform: translateY(0) scale(0.98, 1.03); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  31%, 88% { transform: translateY(0) scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  93% { transform: translateY(0) scale(0.9, 0.9); opacity: 0; }
+  93.1%, 100% { transform: translateY(-60px) scale(1, 1); opacity: 0; }
+}
+@keyframes esc-ti-en-polvo {
+  0%, 24.5% { transform: translateX(0) scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  25.5% { transform: translateX(0) scale(0.6); opacity: 0.6; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  34%, 100% { transform: translateX(var(--dx)) scale(1.6); opacity: 0; }
+}
+/* el globito: x pareja, y en arco, tamaño aparte */
+@keyframes esc-ti-en-vx {
+  0%, 36% { transform: translateX(0); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  43% { transform: translateX(120px); }
+  43.1%, 100% { transform: translateX(0); }
+}
+@keyframes esc-ti-en-vy {
+  0%, 36% { transform: translateY(0); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+  39.5% { transform: translateY(-26px); animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0); }
+  43% { transform: translateY(5px); }
+  43.1%, 100% { transform: translateY(0); }
+}
+@keyframes esc-ti-en-vs {
+  0%, 35.5% { transform: scale(0.4); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  38% { transform: scale(1.08); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  41.5% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  43.5%, 100% { transform: scale(0.4); opacity: 0; }
+}
+@keyframes esc-ti-en-resp {
+  0%, 42.5% { transform: scale(0.6); opacity: 0; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  45.5% { transform: scale(1.05); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  47.5%, 92% { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
+  95%, 100% { transform: scale(0.6); opacity: 0; }
+}
+/* el celular vibra al recibir */
+@keyframes esc-ti-en-tel {
+  0%, 43% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  44.2% { transform: rotate(-2.5deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  45.6% { transform: rotate(2.5deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  47% { transform: rotate(-1.4deg); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  48.4%, 100% { transform: rotate(0deg); }
+}
+
+.escena .esc-ti-en-fila { animation: esc-ti-en-fila 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-en-avatar { animation: esc-ti-en-avatar 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-en-escribe { transform-origin: 0 50%; animation: esc-ti-en-escribe 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-en-pend { opacity: 0; animation: esc-ti-en-pend 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-en-llego { animation: esc-ti-en-llego 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-en-flash { opacity: 0; animation: esc-ti-en-flash 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-en-caja { transform-origin: 50% 100%; animation: esc-ti-en-caja 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-en-polvo { opacity: 0; animation: esc-ti-en-polvo 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-en-vx { animation: esc-ti-en-vx 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-en-vy { animation: esc-ti-en-vy 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-en-vs { opacity: 0; animation: esc-ti-en-vs 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-en-resp { transform-origin: 0% 0%; animation: esc-ti-en-resp 6.5s infinite; animation-delay: -2.6s; }
+.escena .esc-ti-en-tel { transform-origin: 50% 100%; animation: esc-ti-en-tel 6.5s infinite; animation-delay: -2.6s; }
