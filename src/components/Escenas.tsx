@@ -3,6 +3,7 @@ import { Aviso, Marco, svgBase, v } from './escenasBase'
 import './Escenas.css'
 import { EscenaMinimarket, EscenaFerreteria } from './EscenasComercio'
 import { EscenaBillar, EscenaAcademia } from './EscenasBillarYAcademia'
+import { EscenaLicoreria } from './EscenasLicoreria'
 import { EscenaPeluqueria, EscenaBarberia } from './EscenasPelo'
 import { EscenaSpa, EscenaUnas } from './EscenasBelleza'
 
@@ -534,6 +535,7 @@ export const ESCENAS = {
   ferreteria: EscenaFerreteria,
   farmacia: EscenaFarmacia,
   billar: EscenaBillar,
+  licoreria: EscenaLicoreria,
   peluqueria: EscenaPeluqueria,
   barberia: EscenaBarberia,
   spa: EscenaSpa,
