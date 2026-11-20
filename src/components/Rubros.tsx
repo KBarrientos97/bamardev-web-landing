@@ -89,6 +89,19 @@ const RUBROS: Record<Modo, Rubro[]> = {
       quienEscribe: 'tengo un billar o restobar',
       escena: 'billar',
     },
+    {
+      // Licorería (20-nov-2026): el núcleo viene en todos los planes; delivery,
+      // la página y los pedidos de Yango y PedidosYa se le prenden aparte.
+      emoji: '🍷',
+      nombre: 'Licorerías',
+      puntos: [
+        'Venta rápida con buscador: cervezas, vinos y destilados por categoría',
+        'Stock real de cada botella y cierre de caja con arqueo',
+        'Delivery, tu página web y los pedidos de Yango o PedidosYa, cuando los quieras sumar',
+      ],
+      quienEscribe: 'tengo una licorería',
+      escena: 'licoreria',
+    },
   ],
   agenda: [
     {
