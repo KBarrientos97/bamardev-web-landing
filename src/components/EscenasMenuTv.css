@@ -1,0 +1,66 @@
+/*
+  Keyframes de la escena «Menú en la TV» (EscenasMenuTv.tsx). Sólo transform y
+  opacity. Todo vive dentro de `.escena`, así que las pausas fuera de pantalla y
+  "reducir movimiento" ya vienen de index.css.
+
+  Ciclo maestro: 6,5 s, el del aviso (esc-chip). La TV pasa tres platos, uno por
+  tercio del ciclo (0 %, 33 % y 66 %): cada uno usa el mismo keyframe con su
+  desfase. La franja de la lista baja al plato que se está mostrando, y el
+  celular de al lado "toca" justo antes de cada cambio.
+*/
+
+@keyframes esc-tv-flota {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.6px); }
+}
+
+/* cada plato: entra, se queda su tercio y se va */
+@keyframes esc-tv-plato {
+  0% { opacity: 0; transform: translateY(5px) scale(0.92); }
+  5%, 29% { opacity: 1; transform: translateY(0) scale(1); }
+  33%, 100% { opacity: 0; transform: translateY(-4px) scale(0.96); }
+}
+
+/* la franja de la lista sigue al plato de la pantalla */
+@keyframes esc-tv-franja {
+  0%, 30% { transform: translateY(0); }
+  34%, 63% { transform: translateY(14px); }
+  67%, 96% { transform: translateY(28px); }
+  100% { transform: translateY(0); }
+}
+
+/* la etiqueta PROMO late */
+@keyframes esc-tv-promo {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+/* el brillo que cruza la pantalla */
+@keyframes esc-tv-brillo {
+  0%, 55% { transform: translateX(0); opacity: 0; }
+  60% { opacity: 1; }
+  85% { transform: translateX(var(--d, 200px)); opacity: 1; }
+  90%, 100% { transform: translateX(var(--d, 200px)); opacity: 0; }
+}
+
+/* el toque en el celular, antes de cada cambio de plato */
+@keyframes esc-tv-toque {
+  0% { transform: scale(0.4); opacity: 0; }
+  12% { opacity: 0.85; }
+  60%, 100% { transform: scale(1.9); opacity: 0; }
+}
+
+/* el vapor del café */
+@keyframes esc-tv-vapor {
+  0% { transform: translateY(2px); opacity: 0; }
+  40% { opacity: 0.8; }
+  100% { transform: translateY(-6px); opacity: 0; }
+}
+
+.esc-tv-flota { animation: esc-tv-flota 6.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.esc-tv-plato { animation: esc-tv-plato 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+.esc-tv-franja { animation: esc-tv-franja 6.5s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+.esc-tv-promo { animation: esc-tv-promo 1.6s ease-in-out infinite; }
+.esc-tv-brillo { animation: esc-tv-brillo 6.5s ease-in-out infinite; }
+.esc-tv-toque { animation: esc-tv-toque 2.1667s ease-out 1.95s infinite; }
+.esc-tv-vapor { animation: esc-tv-vapor 1.8s ease-out infinite; }
